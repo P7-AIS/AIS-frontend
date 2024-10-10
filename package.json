@@ -8,13 +8,14 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "build:protos": "proto-loader-gen-types --longs=String --enums=String --defaults --oneofs --grpcLib=@grpc/grpc-js --outDir=proto/ AIS-protobuf/*.proto"
+    "build:protos": "protoc --plugin=protoc-gen-ts=./node_modules/.bin/protoc-gen-ts --ts_out=service=grpc-web:./src/generated -I ./AIS-protobuf ./AIS-protobuf/ais.proto"
   },
   "dependencies": {
+    "google-protobuf": "^3.21.4",
+    "grpc-web": "^1.5.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "@grpc/grpc-js": "^1.11.3",
-    "@grpc/proto-loader": "^0.7.13"
+    "react-router-dom": "^6.26.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",
@@ -25,6 +26,7 @@
     "eslint-plugin-react-hooks": "^5.1.0-rc.0",
     "eslint-plugin-react-refresh": "^0.4.9",
     "globals": "^15.9.0",
+    "ts-protoc-gen": "^0.15.0",
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.0.1",
     "vite": "^5.4.1"
