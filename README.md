@@ -1,8 +1,9 @@
 ### Prerequisites
+
 `npm i`\
-`npm run build:protos:mac`\
-`brew install envoy`
+`npm run build:protos:(mac/win))`\
 
 ### Start server
-`envoy --config-path ./envoy.yaml`\
+
+`npm run proxy`\
 `npm run dev`

@@ -8,9 +8,13 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "build:protos:mac": "protoc --plugin=./node_modules/.bin/protoc-gen-ts_proto --ts_proto_opt=outputClientImpl=grpc-web --ts_proto_out=./proto ./AIS-protobuf/ais.proto"
+    "build:protos:mac": "protoc --plugin=./node_modules/.bin/protoc-gen-ts_proto --ts_proto_opt=outputClientImpl=grpc-web --ts_proto_out=./proto ./AIS-protobuf/ais.proto",
+    "build:protos:win": "protoc --plugin=./node_modules/.bin/protoc-gen-ts_proto.cmd --ts_proto_opt=outputClientImpl=grpc-web --ts_proto_out=./proto ./AIS-protobuf/ais.proto",
+    "proxy": "npx @grpc-web/proxy --target http://127.0.0.1:50000 --listen 8080"
   },
   "dependencies": {
+    "@grpc-web/proxy": "^0.1.0",
+    "@improbable-eng/grpc-web": "^0.15.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.26.2",
