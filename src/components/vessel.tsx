@@ -1,56 +1,66 @@
-import { ISimpleVessel } from '../models/simpleVessel';
-import { useState } from 'react';
-import { ILocation } from '../models/location';
-import { IDetailedVessel } from '../models/detailedVessel';
-import Popup from './popup';
-import Timeline from './timeline';
-import Path from './path';
-import { AISServiceClient } from '../../proto/ais.client';
-import { VesselInfoRequest } from '../../proto/ais';
-import { GrpcWebClientBase } from 'grpc-web';
-import { GrpcWebFetchTransport } from '@protobuf-ts/grpcweb-transport';
+import { ISimpleVessel } from '../models/simpleVessel'
+import { useEffect, useState } from 'react'
+import { ILocation } from '../models/location'
+import { IDetailedVessel } from '../models/detailedVessel'
+import Popup from './popup'
+import Timeline from './timeline'
+import Path from './path'
+import GRPCClient from '../GRPCClient'
+import { StreamingRequest, StreamingResponse, VesselInfoRequest } from '../../proto/AIS-protobuf/ais'
 
 interface IVesselProps {
-	vessel: ISimpleVessel | IDetailedVessel;
-	isMonitored: boolean;
+  vessel: ISimpleVessel | IDetailedVessel
+  isMonitored: boolean
 }
 
 export default function Vessel({ vessel, isMonitored }: IVesselProps) {
-	const [history, setHistory] = useState<ILocation[] | undefined>(undefined);
-	const [vesselDetail, setVesselDetail] = useState<IDetailedVessel | undefined>(
-		undefined
-	);
+  const [history, setHistory] = useState<ILocation[] | undefined>(undefined)
+  const [vesselDetail, setVesselDetail] = useState<IDetailedVessel | undefined>(undefined)
 
-	function vesselTimestamps() {
-		//fetch history
-		return [];
-	}
-	async function popupClick() {
-		if (vesselDetail) {
-			setVesselDetail(undefined);
-			return;
-		}
+  function vesselTimestamps() {
+    //fetch history
+    return []
+  }
+  async function popupClick() {
+    const request: VesselInfoRequest = {
+      mmsi: 12345678,
+      timestamp: 0,
+    }
 
-		const transport = new GrpcWebFetchTransport({
-			baseUrl: 'http://127.0.0.1:50000'
-		});
-		const client = new AISServiceClient(transport);
-		const request: VesselInfoRequest = {
-			mmsi: 123n,
-			timestamp: 12312n
-		};
+    const response = await GRPCClient.GetVesselInfo(request)
 
-		const response = client.getVesselInfo(request);
-		console.log(response);
-	}
+    const details: IDetailedVessel = {
+      id: response.mmsi,
+      name: response.name,
+      mmsi: response.mmsi,
+    }
 
-	return (
-		<>
-			<h1>Vessel component</h1>
-			<button onClick={popupClick}>Shop popup</button>
-			{vesselDetail && <Popup vessel={vesselDetail}></Popup>}
-			<Timeline timestamps={vesselTimestamps()}></Timeline>
-			{history && <Path history={history}></Path>}
-		</>
-	);
+    setVesselDetail(details)
+
+    console.log(response)
+  }
+
+  useEffect(() => {
+    const request: StreamingRequest = {
+      selectedArea: [],
+      startTime: 1728645348194,
+      timeSpeed: 0,
+    }
+
+    const stream = GRPCClient.StartStreaming(request)
+
+    stream.subscribe((data) => {
+      console.log(data)
+    })
+  }, [])
+
+  return (
+    <>
+      <h1>Vessel component</h1>
+      <button onClick={popupClick}>Shop popup</button>
+      {vesselDetail && <Popup vessel={vesselDetail}></Popup>}
+      <Timeline timestamps={vesselTimestamps()}></Timeline>
+      {history && <Path history={history}></Path>}
+    </>
+  )
 }
