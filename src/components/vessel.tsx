@@ -5,8 +5,7 @@ import { IDetailedVessel } from '../models/detailedVessel'
 import Popup from './popup'
 import Timeline from './timeline'
 import Path from './path'
-import GRPCClient from '../GRPCClient'
-import { StreamingRequest, StreamingResponse, VesselInfoRequest } from '../../proto/AIS-protobuf/ais'
+import { useAppContext } from '../contexts/appcontext'
 
 interface IVesselProps {
   vessel: ISimpleVessel | IDetailedVessel
@@ -16,43 +15,33 @@ interface IVesselProps {
 export default function Vessel({ vessel, isMonitored }: IVesselProps) {
   const [history, setHistory] = useState<ILocation[] | undefined>(undefined)
   const [vesselDetail, setVesselDetail] = useState<IDetailedVessel | undefined>(undefined)
+  const { clientHandler } = useAppContext()
 
   function vesselTimestamps() {
     //fetch history
     return []
   }
   async function popupClick() {
-    const request: VesselInfoRequest = {
-      mmsi: 12345678,
-      timestamp: 0,
-    }
+    const response = await clientHandler.GetVesselInfo({ mmsi: 12345678, timeStamp: 0 })
 
-    const response = await GRPCClient.GetVesselInfo(request)
-
-    const details: IDetailedVessel = {
-      id: response.mmsi,
-      name: response.name,
-      mmsi: response.mmsi,
-    }
-
-    setVesselDetail(details)
+    setVesselDetail(response)
 
     console.log(response)
   }
 
   useEffect(() => {
-    const request: StreamingRequest = {
-      selectedArea: [],
+    const request = {
+      selection: [],
       startTime: 1728645348194,
       timeSpeed: 0,
     }
 
-    const stream = GRPCClient.StartStreaming(request)
+    const stream = clientHandler.StartStreaming(request)
 
     stream.subscribe((data) => {
       console.log(data)
     })
-  }, [])
+  }, [clientHandler])
 
   return (
     <>

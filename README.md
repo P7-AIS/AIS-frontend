@@ -5,5 +5,4 @@
 
 ### Start server
 
-`npm run proxy`\
-`npm run dev`
+`npm run dev:all`
