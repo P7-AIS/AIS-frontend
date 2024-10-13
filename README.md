@@ -1,7 +1,7 @@
 ### Prerequisites
 
 `npm i`\
-`npm run build:protos:(mac/win))`\
+`npm run build:protos:(mac/win)`\
 
 ### Start server
 
