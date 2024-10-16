@@ -3,5 +3,5 @@ interface ITimelineProps {
 }
 
 export default function Timeline({ timestamps }: ITimelineProps) {
-	return <h1>timestamp</h1>;
+	return <h1>timeline component</h1>;
 }

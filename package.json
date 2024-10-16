@@ -5,17 +5,23 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:all": "concurrently \"npm run proxy\" \"npm run dev\"",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "build:protos": "protoc --plugin=protoc-gen-ts=./node_modules/.bin/protoc-gen-ts --ts_out=service=grpc-web:./src/generated -I ./AIS-protobuf ./AIS-protobuf/ais.proto"
+    "build:protos:mac": "protoc --plugin=./node_modules/.bin/protoc-gen-ts_proto --ts_proto_opt=outputClientImpl=grpc-web --ts_proto_out=./proto ./AIS-protobuf/ais.proto",
+    "build:protos:win": "protoc --plugin=./node_modules/.bin/protoc-gen-ts_proto.cmd --ts_proto_opt=outputClientImpl=grpc-web --ts_proto_out=./proto ./AIS-protobuf/ais.proto",
+    "proxy": "npx @grpc-web/proxy --target http://127.0.0.1:50000 --listen 8080"
   },
   "dependencies": {
-    "google-protobuf": "^3.21.4",
-    "grpc-web": "^1.5.0",
+    "@grpc-web/proxy": "^0.1.0",
+    "@improbable-eng/grpc-web": "^0.15.0",
+    "concurrently": "^9.0.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-router-dom": "^6.26.2"
+    "react-router-dom": "^6.26.2",
+    "rxjs": "^7.8.1",
+    "ts-proto": "^2.2.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",
@@ -26,7 +32,6 @@
     "eslint-plugin-react-hooks": "^5.1.0-rc.0",
     "eslint-plugin-react-refresh": "^0.4.9",
     "globals": "^15.9.0",
-    "ts-protoc-gen": "^0.15.0",
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.0.1",
     "vite": "^5.4.1"

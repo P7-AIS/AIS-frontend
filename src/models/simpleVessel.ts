@@ -1,10 +1,10 @@
-import { ILocation } from "./location";
+import { ILocation } from './location'
 
 export interface ISimpleVessel {
-    location: ILocation,
-    vesselId: number
+  location: ILocation
+  mmsi: number
 }
 
 export default class SimpleVessel implements ISimpleVessel {
-    constructor(public location: ILocation, public vesselId: number) { }
+  constructor(public location: ILocation, public mmsi: number) {}
 }

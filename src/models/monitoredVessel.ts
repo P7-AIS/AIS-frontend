@@ -1,13 +1,9 @@
 export interface IMonitoredVessel {
-    vesselId: string;
-    trustwortiness: number;
-    reason?: string;
+  mmsi: number
+  trustwortiness: number
+  reason?: string
 }
 
 export default class MonitoredVessel implements IMonitoredVessel {
-    constructor(
-        public vesselId: string,
-        public trustwortiness: number,
-        public reason?: string
-    ) { }
+  constructor(public mmsi: number, public trustwortiness: number, public reason?: string) {}
 }
