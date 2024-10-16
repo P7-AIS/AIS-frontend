@@ -1,7 +1,7 @@
 import { createContext, useContext, useState } from 'react'
-import { IClientHandler } from '../interfaces/IClient'
+import { IClientHandler } from '../interfaces/IClientHandler'
 import { AISServiceClientImpl, GrpcWebImpl } from '../../proto/AIS-protobuf/ais'
-import GRPCClientHandler from '../implemenrations/GRPCClient'
+import GRPCClientHandler from '../implementations/GRPCClientHandler'
 
 interface IAppContext {
   myDateTime: Date

@@ -7,7 +7,7 @@ import { IStreamResponse } from '../models/streamResponse'
 // It should never use any GRPC models
 
 export interface IClientHandler {
-  GetVesselInfo(request: { mmsi: number; timeStamp: number }): Promise<IDetailedVessel>
+  GetVesselInfo(request: { mmsi: number; timestamp: number }): Promise<IDetailedVessel>
   StartStreaming(request: {
     startTime: number
     selection: ISelectionArea[]

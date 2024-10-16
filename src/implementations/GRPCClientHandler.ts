@@ -9,7 +9,7 @@ import {
   VesselInfoRequest,
   VesselInfoResponse,
 } from '../../proto/AIS-protobuf/ais'
-import { IClientHandler } from '../interfaces/IClient'
+import { IClientHandler } from '../interfaces/IClientHandler'
 import { IDetailedVessel } from '../models/detailedVessel'
 import { ISelectionArea } from '../models/selectionArea'
 import { IStreamResponse } from '../models/streamResponse'
@@ -21,10 +21,10 @@ import { IMonitoredVessel } from '../models/monitoredVessel'
 export default class GRPCClientHandler implements IClientHandler {
   constructor(private readonly client: AISServiceClientImpl) {}
 
-  async GetVesselInfo(request: { mmsi: number; timeStamp: number }): Promise<IDetailedVessel> {
+  async GetVesselInfo(request: { mmsi: number; timestamp: number }): Promise<IDetailedVessel> {
     const grpcReq: VesselInfoRequest = {
       mmsi: request.mmsi,
-      timestamp: request.timeStamp,
+      timestamp: request.timestamp,
     }
 
     const response = await this.client.GetVesselInfo(grpcReq)
