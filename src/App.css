@@ -40,3 +40,8 @@
 .read-the-docs {
   color: #888;
 }
+
+.rotate-90 {
+  position: absolute;
+  transform: rotate(90deg) !important;
+}
