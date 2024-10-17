@@ -2,11 +2,9 @@ import { createContext, useContext, useState } from 'react'
 import { ISelectionArea } from '../models/selectionArea'
 
 export enum ActiveGuiTool {
-  ZoomIn,
-  ZoomOut,
-  Rectangle,
-  Polygon,
-  Mouse,
+  Rectangle = 'Rectangle',
+  Polygon = 'Polygon',
+  Mouse = 'Mouse',
 }
 
 interface IVesselGuiContext {

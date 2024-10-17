@@ -11,15 +11,8 @@ export default function Toolbar({ map }: IToolbarProps) {
   const { activeTool, setActiveTool } = useVesselGuiContext()
 
   useEffect(() => {
-    switch (activeTool) {
-      case ActiveGuiTool.Polygon:
-        map.pm.enableDraw('Polygon', { snappable: true })
-        break
-      case ActiveGuiTool.Rectangle:
-        map.pm.enableDraw('Rectangle', { snappable: true })
-        break
-      default:
-        break
+    if (activeTool !== ActiveGuiTool.Mouse) {
+      map.pm.enableDraw(activeTool, { snappable: true })
     }
   }, [activeTool, map.pm])
 
