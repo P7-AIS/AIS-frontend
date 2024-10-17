@@ -1,6 +1,7 @@
 import { ActiveGuiTool, useVesselGuiContext } from '../contexts/vesselGuiContext'
 import { Polygon } from 'leaflet'
 import L from 'leaflet'
+import { useEffect } from 'react'
 
 interface IToolbarProps {
   map: L.Map
@@ -9,22 +10,18 @@ interface IToolbarProps {
 export default function Toolbar({ map }: IToolbarProps) {
   const { activeTool, setActiveTool } = useVesselGuiContext()
 
-  function enableTool(setTool: ActiveGuiTool) {
-    clearTool()
-    if (map !== null) {
-      switch (setTool) {
-        case ActiveGuiTool.Polygon:
-          map.pm.enableDraw('Polygon', { snappable: true })
-          break
-        case ActiveGuiTool.Rectangle:
-          map.pm.enableDraw('Rectangle', { snappable: true })
-          break
-        default:
-          break
-      }
-      setActiveTool(setTool) //nødvendig?
+  useEffect(() => {
+    switch (activeTool) {
+      case ActiveGuiTool.Polygon:
+        map.pm.enableDraw('Polygon', { snappable: true })
+        break
+      case ActiveGuiTool.Rectangle:
+        map.pm.enableDraw('Rectangle', { snappable: true })
+        break
+      default:
+        break
     }
-  }
+  }, [activeTool, map.pm])
 
   if (map !== null) {
     map.on('pm:create', function (e) {
@@ -47,7 +44,7 @@ export default function Toolbar({ map }: IToolbarProps) {
 
   return (
     <span className="inline-flex flex-col space-y-1">
-      <button onClick={() => enableTool(ActiveGuiTool.Rectangle)}>
+      <button onClick={() => setActiveTool(ActiveGuiTool.Rectangle)}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="32"
@@ -60,7 +57,7 @@ export default function Toolbar({ map }: IToolbarProps) {
         </svg>
       </button>
 
-      <button onClick={() => enableTool(ActiveGuiTool.Polygon)}>
+      <button onClick={() => setActiveTool(ActiveGuiTool.Polygon)}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="32"
