@@ -27,14 +27,23 @@ export default function Toolbar({ map }: IToolbarProps) {
     }
   }, [activeTool, clearTool, map.pm])
 
-  if (map !== null) {
-    map.on('pm:create', function (e) {
-      if (['Polygon', 'Rectangle'].includes(e.shape)) {
-        //TODO: her skal der nok sendes en request til backend med nyt valgte område
-        console.log((e.layer as Polygon).toGeoJSON())
+  useEffect(() => {
+    if (map !== null) {
+      map.on('pm:create', function (e) {
+        if (['Polygon', 'Rectangle'].includes(e.shape)) {
+          console.log((e.layer as Polygon).toGeoJSON())
+          //TODO: send request til backend med nyt valgt område
+          setActiveTool(ActiveGuiTool.Mouse)
+        }
+      })
+    }
+
+    return () => {
+      if (map !== null) {
+        map.off('pm:create')
       }
-    })
-  }
+    }
+  }, [map, setActiveTool])
 
   return (
     <span className="inline-flex flex-col space-y-1">
