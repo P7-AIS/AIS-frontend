@@ -11,6 +11,7 @@ import L from 'leaflet'
 import MonitoringMenu from '../components/monitoringMenu'
 import MonitoringMenuRow from '../components/monitoringMenuRow'
 import Toolbar from '../components/toolbar'
+import Vessel from '../components/vessel'
 
 export default function VesselMapPage() {
   const [allVessels, setAllVessels] = useState<ISimpleVessel[] | undefined>(undefined)
@@ -117,11 +118,10 @@ export default function VesselMapPage() {
         )}
       </div>
 
-      {/* Map */}
       <div className="h-screen w-screen absolute top-0 left-0 z-0">
         <LMap setMapRef={setMap}>
           {allVessels?.map((vessel) => (
-            <VesselMarker key={vessel.mmsi} vessel={vessel}></VesselMarker>
+            <Vessel key={vessel.mmsi} vessel={vessel} isMonitored={false}></Vessel>
           ))}
         </LMap>
       </div>

@@ -3,13 +3,14 @@ import L from 'leaflet'
 import { MapContainer, TileLayer, Marker, Popup as LPopup, useMap } from 'react-leaflet'
 import Popup from './popup'
 import IVesselDetail from '../models/detailedVessel'
-import { useState } from 'react'
+import React, { useState } from 'react'
 
 interface IVesselMarker {
-  vessel: ISimpleVessel
+  vessel: ISimpleVessel;
+  popup: React.ReactNode;
 }
 
-export default function VesselMarker({ vessel }: IVesselMarker) {
+export default function VesselMarker({ vessel, popup }: IVesselMarker) {
   const [vesselDetails, setVesselDetails] = useState<IVesselDetail | undefined>(undefined)
 
   const icon = L.divIcon({
@@ -26,7 +27,7 @@ export default function VesselMarker({ vessel }: IVesselMarker) {
     <Marker position={[vessel.location.point.lat, vessel.location.point.lon]} icon={icon}>
       {vesselDetails && (
         <LPopup>
-          <Popup vessel={vesselDetails} />
+          {popup}
         </LPopup>
       )}
     </Marker>
