@@ -14,9 +14,9 @@ export default function VesselMarker({ vessel }: IVesselMarker) {
 
   const icon = L.divIcon({
     className: 'custom-div-icon',
-    html: `<div style='width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent; border-bottom: 40px solid #c30b82; transform: rotate(${
+    html: `<div style="width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent; border-bottom: 40px solid #c30b82; transform: translate(-5px, -20px) rotate(${
       vessel.location.heading || 0
-    }deg) translate(-5px, -20px);'></div>
+    }deg);"></div>
 `,
     iconAnchor: [0, 0],
     popupAnchor: [0, -25],
