@@ -17,6 +17,7 @@ export default function VesselMapPage() {
   const [allVessels, setAllVessels] = useState<ISimpleVessel[] | undefined>(undefined)
   const [monitoredVessels, setMonitoredVessels] = useState<IMonitoredVessel[] | undefined>(undefined)
   const [map, setMap] = useState<L.Map | null>(null)
+  const { selectedVesselmmsi } = useVesselGuiContext()
 
   const { pathHistory } = useVesselGuiContext()
 
@@ -42,43 +43,25 @@ export default function VesselMapPage() {
       },
     },
   }
+  const vessel2: ISimpleVessel = {
+    mmsi: 543,
+    location: {
+      heading: 25,
+      timestamp: new Date(),
+      point: {
+        lat: 56.35674,
+        lon: 10.21076,
+      },
+    },
+  }
 
   useEffect(() => {
-    setAllVessels([vessel, vessel1])
+    setAllVessels([vessel, vessel1, vessel2])
     setMonitoredVessels([
       {...vessel, trustworthiness:0.20, reason:"therefore"},
       {...vessel1, trustworthiness:0.30, reason:"therefore"},
-      {...vessel1, trustworthiness:0.30, reason:"therefore"},
-      {...vessel1, trustworthiness:0.30, reason:"therefore"},
-      {...vessel1, trustworthiness:0.30, reason:"therefore"},
-      {...vessel1, trustworthiness:0.30, reason:"therefore"},
-      {...vessel1, trustworthiness:0.30, reason:"therefore"},
-      {...vessel1, trustworthiness:0.30, reason:"therefore"},
-      {...vessel1, trustworthiness:0.30, reason:"therefore"},
-      {...vessel1, trustworthiness:0.30, reason:"therefore"},
-      {...vessel1, trustworthiness:0.30, reason:"therefore"},
-      {...vessel1, trustworthiness:0.30, reason:"therefore"},
-      {...vessel1, trustworthiness:0.30, reason:"therefore"},
-      {...vessel1, trustworthiness:0.30, reason:"therefore"},
-      {...vessel1, trustworthiness:0.30, reason:"therefore"},
-      {...vessel1, trustworthiness:0.30, reason:"therefore"},
-      {...vessel1, trustworthiness:0.30, reason:"therefore"},
-      {...vessel1, trustworthiness:0.30, reason:"therefore"},
-      {...vessel1, trustworthiness:0.30, reason:"therefore"},
-      {...vessel1, trustworthiness:0.30, reason:"therefore"},
-      {...vessel1, trustworthiness:0.30, reason:"therefore"},
-      {...vessel1, trustworthiness:0.30, reason:"therefore"},
-      {...vessel1, trustworthiness:0.30, reason:"therefore"},
-      {...vessel1, trustworthiness:0.30, reason:"therefore"},
-      {...vessel1, trustworthiness:0.30, reason:"therefore"},
-      {...vessel1, trustworthiness:0.30, reason:"therefore"},
-      {...vessel1, trustworthiness:0.30, reason:"therefore"},
-      {...vessel1, trustworthiness:0.30, reason:"therefore"},
-      {...vessel1, trustworthiness:0.30, reason:"therefore"},
-      {...vessel1, trustworthiness:0.30, reason:"therefore"},
-      {...vessel1, trustworthiness:0.30, reason:"therefore"},
-      {...vessel1, trustworthiness:0.30, reason:"therefore"},
-      {...vessel1, trustworthiness:0.30, reason:"therefore"},
+      {...vessel2, trustworthiness:0.30, reason:"therefore"},
+
     ])
   }, [])
 
@@ -109,7 +92,7 @@ export default function VesselMapPage() {
                 <MonitoringMenuRow
                   key={vessel.mmsi}
                   monitoredVessel={vessel}
-                  isSelected={false}
+                  isSelected={selectedVesselmmsi === vessel.mmsi}
                   zoomToCallback={zoomToVessel}
                 ></MonitoringMenuRow>
               );

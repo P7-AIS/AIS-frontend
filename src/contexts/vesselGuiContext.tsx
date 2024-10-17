@@ -22,8 +22,8 @@ interface IVesselGuiContext {
   setActiveTime: React.Dispatch<React.SetStateAction<Date>>
   selectionArea?: ISelectionArea
   setSelectionArea: React.Dispatch<React.SetStateAction<ISelectionArea | undefined>>
-  selectedVesselmmsi?: string
-  setSelectedVesselmmsi: React.Dispatch<React.SetStateAction<string | undefined>>
+  selectedVesselmmsi?: number
+  setSelectedVesselmmsi: React.Dispatch<React.SetStateAction<number | undefined>>
   selectedVesselPath?: ILocation[]
   setSelectedVesselPath: React.Dispatch<React.SetStateAction<ILocation[] | undefined>>
 }
@@ -46,7 +46,7 @@ export const VesselGuiContextProvider = ({ children }: { children: React.ReactNo
   const [activeTool, setActiveTool] = useState<ActiveGuiTool>(ActiveGuiTool.Mouse)
   const [activeTime, setActiveTime] = useState<Date>(new Date())
   const [selectionArea, setSelectionArea] = useState<ISelectionArea | undefined>()
-  const [selectedVesselmmsi, setSelectedVesselmmsi] = useState<string | undefined>()
+  const [selectedVesselmmsi, setSelectedVesselmmsi] = useState<number | undefined>()
   const [selectedVesselPath, setSelectedVesselPath] = useState<ILocation[] | undefined>()
 
   return (
