@@ -14,6 +14,7 @@
     "proxy": "npx @grpc-web/proxy --target http://127.0.0.1:50000 --listen 8080"
   },
   "dependencies": {
+    "@geoman-io/leaflet-geoman-free": "^2.17.0",
     "@grpc-web/proxy": "^0.1.0",
     "@improbable-eng/grpc-web": "^0.15.0",
     "concurrently": "^9.0.1",

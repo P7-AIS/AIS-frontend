@@ -14,9 +14,10 @@ const ComponentResize = () => {
 
 interface IMap {
   children: React.ReactNode
+  setMapRef: React.Dispatch<React.SetStateAction<L.Map | null>>
 }
 
-const LMap = ({ children }: IMap) => {
+const LMap = ({ setMapRef, children }: IMap) => {
   return (
     <MapContainer
       style={{
@@ -28,6 +29,7 @@ const LMap = ({ children }: IMap) => {
       zoom={8}
       minZoom={3}
       scrollWheelZoom={true}
+      ref={setMapRef}
     >
       <ComponentResize />
       <TileLayer
