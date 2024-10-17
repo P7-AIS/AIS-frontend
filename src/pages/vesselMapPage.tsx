@@ -10,6 +10,8 @@ import '@geoman-io/leaflet-geoman-free'
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css'
 import { Polygon } from 'leaflet'
 import L from 'leaflet'
+import MonitoringMenu from '../components/monitoringMenu'
+import MonitoringMenuRow from '../components/monitoringMenuRow'
 
 export default function VesselMapPage() {
   const [allVessels, setAllVessels] = useState<ISimpleVessel[] | undefined>(undefined)
@@ -70,9 +72,9 @@ export default function VesselMapPage() {
   }
 
   return (
-    <div className="relative w-full h-full">
-      <div className="relative z-10 ">
-        <h1>Here is the page {pathHistory ? 'true' : 'false'}</h1>
+    <div className="relative">
+      <div className="absolute z-10 bg-neutral_2 w-96">
+        <p>Here is the page </p>
         <Vessel isMonitored={false} vessel={vessel}></Vessel>
         <span>
           <button onClick={enableTool}>test tool</button>
@@ -80,6 +82,26 @@ export default function VesselMapPage() {
         </span>
       </div>
 
+      <div
+        id="monitoring-menu-container"
+        className="absolute max-w-96 max-h-1/3 top-0 right-0 z-10 bg-neutral_2"
+      >
+        {monitoredVessels && (
+          <MonitoringMenu monitoredVessels={monitoredVessels}>
+            {monitoredVessels.map((vessel: IMonitoredVessel) => {
+              return (
+                <MonitoringMenuRow
+                  key={vessel.mmsi}
+                  monitoredVessel={vessel}
+                  isSelected={false}
+                ></MonitoringMenuRow>
+              );
+            })}
+          </MonitoringMenu>
+        )}
+      </div>
+
+      {/* Map */}
       <div className="h-screen w-screen absolute top-0 left-0 z-0">
         <LMap setMapRef={setMap}>
           {allVessels?.map((vessel) => (
@@ -88,6 +110,7 @@ export default function VesselMapPage() {
         </LMap>
       </div>
     </div>
+
 
   )
 }
