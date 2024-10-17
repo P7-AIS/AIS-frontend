@@ -1,11 +1,11 @@
 import { createContext, useContext, useState } from 'react'
 import { ISelectionArea } from '../models/selectionArea'
 
-enum ActiveGuiTool {
+export enum ActiveGuiTool {
   ZoomIn,
   ZoomOut,
   Rectangle,
-  Lasso,
+  Polygon,
   Mouse,
 }
 

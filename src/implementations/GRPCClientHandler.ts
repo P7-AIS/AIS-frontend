@@ -19,7 +19,7 @@ import { ISimpleVessel } from '../models/simpleVessel'
 import { IMonitoredVessel } from '../models/monitoredVessel'
 
 export default class GRPCClientHandler implements IClientHandler {
-  constructor(private readonly client: AISServiceClientImpl) {}
+  constructor(private readonly client: AISServiceClientImpl) { }
 
   async GetVesselInfo(request: { mmsi: number; timestamp: number }): Promise<IDetailedVessel> {
     const grpcReq: VesselInfoRequest = {

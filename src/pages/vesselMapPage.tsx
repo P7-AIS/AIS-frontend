@@ -2,14 +2,13 @@ import { useVesselGuiContext } from '../contexts/vesselGuiContext'
 import { useState, useEffect } from 'react'
 import { ISimpleVessel } from '../models/simpleVessel'
 import { IMonitoredVessel } from '../models/monitoredVessel'
-import Vessel from '../components/vessel'
 import LMap from '../components/map'
 import VesselMarker from '../components/vesselMarker'
 import 'leaflet/dist/leaflet.css'
 import '@geoman-io/leaflet-geoman-free'
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css'
-import { Polygon } from 'leaflet'
 import L from 'leaflet'
+import Toolbar from '../components/toolbar'
 
 export default function VesselMapPage() {
   const [allVessels, setAllVessels] = useState<ISimpleVessel[] | undefined>(undefined)
@@ -45,39 +44,11 @@ export default function VesselMapPage() {
     setAllVessels([vessel, vessel1])
   }, [])
 
-  function enableTool() {
-    if (map) {
-      map.pm.enableDraw('Polygon', { snappable: true })
-    }
-  }
-
-  if (map !== null) {
-    map.on('pm:create', function (e) {
-      if (e.shape === 'Polygon') {
-        console.log((e.layer as Polygon).toGeoJSON())
-      }
-    })
-  }
-
-  function clearTool() {
-    if (map !== null) {
-      map.eachLayer(function (layer: L.Layer) {
-        if (!(layer instanceof L.TileLayer || layer instanceof L.Marker)) {
-          map.removeLayer(layer)
-        }
-      })
-    }
-  }
-
   return (
     <>
       <h1>Here is the page {pathHistory ? 'true' : 'false'}</h1>
-      <Vessel isMonitored={false} vessel={vessel}></Vessel>
-      <span>
-        <button onClick={enableTool}>test tool</button>
-        <button onClick={clearTool}>clear</button>
-      </span>
       <div className="h-screen w-screen">
+        <Toolbar map={map} />
         <LMap setMapRef={setMap}>
           {allVessels?.map((vessel) => {
             return <VesselMarker key={vessel.mmsi} vessel={vessel}></VesselMarker>

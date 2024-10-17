@@ -26,6 +26,7 @@ const LMap = ({ setMapRef, children }: IMap) => {
       }}
       center={[56.15674, 10.21076]}
       attributionControl={true}
+      zoomControl={false}
       zoom={8}
       minZoom={3}
       scrollWheelZoom={true}
