@@ -11,6 +11,7 @@ import L from 'leaflet'
 import MonitoringMenu from '../components/monitoringMenu'
 import MonitoringMenuRow from '../components/monitoringMenuRow'
 import Toolbar from '../components/toolbar'
+import Vessel from '../components/vessel'
 
 export default function VesselMapPage() {
   const [allVessels, setAllVessels] = useState<ISimpleVessel[] | undefined>(undefined)
@@ -22,7 +23,7 @@ export default function VesselMapPage() {
   const vessel: ISimpleVessel = {
     mmsi: 123,
     location: {
-      heading: 45,
+      heading: 90,
       timestamp: new Date(),
       point: {
         lat: 56.15674,
@@ -47,6 +48,37 @@ export default function VesselMapPage() {
     setMonitoredVessels([
       {...vessel, trustworthiness:0.20, reason:"therefore"},
       {...vessel1, trustworthiness:0.30, reason:"therefore"},
+      {...vessel1, trustworthiness:0.30, reason:"therefore"},
+      {...vessel1, trustworthiness:0.30, reason:"therefore"},
+      {...vessel1, trustworthiness:0.30, reason:"therefore"},
+      {...vessel1, trustworthiness:0.30, reason:"therefore"},
+      {...vessel1, trustworthiness:0.30, reason:"therefore"},
+      {...vessel1, trustworthiness:0.30, reason:"therefore"},
+      {...vessel1, trustworthiness:0.30, reason:"therefore"},
+      {...vessel1, trustworthiness:0.30, reason:"therefore"},
+      {...vessel1, trustworthiness:0.30, reason:"therefore"},
+      {...vessel1, trustworthiness:0.30, reason:"therefore"},
+      {...vessel1, trustworthiness:0.30, reason:"therefore"},
+      {...vessel1, trustworthiness:0.30, reason:"therefore"},
+      {...vessel1, trustworthiness:0.30, reason:"therefore"},
+      {...vessel1, trustworthiness:0.30, reason:"therefore"},
+      {...vessel1, trustworthiness:0.30, reason:"therefore"},
+      {...vessel1, trustworthiness:0.30, reason:"therefore"},
+      {...vessel1, trustworthiness:0.30, reason:"therefore"},
+      {...vessel1, trustworthiness:0.30, reason:"therefore"},
+      {...vessel1, trustworthiness:0.30, reason:"therefore"},
+      {...vessel1, trustworthiness:0.30, reason:"therefore"},
+      {...vessel1, trustworthiness:0.30, reason:"therefore"},
+      {...vessel1, trustworthiness:0.30, reason:"therefore"},
+      {...vessel1, trustworthiness:0.30, reason:"therefore"},
+      {...vessel1, trustworthiness:0.30, reason:"therefore"},
+      {...vessel1, trustworthiness:0.30, reason:"therefore"},
+      {...vessel1, trustworthiness:0.30, reason:"therefore"},
+      {...vessel1, trustworthiness:0.30, reason:"therefore"},
+      {...vessel1, trustworthiness:0.30, reason:"therefore"},
+      {...vessel1, trustworthiness:0.30, reason:"therefore"},
+      {...vessel1, trustworthiness:0.30, reason:"therefore"},
+      {...vessel1, trustworthiness:0.30, reason:"therefore"},
     ])
   }, [])
 
@@ -68,7 +100,7 @@ export default function VesselMapPage() {
 
       <div
         id="monitoring-menu-container"
-        className="absolute max-w-96 max-h-1/3 top-0 right-0 z-10 bg-neutral_2"
+        className="absolute max-w-96 max-h-98 top-5 right-5 z-10"
       >
         {monitoredVessels && (
           <MonitoringMenu monitoredVessels={monitoredVessels}>
@@ -86,11 +118,10 @@ export default function VesselMapPage() {
         )}
       </div>
 
-      {/* Map */}
       <div className="h-screen w-screen absolute top-0 left-0 z-0">
         <LMap setMapRef={setMap}>
           {allVessels?.map((vessel) => (
-            <VesselMarker key={vessel.mmsi} vessel={vessel}></VesselMarker>
+            <Vessel key={vessel.mmsi} vessel={vessel} isMonitored={false}></Vessel>
           ))}
         </LMap>
       </div>
