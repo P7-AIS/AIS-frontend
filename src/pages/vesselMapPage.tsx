@@ -45,6 +45,10 @@ export default function VesselMapPage() {
 
   useEffect(() => {
     setAllVessels([vessel, vessel1])
+    setMonitoredVessels([
+      {...vessel, trustworthiness:0.20, reason:"therefore"},
+      {...vessel1, trustworthiness:0.30, reason:"therefore"},
+    ])
   }, [])
 
   function enableTool() {
@@ -71,6 +75,12 @@ export default function VesselMapPage() {
     }
   }
 
+  function zoomToVessel(vessel: ISimpleVessel) {
+    if (map !== null) {
+      map.flyTo([vessel.location.point.lat, vessel.location.point.lon], 13)
+    }
+  }
+
   return (
     <div className="relative">
       <div className="absolute z-10 bg-neutral_2 w-96">
@@ -94,6 +104,7 @@ export default function VesselMapPage() {
                   key={vessel.mmsi}
                   monitoredVessel={vessel}
                   isSelected={false}
+                  zoomToCallback={zoomToVessel}
                 ></MonitoringMenuRow>
               );
             })}
