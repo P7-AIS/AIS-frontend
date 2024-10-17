@@ -28,7 +28,7 @@ export default function VesselMapPage() {
       timestamp: new Date(),
       point: {
         lat: 56.15674,
-        lon: 10.21076,
+        lon: 10.28576,
       },
     },
   }
@@ -39,18 +39,18 @@ export default function VesselMapPage() {
       timestamp: new Date(),
       point: {
         lat: 56.25674,
-        lon: 10.21076,
+        lon: 11.21076,
       },
     },
   }
   const vessel2: ISimpleVessel = {
     mmsi: 543,
     location: {
-      heading: 25,
+      heading: 270,
       timestamp: new Date(),
       point: {
         lat: 56.35674,
-        lon: 10.21076,
+        lon: 11.21076,
       },
     },
   }

@@ -31,7 +31,7 @@ const VesselGuiContext = createContext<IVesselGuiContext | undefined>(undefined)
 export const useVesselGuiContext = () => {
   const context = useContext(VesselGuiContext)
   if (context === undefined) {
-    throw new Error('useVesselGuiContext must be used within a AppContextProvider')
+    throw new Error('useVesselGuiContext must be used within a VesselGuiContextProvider')
   }
   return context
 }
