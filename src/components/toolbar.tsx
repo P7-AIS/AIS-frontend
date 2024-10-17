@@ -1,7 +1,7 @@
 import { ActiveGuiTool, useVesselGuiContext } from '../contexts/vesselGuiContext'
 import { Polygon } from 'leaflet'
 import L from 'leaflet'
-import { useEffect } from 'react'
+import { useCallback, useEffect } from 'react'
 
 interface IToolbarProps {
   map: L.Map
@@ -10,11 +10,22 @@ interface IToolbarProps {
 export default function Toolbar({ map }: IToolbarProps) {
   const { activeTool, setActiveTool } = useVesselGuiContext()
 
+  const clearTool = useCallback(() => {
+    if (map !== null) {
+      map.eachLayer(function (layer: L.Layer) {
+        if (!(layer instanceof L.TileLayer || layer instanceof L.Marker)) {
+          map.removeLayer(layer)
+        }
+      })
+    }
+  }, [map])
+
   useEffect(() => {
     if (activeTool !== ActiveGuiTool.Mouse) {
+      clearTool()
       map.pm.enableDraw(activeTool, { snappable: true })
     }
-  }, [activeTool, map.pm])
+  }, [activeTool, clearTool, map.pm])
 
   if (map !== null) {
     map.on('pm:create', function (e) {
@@ -23,16 +34,6 @@ export default function Toolbar({ map }: IToolbarProps) {
         console.log((e.layer as Polygon).toGeoJSON())
       }
     })
-  }
-
-  function clearTool() {
-    if (map !== null) {
-      map.eachLayer(function (layer: L.Layer) {
-        if (!(layer instanceof L.TileLayer || layer instanceof L.Marker)) {
-          map.removeLayer(layer)
-        }
-      })
-    }
   }
 
   return (
