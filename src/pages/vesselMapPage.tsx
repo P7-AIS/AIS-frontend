@@ -70,20 +70,24 @@ export default function VesselMapPage() {
   }
 
   return (
-    <>
-      <h1>Here is the page {pathHistory ? 'true' : 'false'}</h1>
-      <Vessel isMonitored={false} vessel={vessel}></Vessel>
-      <span>
-        <button onClick={enableTool}>test tool</button>
-        <button onClick={clearTool}>clear</button>
-      </span>
-      <div className="h-screen w-screen">
+    <div className="relative w-full h-full">
+      <div className="relative z-10 ">
+        <h1>Here is the page {pathHistory ? 'true' : 'false'}</h1>
+        <Vessel isMonitored={false} vessel={vessel}></Vessel>
+        <span>
+          <button onClick={enableTool}>test tool</button>
+          <button onClick={clearTool}>clear</button>
+        </span>
+      </div>
+
+      <div className="h-screen w-screen absolute top-0 left-0 z-0">
         <LMap setMapRef={setMap}>
-          {allVessels?.map((vessel) => {
-            return <VesselMarker key={vessel.mmsi} vessel={vessel}></VesselMarker>
-          })}
+          {allVessels?.map((vessel) => (
+            <VesselMarker key={vessel.mmsi} vessel={vessel}></VesselMarker>
+          ))}
         </LMap>
       </div>
-    </>
+    </div>
+
   )
 }
