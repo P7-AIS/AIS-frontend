@@ -50,29 +50,6 @@ export default function VesselMapPage() {
     ])
   }, [])
 
-  function enableTool() {
-    if (map) {
-      map.pm.enableDraw('Polygon', { snappable: true })
-    }
-  }
-
-  if (map !== null) {
-    map.on('pm:create', function (e) {
-      if (e.shape === 'Polygon') {
-        console.log((e.layer as Polygon).toGeoJSON())
-      }
-    })
-  }
-
-  function clearTool() {
-    if (map !== null) {
-      map.eachLayer(function (layer: L.Layer) {
-        if (!(layer instanceof L.TileLayer || layer instanceof L.Marker)) {
-          map.removeLayer(layer)
-        }
-      })
-    }
-  }
 
   function zoomToVessel(vessel: ISimpleVessel) {
     if (map !== null) {
@@ -84,12 +61,9 @@ export default function VesselMapPage() {
     <div className="relative">
       <div className="absolute z-10 bg-neutral_2 w-96">
         <p>Here is the page </p>
-        <Toolbar map={map} />
-        <Vessel isMonitored={false} vessel={vessel}></Vessel>
-        <span>
-          <button onClick={enableTool}>test tool</button>
-          <button onClick={clearTool}>clear</button>
-        </span>
+        {map!== null && 
+          <Toolbar map={map} />
+        }
       </div>
 
       <div
