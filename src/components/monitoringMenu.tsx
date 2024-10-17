@@ -11,7 +11,7 @@ export default function MonitoringMenu({
 	monitoredVessels,
 	children
 }: IMonitoringMenuProps) {
-	const [isCollapsed, setIsCollapsed] = useState<boolean>(false);
+	const [isCollapsed, setIsCollapsed] = useState<boolean>(true);
 
 	return (
 		<div className="flex flex-col h-full rounded-lg border-neural_3 border-2 bg-neutral_2 px-2">
