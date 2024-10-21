@@ -2,16 +2,19 @@ import { ActiveGuiTool, useVesselGuiContext } from '../contexts/vesselGuiContext
 import { Polygon } from 'leaflet'
 import L from 'leaflet'
 import { useCallback, useEffect } from 'react'
+import Point, { IPoint } from '../models/point'
 
 interface IToolbarProps {
   map: L.Map
+  onMonitoringAreaChange: (area: IPoint[] | undefined) => void
 }
 
-export default function Toolbar({ map }: IToolbarProps) {
+export default function Toolbar({ map, onMonitoringAreaChange }: IToolbarProps) {
   const { activeTool, setActiveTool } = useVesselGuiContext()
 
   const clearTool = useCallback(() => {
     if (map !== null) {
+      onMonitoringAreaChange(undefined) //no monitoring area active
       map.eachLayer(function (layer: L.Layer) {
         if (!(layer instanceof L.TileLayer || layer instanceof L.Marker)) {
           map.removeLayer(layer)
@@ -32,7 +35,12 @@ export default function Toolbar({ map }: IToolbarProps) {
       map.on('pm:create', function (e) {
         if (['Polygon', 'Rectangle'].includes(e.shape)) {
           console.log((e.layer as Polygon).toGeoJSON())
-          //TODO: send request til backend med nyt valgt område
+          //change in monitored area
+          onMonitoringAreaChange(
+            (e.layer as Polygon)
+              .toGeoJSON()
+              .geometry.coordinates[0].map((loc) => new Point(loc[1] as number, loc[0] as number))
+          )
           setActiveTool(ActiveGuiTool.Mouse)
         }
       })

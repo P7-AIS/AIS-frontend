@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react'
 import { ISimpleVessel } from '../models/simpleVessel'
 import { IMonitoredVessel } from '../models/monitoredVessel'
 import LMap from '../components/map'
-import VesselMarker from '../components/vesselMarker'
 import 'leaflet/dist/leaflet.css'
 import '@geoman-io/leaflet-geoman-free'
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css'
@@ -12,79 +11,58 @@ import MonitoringMenu from '../components/monitoringMenu'
 import MonitoringMenuRow from '../components/monitoringMenuRow'
 import Toolbar from '../components/toolbar'
 import Vessel from '../components/vessel'
+import { useAppContext } from '../contexts/appcontext'
+import TimeLine from '../components/timeline'
+import StreamManager from '../implementations/StreamManager'
 
 export default function VesselMapPage() {
   const [allVessels, setAllVessels] = useState<ISimpleVessel[] | undefined>(undefined)
   const [monitoredVessels, setMonitoredVessels] = useState<IMonitoredVessel[] | undefined>(undefined)
   const [map, setMap] = useState<L.Map | null>(null)
   const { selectedVesselmmsi } = useVesselGuiContext()
+  const { clientHandler } = useAppContext()
 
   const { pathHistory } = useVesselGuiContext()
-
-  const vessel: ISimpleVessel = {
-    mmsi: 123,
-    location: {
-      heading: 90,
-      timestamp: new Date(),
-      point: {
-        lat: 56.15674,
-        lon: 10.28576,
-      },
-    },
-  }
-  const vessel1: ISimpleVessel = {
-    mmsi: 321,
-    location: {
-      heading: 25,
-      timestamp: new Date(),
-      point: {
-        lat: 56.25674,
-        lon: 11.21076,
-      },
-    },
-  }
-  const vessel2: ISimpleVessel = {
-    mmsi: 543,
-    location: {
-      heading: 270,
-      timestamp: new Date(),
-      point: {
-        lat: 56.35674,
-        lon: 11.21076,
-      },
-    },
-  }
+  const [streamManager] = useState(new StreamManager(clientHandler, setAllVessels, setMonitoredVessels))
 
   useEffect(() => {
-    setAllVessels([vessel, vessel1, vessel2])
-    setMonitoredVessels([
-      {...vessel, trustworthiness:0.20, reason:"therefore"},
-      {...vessel1, trustworthiness:0.30, reason:"therefore"},
-      {...vessel2, trustworthiness:0.30, reason:"therefore"},
-
-    ])
+    streamManager.startStream()
+    // Cleanup function to close the stream when the component unmounts
+    return () => {
+      streamManager.endStream()
+    }
   }, [])
 
+  useEffect(() => {
+    console.log('allVessels useeffect')
+    //to sync state in class
+    streamManager.syncAllVessels(allVessels)
+  }, [allVessels, streamManager])
 
-  function zoomToVessel(vessel: ISimpleVessel) {
+  useEffect(() => {
+    //to sync state in class
+    streamManager.syncMonitoredVessels(monitoredVessels)
+  }, [monitoredVessels, streamManager])
+
+  function zoomToVessel(vessel: IMonitoredVessel) {
+    const simpleVessel = allVessels?.filter((v) => v.mmsi === vessel.mmsi)[0]
+    if (!simpleVessel) {
+      console.error('monitored vessel not in simple vessel list')
+      return
+    }
+
     if (map !== null) {
-      map.flyTo([vessel.location.point.lat, vessel.location.point.lon], 13)
+      map.flyTo([simpleVessel.location.point.lon, simpleVessel.location.point.lat], 13)
     }
   }
 
   return (
     <div className="relative">
       <div className="absolute z-10 bg-neutral_2 w-96">
-        <p>Here is the page </p>
-        {map!== null && 
-          <Toolbar map={map} />
-        }
+        {map !== null && <Toolbar map={map} onMonitoringAreaChange={streamManager.onMonitoringZoneChange} />}
       </div>
 
-      <div
-        id="monitoring-menu-container"
-        className="absolute max-w-96 max-h-98 top-5 right-5 z-10"
-      >
+      <div id="monitoring-menu-container" className="absolute max-w-96 max-h-98 top-5 right-5 z-10">
         {monitoredVessels && (
           <MonitoringMenu monitoredVessels={monitoredVessels}>
             {monitoredVessels.map((vessel: IMonitoredVessel) => {
@@ -95,7 +73,7 @@ export default function VesselMapPage() {
                   isSelected={selectedVesselmmsi === vessel.mmsi}
                   zoomToCallback={zoomToVessel}
                 ></MonitoringMenuRow>
-              );
+              )
             })}
           </MonitoringMenu>
         )}
@@ -104,12 +82,17 @@ export default function VesselMapPage() {
       <div className="h-screen w-screen absolute top-0 left-0 z-0">
         <LMap setMapRef={setMap}>
           {allVessels?.map((vessel) => (
-            <Vessel key={vessel.mmsi} vessel={vessel} isMonitored={false}></Vessel>
+            <Vessel
+              key={vessel.mmsi}
+              vessel={vessel}
+              isMonitored={monitoredVessels?.map((mv) => mv.mmsi).includes(vessel.mmsi) || false}
+            ></Vessel>
           ))}
         </LMap>
       </div>
+      {/* <div id="timeline-container" className="absolute end-0 left-0 z-10">
+        <TimeLine timestamps={[new Date(123456), new Date(54123), new Date(871263)]}></TimeLine>
+      </div> */}
     </div>
-
-
   )
 }
