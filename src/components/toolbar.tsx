@@ -21,7 +21,7 @@ export default function Toolbar({ map, onMonitoringAreaChange }: IToolbarProps) 
         }
       })
     }
-  }, [map])
+  }, [map, onMonitoringAreaChange])
 
   useEffect(() => {
     if (activeTool !== ActiveGuiTool.Mouse) {
@@ -51,7 +51,7 @@ export default function Toolbar({ map, onMonitoringAreaChange }: IToolbarProps) 
         map.off('pm:create')
       }
     }
-  }, [map, setActiveTool])
+  }, [map, setActiveTool, onMonitoringAreaChange])
 
   return (
     <span className="inline-flex flex-col space-y-1">

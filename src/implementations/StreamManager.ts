@@ -9,13 +9,15 @@ export default class StreamManager implements IStreamManager {
   private allVessels: ISimpleVessel[] | undefined
   private monitoredVessels: IMonitoredVessel[] | undefined
   private subscription?: Subscription = undefined
-  private zone?: IPoint[]
+  private zone: IPoint[] = []
 
   constructor(
     private readonly clientHandler: IClientHandler,
     private readonly setAllVessels: React.Dispatch<React.SetStateAction<ISimpleVessel[] | undefined>>,
     private readonly setMonitoredVessels: React.Dispatch<React.SetStateAction<IMonitoredVessel[] | undefined>>
-  ) {}
+  ) {
+    this.onMonitoringZoneChange = this.onMonitoringZoneChange.bind(this)
+  }
 
   public syncAllVessels(vessels: ISimpleVessel[] | undefined) {
     this.allVessels = vessels
@@ -27,15 +29,13 @@ export default class StreamManager implements IStreamManager {
   public startStream() {
     const stream = this.clientHandler.StartStreaming({
       startTime: 1725844950,
-      selection: { points: this.zone || [] },
+      selection: { points: this.zone },
       timeSpeed: 1,
     })
 
     this.subscription = stream.subscribe((data) => {
-      console.log('managing data')
       this.manageNewSimpleVessels(data.simpleVessels)
       this.manageNewMonitoredVessels(data.monitoredVessels)
-      console.log('data managed')
     })
   }
 
@@ -44,7 +44,7 @@ export default class StreamManager implements IStreamManager {
   }
 
   public onMonitoringZoneChange(zone: IPoint[] | undefined) {
-    this.zone = zone
+    this.zone = zone || []
     this.endStream()
     this.setAllVessels(undefined)
     this.setMonitoredVessels(undefined)
@@ -52,21 +52,29 @@ export default class StreamManager implements IStreamManager {
   }
 
   private manageNewSimpleVessels(vessels: ISimpleVessel[]) {
-    const locVessels = this.allVessels ? JSON.parse(JSON.stringify(this.allVessels)) : []
-    console.log('mananig simple vessels')
+    const newVessels = this.manageVesselsFromStream(vessels, this.allVessels)
+    this.setAllVessels(newVessels)
+  }
+
+  private manageNewMonitoredVessels(vessels: IMonitoredVessel[]) {
+    const newVessels = this.manageVesselsFromStream(vessels, this.monitoredVessels)
+    this.setMonitoredVessels(newVessels)
+  }
+
+  private manageVesselsFromStream<T extends ISimpleVessel | IMonitoredVessel>(
+    vessels: T[],
+    curVessels: T[] | undefined
+  ): T[] {
+    const locVessels: T[] = curVessels ? JSON.parse(JSON.stringify(curVessels)) : []
     vessels.forEach((vessel) => {
       if (locVessels?.map((v) => v.mmsi).includes(vessel.mmsi)) {
         const idx = locVessels.findIndex((v) => v.mmsi === vessel.mmsi)
         locVessels[idx] = vessel
-        console.log('updated existing vessel')
       } else {
         locVessels?.push(vessel)
-        console.log('added new vessel')
       }
     })
 
-    this.setAllVessels(locVessels)
+    return locVessels
   }
-
-  private manageNewMonitoredVessels(vessels: IMonitoredVessel[]) {}
 }

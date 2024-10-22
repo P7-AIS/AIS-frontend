@@ -3,6 +3,7 @@ import {
   AISServiceClientImpl,
   MonitoredVessel,
   SimpleVessel,
+  StreamingRequest,
   StreamingResponse,
   VesselInfoRequest,
   VesselInfoResponse,
@@ -31,11 +32,16 @@ export default class GRPCClientHandler implements IClientHandler {
 
   StartStreaming(request: {
     startTime: number
-    selection: ISelectionArea[]
+    selection: ISelectionArea
     timeSpeed: number
   }): Observable<IStreamResponse> {
     const observable = new Observable<IStreamResponse>((observer) => {
-      const stream = this.client.StartStreaming(request)
+      const requestNew: StreamingRequest = {
+        selectedArea: request.selection.points,
+        startTime: request.startTime,
+        timeSpeed: request.timeSpeed,
+      }
+      const stream = this.client.StartStreaming(requestNew)
 
       const subscription = stream.subscribe({
         next: (data) => {

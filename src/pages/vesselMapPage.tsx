@@ -34,7 +34,6 @@ export default function VesselMapPage() {
   }, [])
 
   useEffect(() => {
-    console.log('allVessels useeffect')
     //to sync state in class
     streamManager.syncAllVessels(allVessels)
   }, [allVessels, streamManager])
@@ -47,7 +46,6 @@ export default function VesselMapPage() {
   function zoomToVessel(vessel: IMonitoredVessel) {
     const simpleVessel = allVessels?.filter((v) => v.mmsi === vessel.mmsi)[0]
     if (!simpleVessel) {
-      console.error('monitored vessel not in simple vessel list')
       return
     }
 
