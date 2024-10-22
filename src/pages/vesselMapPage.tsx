@@ -1,5 +1,5 @@
 import { useVesselGuiContext } from '../contexts/vesselGuiContext'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { ISimpleVessel } from '../models/simpleVessel'
 import { IMonitoredVessel } from '../models/monitoredVessel'
 import LMap from '../components/map'
@@ -50,7 +50,7 @@ export default function VesselMapPage() {
     }
 
     if (map !== null) {
-      map.flyTo([simpleVessel.location.point.lon, simpleVessel.location.point.lat], 13)
+      map.setView([simpleVessel.location.point.lat, simpleVessel.location.point.lon], 13)
     }
   }
 
@@ -79,13 +79,15 @@ export default function VesselMapPage() {
 
       <div className="h-screen w-screen absolute top-0 left-0 z-0">
         <LMap setMapRef={setMap}>
-          {allVessels?.map((vessel) => (
-            <Vessel
-              key={vessel.mmsi}
-              vessel={vessel}
-              isMonitored={monitoredVessels?.map((mv) => mv.mmsi).includes(vessel.mmsi) || false}
-            ></Vessel>
-          ))}
+          {allVessels?.map((vessel) => {
+            return (
+              <Vessel
+                key={vessel.mmsi}
+                vessel={vessel}
+                isMonitored={monitoredVessels?.map((mv) => mv.mmsi).includes(vessel.mmsi) || false}
+              ></Vessel>
+            )
+          })}
         </LMap>
       </div>
       {/* <div id="timeline-container" className="absolute end-0 left-0 z-10">

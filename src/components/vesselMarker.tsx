@@ -29,7 +29,7 @@ export default function VesselMarker({ vessel, popup }: IVesselMarker) {
         background-color: ${selectedVesselmmsi === vessel?.mmsi ? '#da3122' : 'currentColor'};
       "></div>
     `,
-    iconAnchor: [10, 10],
+    iconAnchor: [0, 0],
     popupAnchor: [0, -25],
   })
 

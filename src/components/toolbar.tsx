@@ -14,7 +14,6 @@ export default function Toolbar({ map, onMonitoringAreaChange }: IToolbarProps) 
 
   const clearTool = useCallback(() => {
     if (map !== null) {
-      onMonitoringAreaChange(undefined) //no monitoring area active
       map.eachLayer(function (layer: L.Layer) {
         if (!(layer instanceof L.TileLayer || layer instanceof L.Marker)) {
           map.removeLayer(layer)
@@ -22,6 +21,11 @@ export default function Toolbar({ map, onMonitoringAreaChange }: IToolbarProps) 
       })
     }
   }, [map, onMonitoringAreaChange])
+
+  function clearOnClick() {
+    clearTool()
+    onMonitoringAreaChange(undefined)
+  }
 
   useEffect(() => {
     if (activeTool !== ActiveGuiTool.Mouse) {
@@ -81,7 +85,7 @@ export default function Toolbar({ map, onMonitoringAreaChange }: IToolbarProps) 
         </svg>
       </button>
 
-      <button className="bi bi-eraser" onClick={clearTool}>
+      <button className="bi bi-eraser" onClick={clearOnClick}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="32"
