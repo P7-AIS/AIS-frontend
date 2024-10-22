@@ -10,7 +10,7 @@ export interface IClientHandler {
   GetVesselInfo(request: { mmsi: number; timestamp: number }): Promise<IDetailedVessel>
   StartStreaming(request: {
     startTime: number
-    selection: ISelectionArea[]
+    selection: ISelectionArea
     timeSpeed: number
   }): Observable<IStreamResponse>
 }

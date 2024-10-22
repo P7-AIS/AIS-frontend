@@ -1,10 +1,9 @@
 import { Observable } from 'rxjs'
 import {
   AISServiceClientImpl,
-  Location,
   MonitoredVessel,
-  Point,
   SimpleVessel,
+  StreamingRequest,
   StreamingResponse,
   VesselInfoRequest,
   VesselInfoResponse,
@@ -13,10 +12,9 @@ import { IClientHandler } from '../interfaces/IClientHandler'
 import { IDetailedVessel } from '../models/detailedVessel'
 import { ISelectionArea } from '../models/selectionArea'
 import { IStreamResponse } from '../models/streamResponse'
-import { ILocation } from '../models/location'
-import { IPoint } from '../models/point'
 import { ISimpleVessel } from '../models/simpleVessel'
 import { IMonitoredVessel } from '../models/monitoredVessel'
+import { ILocation } from '../models/location'
 
 export default class GRPCClientHandler implements IClientHandler {
   constructor(private readonly client: AISServiceClientImpl) {}
@@ -34,11 +32,16 @@ export default class GRPCClientHandler implements IClientHandler {
 
   StartStreaming(request: {
     startTime: number
-    selection: ISelectionArea[]
+    selection: ISelectionArea
     timeSpeed: number
   }): Observable<IStreamResponse> {
     const observable = new Observable<IStreamResponse>((observer) => {
-      const stream = this.client.StartStreaming(request)
+      const requestNew: StreamingRequest = {
+        selectedArea: request.selection.points,
+        startTime: request.startTime,
+        timeSpeed: request.timeSpeed,
+      }
+      const stream = this.client.StartStreaming(requestNew)
 
       const subscription = stream.subscribe({
         next: (data) => {
@@ -62,9 +65,14 @@ export default class GRPCClientHandler implements IClientHandler {
 
   private convertToDetailedVessel(grpcVessel: VesselInfoResponse): IDetailedVessel {
     return {
-      id: grpcVessel.mmsi,
-      name: grpcVessel.name,
       mmsi: grpcVessel.mmsi,
+      name: grpcVessel.name,
+      shipType: grpcVessel.shipType,
+      imo: grpcVessel.imo,
+      callSign: grpcVessel.callSign,
+      width: grpcVessel.width,
+      length: grpcVessel.length,
+      positionFixingDevice: grpcVessel.positionFixingDevice,
     }
   }
 
@@ -78,30 +86,24 @@ export default class GRPCClientHandler implements IClientHandler {
   private convertToMoniteredVessel(grpcVessel: MonitoredVessel): IMonitoredVessel {
     return {
       mmsi: grpcVessel.mmsi,
-      trustwortiness: grpcVessel.trustworthiness,
+      trustworthiness: grpcVessel.trustworthiness,
       reason: grpcVessel.reason,
     }
   }
 
   private convertToSimpleVessel(grpcVessel: SimpleVessel): ISimpleVessel {
+    const location: ILocation = {
+      point: {
+        lon: grpcVessel.location!.point!.lon,
+        lat: grpcVessel.location!.point!.lat,
+      },
+      timestamp: new Date(grpcVessel.location!.timestamp),
+      heading: grpcVessel.location!.heading,
+    }
+
     return {
       mmsi: grpcVessel.mmsi,
-      location: this.convertToLocation(grpcVessel.location!),
-    }
-  }
-
-  private convertToLocation(grpcLocation: Location): ILocation {
-    return {
-      point: this.convertToPoint(grpcLocation.point!),
-      heading: grpcLocation.heading,
-      timestamp: new Date(grpcLocation.timestamp),
-    }
-  }
-
-  private convertToPoint(grpcPoint: Point): IPoint {
-    return {
-      lat: grpcPoint.lat,
-      lon: grpcPoint.lon,
+      location: location,
     }
   }
 }

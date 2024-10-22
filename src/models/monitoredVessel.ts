@@ -1,9 +1,9 @@
 export interface IMonitoredVessel {
   mmsi: number
-  trustwortiness: number
+  trustworthiness: number
   reason?: string
 }
 
 export default class MonitoredVessel implements IMonitoredVessel {
-  constructor(public mmsi: number, public trustwortiness: number, public reason?: string) {}
+  constructor(public mmsi: number, public trustworthiness: number, public reason?: string) { }
 }

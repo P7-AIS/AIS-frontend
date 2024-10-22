@@ -3,12 +3,13 @@ import { useEffect, useState } from 'react'
 import { ILocation } from '../models/location'
 import { IDetailedVessel } from '../models/detailedVessel'
 import Popup from './popup'
-import Timeline from './timeline'
 import Path from './path'
+import { Marker } from 'react-leaflet'
 import { useAppContext } from '../contexts/appcontext'
+import VesselMarker from './vesselMarker'
 
 interface IVesselProps {
-  vessel: ISimpleVessel | IDetailedVessel
+  vessel: ISimpleVessel
   isMonitored: boolean
 }
 
@@ -17,39 +18,9 @@ export default function Vessel({ vessel, isMonitored }: IVesselProps) {
   const [vesselDetail, setVesselDetail] = useState<IDetailedVessel | undefined>(undefined)
   const { clientHandler } = useAppContext()
 
-  function vesselTimestamps() {
-    //fetch history
-    return []
-  }
-  async function popupClick() {
-    const response = await clientHandler.GetVesselInfo({ mmsi: 12345678, timeStamp: 0 })
-
-    setVesselDetail(response)
-
-    console.log(response)
-  }
-
-  useEffect(() => {
-    const request = {
-      selection: [],
-      startTime: 1728645348194,
-      timeSpeed: 0,
-    }
-
-    const stream = clientHandler.StartStreaming(request)
-
-    stream.subscribe((data) => {
-      console.log(data)
-    })
-  }, [clientHandler])
-
   return (
     <>
-      <h1>Vessel component</h1>
-      <button onClick={popupClick}>Shop popup</button>
-      {vesselDetail && <Popup vessel={vesselDetail}></Popup>}
-      <Timeline timestamps={vesselTimestamps()}></Timeline>
-      {history && <Path history={history}></Path>}
+      <VesselMarker vessel={vessel} popup={vesselDetail ? <Popup vessel={vesselDetail} /> : <></>}></VesselMarker>
     </>
   )
 }
