@@ -11,7 +11,7 @@ export default function MonitoringMenu({ monitoredVessels, children }: IMonitori
   const [isCollapsed, setIsCollapsed] = useState<boolean>(true)
 
   return (
-    <div className="flex flex-col h-full rounded-lg border-neural_3 border-2 bg-neutral_2 px-2">
+    <div className="flex flex-col h-full rounded-lg border-2 bg-neutral_2 px-2">
       <div className={`flex flex-row justify-between items-center ${!isCollapsed && 'border-b-2'} gap-4 p-2`}>
         <h1 className="text-xl font-bold">Monitoring overview</h1>
         <p className="text-sm">{monitoredVessels.length} ships</p>
