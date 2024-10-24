@@ -2,6 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Gabarito', 'Segoe UI', 'Roboto', 'Oxygen',
+      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+      sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 /* width */
 ::-webkit-scrollbar {
   width: 8px;
@@ -26,10 +34,10 @@
 
 /* Vessel shape using the correct polygon */
 .vessel-shape {
-  width: 16px;
-  height: 16px;
+  width: 20px;
+  height: 10px;
   background-color: currentColor;
-  clip-path: polygon(0% 20%, 50% 20%, 50% 20%, 80% 50%, 50% 80%, 50% 80%, 0% 80%);
+  clip-path: polygon(0% 0%, 50% 0%, 50% 0%, 100% 50%, 50% 100%, 50% 100%, 0% 100%);
 }
 
 .circle {

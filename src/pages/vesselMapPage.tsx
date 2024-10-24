@@ -63,7 +63,7 @@ export default function VesselMapPage() {
 
   return (
     <div className="relative">
-      <div className="absolute z-10 bg-neutral_2 w-96">
+      <div id="toolbar-container" className="absolute z-10 w-fit top-5 left-5">
         {map !== null && <Toolbar map={map} onMonitoringAreaChange={streamManager.onMonitoringZoneChange} />}
       </div>
 
