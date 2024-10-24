@@ -58,8 +58,12 @@ export default function Toolbar({ map, onMonitoringAreaChange }: IToolbarProps) 
   }, [map, setActiveTool, onMonitoringAreaChange])
 
   return (
-    <span className="inline-flex flex-col space-y-1">
-      <button onClick={() => setActiveTool(ActiveGuiTool.Rectangle)}>
+    <div className="flex gap-4 bg-neutral_2 rounded-lg p-2 items-center">
+      <p>
+        <b>Toolbar</b>
+      </p>
+      
+      <button title="Draw monitoring area as rectangle" onClick={() => setActiveTool(ActiveGuiTool.Rectangle)}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="32"
@@ -72,7 +76,7 @@ export default function Toolbar({ map, onMonitoringAreaChange }: IToolbarProps) 
         </svg>
       </button>
 
-      <button onClick={() => setActiveTool(ActiveGuiTool.Polygon)}>
+      <button title="Draw monitoring area as polygon" onClick={() => setActiveTool(ActiveGuiTool.Polygon)}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="32"
@@ -85,7 +89,7 @@ export default function Toolbar({ map, onMonitoringAreaChange }: IToolbarProps) 
         </svg>
       </button>
 
-      <button className="bi bi-eraser" onClick={clearOnClick}>
+      <button title="Clear monitoring area" className="bi bi-eraser" onClick={clearOnClick}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="32"
@@ -97,6 +101,6 @@ export default function Toolbar({ map, onMonitoringAreaChange }: IToolbarProps) 
           <path d="M8.086 2.207a2 2 0 0 1 2.828 0l3.879 3.879a2 2 0 0 1 0 2.828l-5.5 5.5A2 2 0 0 1 7.879 15H5.12a2 2 0 0 1-1.414-.586l-2.5-2.5a2 2 0 0 1 0-2.828zm2.121.707a1 1 0 0 0-1.414 0L4.16 7.547l5.293 5.293 4.633-4.633a1 1 0 0 0 0-1.414zM8.746 13.547 3.453 8.254 1.914 9.793a1 1 0 0 0 0 1.414l2.5 2.5a1 1 0 0 0 .707.293H7.88a1 1 0 0 0 .707-.293z" />
         </svg>
       </button>
-    </span>
+    </div>
   )
 }
