@@ -20,7 +20,7 @@ export default function VesselMapPage() {
   const [monitoredVessels, setMonitoredVessels] = useState<IMonitoredVessel[] | undefined>(undefined)
   const [map, setMap] = useState<L.Map | null>(null)
   const { selectedVesselmmsi } = useVesselGuiContext()
-  const { clientHandler } = useAppContext()
+  const { clientHandler, myClockSpeed, setMyClockSpeed, myDateTime, setMyDateTime } = useAppContext()
 
   const { pathHistory } = useVesselGuiContext()
   const [streamManager] = useState(new StreamManager(clientHandler, setAllVessels, setMonitoredVessels))
@@ -34,12 +34,18 @@ export default function VesselMapPage() {
   }, [])
 
   useEffect(() => {
-    //to sync state in class
+    streamManager.syncMyClockSpeed(myClockSpeed)
+  }, [myClockSpeed, streamManager])
+
+  useEffect(() => {
+    streamManager.syncMyDatetime(myDateTime)
+  }, [myDateTime, streamManager])
+
+  useEffect(() => {
     streamManager.syncAllVessels(allVessels)
   }, [allVessels, streamManager])
 
   useEffect(() => {
-    //to sync state in class
     streamManager.syncMonitoredVessels(monitoredVessels)
   }, [monitoredVessels, streamManager])
 

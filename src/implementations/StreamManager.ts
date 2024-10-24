@@ -10,6 +10,8 @@ export default class StreamManager implements IStreamManager {
   private monitoredVessels: IMonitoredVessel[] | undefined
   private subscription?: Subscription = undefined
   private zone: IPoint[] = []
+  private myClockSpeed: number
+  private myDateTime: Date
 
   constructor(
     private readonly clientHandler: IClientHandler,
@@ -25,14 +27,19 @@ export default class StreamManager implements IStreamManager {
   public syncMonitoredVessels(vessels: IMonitoredVessel[] | undefined) {
     this.monitoredVessels = vessels
   }
+  public syncMyDatetime(date: Date) {
+    this.myDateTime = date
+  }
+  public syncMyClockSpeed(speed: number) {
+    this.myClockSpeed = speed
+  }
 
   public startStream() {
     const stream = this.clientHandler.StartStreaming({
-      startTime: 1725844950,
+      startTime: 1725844950, //Math.floor(this.myDateTime.getTime() / 1000),
       selection: { points: this.zone },
-      timeSpeed: 1,
+      timeSpeed: this.myClockSpeed,
     })
-
     this.subscription = stream.subscribe((data) => {
       this.manageNewSimpleVessels(data.simpleVessels)
       this.manageNewMonitoredVessels(data.monitoredVessels)
@@ -46,8 +53,7 @@ export default class StreamManager implements IStreamManager {
   public onMonitoringZoneChange(zone: IPoint[] | undefined) {
     this.zone = zone || []
     this.endStream()
-    this.setAllVessels(undefined)
-    this.setMonitoredVessels(undefined)
+    this.setMonitoredVessels([])
     this.startStream()
   }
 

@@ -30,7 +30,7 @@ export default function Toolbar({ map, onMonitoringAreaChange }: IToolbarProps) 
   useEffect(() => {
     if (activeTool !== ActiveGuiTool.Mouse) {
       clearTool()
-      map.pm.enableDraw(activeTool, { snappable: true })
+      map.pm.enableDraw(activeTool, { snappable: false })
     }
   }, [activeTool, clearTool, map.pm])
 
