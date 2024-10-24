@@ -19,7 +19,7 @@ import { ILocation } from '../models/location'
 export default class GRPCClientHandler implements IClientHandler {
   constructor(private readonly client: AISServiceClientImpl) {}
 
-  async GetVesselInfo(request: { mmsi: number; timestamp: number }): Promise<IDetailedVessel> {
+  async getVesselInfo(request: { mmsi: number; timestamp: number }): Promise<IDetailedVessel> {
     const grpcReq: VesselInfoRequest = {
       mmsi: request.mmsi,
       timestamp: request.timestamp,
@@ -30,7 +30,20 @@ export default class GRPCClientHandler implements IClientHandler {
     return this.convertToDetailedVessel(response)
   }
 
-  StartStreaming(request: {
+  async getSimpleVessles(request: { timestamp: number }): Promise<ISimpleVessel[]> {
+    const response = await this.client.GetSimpleVessels({ timestamp: request.timestamp })
+    return response.vessels.map(this.convertToSimpleVessel.bind(this))
+  }
+
+  async getMonitoredVessels(request: { timestamp: number; selection: ISelectionArea }): Promise<IMonitoredVessel[]> {
+    const response = await this.client.GetMonitoredVessels({
+      timestamp: request.timestamp,
+      selectedArea: request.selection.points,
+    })
+    return response.vessels.map(this.convertToMoniteredVessel.bind(this))
+  }
+
+  startStreaming(request: {
     startTime: number
     selection: ISelectionArea
     timeSpeed: number
