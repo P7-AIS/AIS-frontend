@@ -33,7 +33,7 @@ export default function VesselMap({ vessels }: IVesselMapProps) {
   return (
     <>
       {visibleVessels.map((vessel) => (
-        <Vessel vessel={vessel}></Vessel>
+        <Vessel vessel={vessel} key={vessel.mmsi}></Vessel>
       ))}
     </>
   )

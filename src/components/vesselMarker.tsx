@@ -1,19 +1,20 @@
 import { Marker, Popup as LPopup } from 'react-leaflet'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import L from 'leaflet'
 import { ISimpleVessel } from '../models/simpleVessel'
 import IVesselDetail from '../models/detailedVessel'
 import { useVesselGuiContext } from '../contexts/vesselGuiContext'
+import { useAppContext } from '../contexts/appcontext'
+import Popup from './popup'
 
 interface IVesselMarker {
   vessel: ISimpleVessel
-  popup: React.ReactNode
 }
 
-export default function VesselMarker({ vessel, popup }: IVesselMarker) {
-  const [vesselDetails, setVesselDetails] = useState<IVesselDetail | undefined>(undefined)
+export default function VesselMarker({ vessel }: IVesselMarker) {
+  const [vesselDetails, setVesselDetails] = useState<IVesselDetail>({ mmsi: 0 })
   const { selectedVesselmmsi, setSelectedVesselmmsi } = useVesselGuiContext()
-  const [markerRef, setMarkerRef] = useState<L.Marker | null>(null)
+  const { clientHandler, myDateTime } = useAppContext()
 
   const icon = L.divIcon({
     className: 'custom-div-icon',
@@ -30,18 +31,28 @@ export default function VesselMarker({ vessel, popup }: IVesselMarker) {
       "></div>
     `,
     iconAnchor: [0, 0],
-    popupAnchor: [0, -25],
+    popupAnchor: [0, -10],
   })
 
-  if (markerRef) {
-    markerRef.on('click', function (e) {
+  const handleVesselClick = async () => {
+    if (selectedVesselmmsi === vessel.mmsi) {
+      setSelectedVesselmmsi(undefined)
+    } else {
+      const details = await clientHandler.GetVesselInfo({ mmsi: vessel.mmsi, timestamp: myDateTime.getTime() })
+      setVesselDetails(details)
       setSelectedVesselmmsi(vessel.mmsi)
-    })
+    }
   }
 
   return (
-    <Marker position={[vessel.location.point.lat, vessel.location.point.lon]} icon={icon} ref={setMarkerRef}>
-      {vesselDetails && <LPopup>{popup}</LPopup>}
+    <Marker
+      eventHandlers={{ click: handleVesselClick }}
+      position={[vessel.location.point.lat, vessel.location.point.lon]}
+      icon={icon}
+    >
+      <LPopup>
+        <Popup vessel={vesselDetails} />
+      </LPopup>
     </Marker>
   )
 }
