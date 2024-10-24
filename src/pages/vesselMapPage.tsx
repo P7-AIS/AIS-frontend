@@ -14,6 +14,7 @@ import Vessel from '../components/vessel'
 import { useAppContext } from '../contexts/appcontext'
 import TimeLine from '../components/timeline'
 import StreamManager from '../implementations/StreamManager'
+import VesselMap from '../components/vesselMap'
 
 export default function VesselMapPage() {
   const [allVessels, setAllVessels] = useState<ISimpleVessel[] | undefined>(undefined)
@@ -85,15 +86,7 @@ export default function VesselMapPage() {
 
       <div className="h-screen w-screen absolute top-0 left-0 z-0">
         <LMap setMapRef={setMap}>
-          {allVessels?.map((vessel) => {
-            return (
-              <Vessel
-                key={vessel.mmsi}
-                vessel={vessel}
-                isMonitored={monitoredVessels?.map((mv) => mv.mmsi).includes(vessel.mmsi) || false}
-              ></Vessel>
-            )
-          })}
+          {allVessels && allVessels.length > 0 ? <VesselMap vessels={allVessels} /> : <></>}
         </LMap>
       </div>
       {/* <div id="timeline-container" className="absolute end-0 left-0 z-10">
