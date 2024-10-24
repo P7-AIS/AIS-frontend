@@ -19,9 +19,7 @@ export default function VesselMarker({ vessel }: IVesselMarker) {
       ? `${ReactDOMServer.renderToString(
           <VesselSVG heading={vessel.location.heading} selected={selectedVesselmmsi === vessel.mmsi} />
         )}`
-      : `${ReactDOMServer.renderToString(
-          <CircleSVG selected={selectedVesselmmsi === vessel.mmsi} />
-        )}`,
+      : `${ReactDOMServer.renderToString(<CircleSVG selected={selectedVesselmmsi === vessel.mmsi} />)}`,
     iconAnchor: [0, 0],
     popupAnchor: [0, -15],
   })
@@ -40,11 +38,7 @@ export default function VesselMarker({ vessel }: IVesselMarker) {
       position={[vessel.location.point.lat, vessel.location.point.lon]}
       icon={icon}
     >
-      { selectedVesselmmsi === vessel.mmsi &&
-        <LPopup>
-          <Popup mmsi={vessel.mmsi} />
-        </LPopup>
-      }
+      <LPopup>{selectedVesselmmsi === vessel.mmsi && <Popup mmsi={vessel.mmsi} />}</LPopup>
     </Marker>
   )
 }

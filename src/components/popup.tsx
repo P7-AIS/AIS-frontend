@@ -8,24 +8,25 @@ interface IPopupProps {
 
 export default function Popup({ mmsi }: IPopupProps) {
   const { clientHandler, myDateTime } = useAppContext()
-  const [ vesselDetails, setVesselDetails ] = useState<IDetailedVessel | undefined>(undefined)
-  const [ loading, setLoading ] = useState(true)
+  const [vesselDetails, setVesselDetails] = useState<IDetailedVessel | undefined>(undefined)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const fetchDetails = async () => {
       const details = await clientHandler.GetVesselInfo({ mmsi, timestamp: myDateTime.getTime() })
       setVesselDetails(details)
     }
-    
+
     fetchDetails()
     setLoading(false)
-  },[])
+  }, [])
 
   return (
-    <div id="popup-container" className="h-[300px] w-[150px]">
-      { loading ? 
-        <div>Loading...</div>
-        : vesselDetails &&
+    <div id="popup-container" className="h-[300px] w-[180px]">
+      {loading ? (
+        <p>Loading...</p>
+      ) : (
+        vesselDetails && (
           <>
             <p>Name: {vesselDetails.name}</p>
             <p>MMSI: {vesselDetails.mmsi}</p>
@@ -36,7 +37,8 @@ export default function Popup({ mmsi }: IPopupProps) {
             <p>Callsign: {vesselDetails.callSign}</p>
             <p>Pos fixing device: {vesselDetails.positionFixingDevice}</p>
           </>
-      }   
+        )
+      )}
     </div>
   )
 }
