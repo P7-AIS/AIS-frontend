@@ -35,14 +35,17 @@ export default class GRPCClientHandler implements IClientHandler {
     selection: ISelectionArea
     timeSpeed: number
   }): Observable<IStreamResponse> {
-    const observable = new Observable<IStreamResponse>((observer) => {
+    return new Observable<IStreamResponse>((observer) => {
       const requestNew: StreamingRequest = {
         selectedArea: request.selection.points,
         startTime: request.startTime,
         timeSpeed: request.timeSpeed,
       }
+
+      // Call the backend to start streaming
       const stream = this.client.StartStreaming(requestNew)
 
+      // Subscribe to the backend stream
       const subscription = stream.subscribe({
         next: (data) => {
           observer.next(this.convertToStreamResponse(data))
@@ -51,14 +54,17 @@ export default class GRPCClientHandler implements IClientHandler {
           observer.error(err)
         },
         complete: () => {
+          console.log('Stream completed.')
           observer.complete()
         },
       })
 
-      return () => subscription.unsubscribe()
+      // Cleanup logic: When the observable is unsubscribed
+      return () => {
+        console.log('Unsubscribing and closing backend stream.')
+        subscription.unsubscribe() // Ensure this stops the backend stream
+      }
     })
-
-    return observable
   }
 
   //////////////////////////////////////////////////////////////////////////////////////
