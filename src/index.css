@@ -31,18 +31,3 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
-
-/* Vessel shape using the correct polygon */
-.vessel-shape {
-  width: 20px;
-  height: 10px;
-  background-color: currentColor;
-  clip-path: polygon(0% 0%, 50% 0%, 50% 0%, 100% 50%, 50% 100%, 50% 100%, 0% 100%);
-}
-
-.circle {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background-color: currentColor;
-}
