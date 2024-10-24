@@ -1,8 +1,8 @@
-import { ISimpleVessel } from '../models/simpleVessel'
-import L from 'leaflet'
 import { Marker, Popup as LPopup } from 'react-leaflet'
-import IVesselDetail from '../models/detailedVessel'
 import React, { useState } from 'react'
+import L from 'leaflet'
+import { ISimpleVessel } from '../models/simpleVessel'
+import IVesselDetail from '../models/detailedVessel'
 import { useVesselGuiContext } from '../contexts/vesselGuiContext'
 
 interface IVesselMarker {
