@@ -19,7 +19,7 @@ import { ILocation } from '../models/location'
 export default class GRPCClientHandler implements IClientHandler {
   constructor(private readonly client: AISServiceClientImpl) {}
 
-  async GetVesselInfo(request: { mmsi: number; timestamp: number }): Promise<IDetailedVessel> {
+  async getVesselInfo(request: { mmsi: number; timestamp: number }): Promise<IDetailedVessel> {
     const grpcReq: VesselInfoRequest = {
       mmsi: request.mmsi,
       timestamp: request.timestamp,
@@ -30,19 +30,35 @@ export default class GRPCClientHandler implements IClientHandler {
     return this.convertToDetailedVessel(response)
   }
 
-  StartStreaming(request: {
+  async getSimpleVessles(request: { timestamp: number }): Promise<ISimpleVessel[]> {
+    const response = await this.client.GetSimpleVessels({ timestamp: request.timestamp })
+    return response.vessels.map(this.convertToSimpleVessel.bind(this))
+  }
+
+  async getMonitoredVessels(request: { timestamp: number; selection: ISelectionArea }): Promise<IMonitoredVessel[]> {
+    const response = await this.client.GetMonitoredVessels({
+      timestamp: request.timestamp,
+      selectedArea: request.selection.points,
+    })
+    return response.vessels.map(this.convertToMoniteredVessel.bind(this))
+  }
+
+  startStreaming(request: {
     startTime: number
     selection: ISelectionArea
     timeSpeed: number
   }): Observable<IStreamResponse> {
-    const observable = new Observable<IStreamResponse>((observer) => {
+    return new Observable<IStreamResponse>((observer) => {
       const requestNew: StreamingRequest = {
         selectedArea: request.selection.points,
         startTime: request.startTime,
         timeSpeed: request.timeSpeed,
       }
+
+      // Call the backend to start streaming
       const stream = this.client.StartStreaming(requestNew)
 
+      // Subscribe to the backend stream
       const subscription = stream.subscribe({
         next: (data) => {
           observer.next(this.convertToStreamResponse(data))
@@ -51,14 +67,17 @@ export default class GRPCClientHandler implements IClientHandler {
           observer.error(err)
         },
         complete: () => {
+          console.log('Stream completed.')
           observer.complete()
         },
       })
 
-      return () => subscription.unsubscribe()
+      // Cleanup logic: When the observable is unsubscribed
+      return () => {
+        console.log('Unsubscribing and closing backend stream.')
+        subscription.unsubscribe() // Ensure this stops the backend stream
+      }
     })
-
-    return observable
   }
 
   //////////////////////////////////////////////////////////////////////////////////////
