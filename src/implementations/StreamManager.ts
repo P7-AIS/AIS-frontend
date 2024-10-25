@@ -8,8 +8,9 @@ export default class StreamManager implements IStreamManager {
   private allVessels: ISimpleVessel[] | undefined
   private monitoredVessels: IMonitoredVessel[] | undefined
   private zone: IPoint[] = []
-  private myClockSpeed: number
   private myDateTime: Date
+  private simpleVesselTimeout: NodeJS.Timeout | undefined = undefined
+  private monitoredVesselTimeout: NodeJS.Timeout | undefined = undefined
 
   constructor(
     private readonly clientHandler: IClientHandler,
@@ -28,48 +29,77 @@ export default class StreamManager implements IStreamManager {
   public syncMyDatetime(date: Date) {
     this.myDateTime = date
   }
-  public syncMyClockSpeed(speed: number) {
-    this.myClockSpeed = speed
-  }
 
-  public async fetchNewVesselData() {
+  private async fetchSimpleVesselData() {
     const simpleVessels = await this.clientHandler.getSimpleVessles({
-      timestamp: 1725844950,
+      timestamp: 1725844950, // myDateTime.getTime() / 1000
     })
 
-    let monitoredVessels: IMonitoredVessel[] = []
-
-    if (this.zone.length >= 4) {
-      monitoredVessels = await this.clientHandler.getMonitoredVessels({
-        selection: { points: this.zone },
-        timestamp: 1725844950,
-      })
-    }
     console.log(simpleVessels)
-    console.log(monitoredVessels)
-
     this.manageNewSimpleVessels(simpleVessels)
-    this.manageNewMonitoredVessels(monitoredVessels)
   }
+
+  private async simpleVesselLoop() {
+    try {
+      await this.fetchSimpleVesselData()
+    } catch(e) {
+      console.log(e)
+    }
+    this.simpleVesselTimeout = setTimeout(this.simpleVesselLoop.bind(this), 10000)
+  }
+
+  public async startSimpleVesselFetching() {
+    this.simpleVesselLoop()
+  }
+
+  public async stopSimpleVesselFetching() {
+    clearTimeout(this.simpleVesselTimeout)
+  }
+
 
   public onMonitoringZoneChange(zone: IPoint[] | undefined) {
     this.zone = zone || []
-    this.setAllVessels(undefined)
-    this.setMonitoredVessels(undefined)
-    this.fetchNewVesselData()
+    if (this.monitoredVesselTimeout || !zone || zone.length < 4) {
+      this.stopMonitoredVesselFetching()
+      this.setMonitoredVessels(undefined)
+    } else {
+      this.startMonitoredVesselFetching()
+    }
+  }
+
+  private async fetchMonitoredVessels() {
+    const monitoredvessels = await this.clientHandler.getMonitoredVessels({
+      timestamp: Math.round(this.myDateTime.getTime()/1000),
+      selection: {points: this.zone}
+    })
+    console.log(monitoredvessels)
+    this.manageNewMonitoredVessels(monitoredvessels)
+  }
+
+  private async startMonitoredVesselFetching() {
+    try {
+      await this.fetchMonitoredVessels()
+    } catch(e) {
+      console.error(e)
+    }
+    this.monitoredVesselTimeout = setTimeout(this.startMonitoredVesselFetching.bind(this), 10000)
+  }
+
+  private async stopMonitoredVesselFetching() {
+    clearTimeout(this.monitoredVesselTimeout)
   }
 
   private manageNewSimpleVessels(vessels: ISimpleVessel[]) {
-    const newVessels = this.manageVesselsFromStream(vessels, this.allVessels)
+    const newVessels = this.manageVesselsFromFetch(vessels, this.allVessels)
     this.setAllVessels(newVessels)
   }
 
   private manageNewMonitoredVessels(vessels: IMonitoredVessel[]) {
-    const newVessels = this.manageVesselsFromStream(vessels, this.monitoredVessels)
+    const newVessels = this.manageVesselsFromFetch(vessels, this.monitoredVessels)
     this.setMonitoredVessels(newVessels)
   }
 
-  private manageVesselsFromStream<T extends ISimpleVessel | IMonitoredVessel>(
+  private manageVesselsFromFetch<T extends ISimpleVessel | IMonitoredVessel>(
     vessels: T[],
     curVessels: T[] | undefined
   ): T[] {

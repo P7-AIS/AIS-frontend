@@ -1,6 +1,7 @@
 import { IPoint } from '../models/point'
 
 export interface IStreamManager {
-  fetchNewVesselData(): void
+  startSimpleVesselFetching(): void
+  stopSimpleVesselFetching(): void
   onMonitoringZoneChange(zone: IPoint[] | undefined): void
 }
