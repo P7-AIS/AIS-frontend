@@ -1,5 +1,5 @@
 import { useVesselGuiContext } from '../contexts/vesselGuiContext'
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { ISimpleVessel } from '../models/simpleVessel'
 import { IMonitoredVessel } from '../models/monitoredVessel'
 import LMap from '../components/map'
@@ -25,14 +25,14 @@ export default function VesselMapPage() {
 
   const { pathHistory } = useVesselGuiContext()
   const [streamManager] = useState(new StreamManager(clientHandler, setAllVessels, setMonitoredVessels))
+  const streamStarted = useRef(false)
 
   useEffect(() => {
-    streamManager.fetchNewVesselData()
+    if (!streamStarted.current) {
+      streamManager.startSimpleVesselFetching()
+      streamStarted.current = true
+    }
   }, [])
-
-  useEffect(() => {
-    streamManager.syncMyClockSpeed(myClockSpeed)
-  }, [myClockSpeed, streamManager])
 
   useEffect(() => {
     streamManager.syncMyDatetime(myDateTime)

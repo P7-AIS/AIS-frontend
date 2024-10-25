@@ -24,6 +24,8 @@ export default function Toolbar({ map, onMonitoringAreaChange }: IToolbarProps) 
 
   function clearOnClick() {
     clearTool()
+    setActiveTool(ActiveGuiTool.Mouse)
+    map.pm.disableDraw()
     onMonitoringAreaChange(undefined)
   }
 
@@ -62,7 +64,7 @@ export default function Toolbar({ map, onMonitoringAreaChange }: IToolbarProps) 
       <p className="text-white">Focus area tools</p>
       
       <div id="tools" className="flex gap-4 items-center">
-        <button title="Draw monitoring area as rectangle" className="hover:text-gray-100" onClick={() => setActiveTool(ActiveGuiTool.Rectangle)}>
+        <button title="Draw monitoring area as rectangle" className={`hover:text-gray-100 ${activeTool===ActiveGuiTool.Rectangle ? "text-blue-500" : ""}`} onClick={() => setActiveTool(ActiveGuiTool.Rectangle)}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="32"
@@ -75,7 +77,7 @@ export default function Toolbar({ map, onMonitoringAreaChange }: IToolbarProps) 
           </svg>
         </button>
 
-        <button title="Draw monitoring area as polygon" className="hover:text-gray-100" onClick={() => setActiveTool(ActiveGuiTool.Polygon)}>
+        <button title="Draw monitoring area as polygon" className={`hover:text-gray-100 ${activeTool===ActiveGuiTool.Polygon ? "text-blue-500" : ""}`} onClick={() => setActiveTool(ActiveGuiTool.Polygon)}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="32"
@@ -88,7 +90,7 @@ export default function Toolbar({ map, onMonitoringAreaChange }: IToolbarProps) 
           </svg>
         </button>
 
-        <button title="Clear monitoring area" className="bi bi-eraser hover:text-gray-100" onClick={clearOnClick}>
+        <button title="Clear monitoring area" className="bi bi-eraser hover:text-gray-100 " onClick={clearOnClick}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="32"
