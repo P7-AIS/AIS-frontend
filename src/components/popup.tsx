@@ -1,15 +1,26 @@
 import { useEffect, useState } from 'react'
 import { useAppContext } from '../contexts/appcontext'
 import { IDetailedVessel } from '../models/detailedVessel'
+import { useVesselGuiContext } from '../contexts/vesselGuiContext'
 
 interface IPopupProps {
   mmsi: number
+  markerRef: L.Marker | null
 }
 
-export default function Popup({ mmsi }: IPopupProps) {
+export default function Popup({ mmsi, markerRef }: IPopupProps) {
   const { clientHandler, myDateTime } = useAppContext()
+  const  {setSelectedVesselmmsi } = useVesselGuiContext()
   const [vesselDetails, setVesselDetails] = useState<IDetailedVessel | undefined>(undefined)
   const [loading, setLoading] = useState(true)
+
+  if (markerRef) {
+    markerRef.getPopup()?.on("remove", function() {
+      setSelectedVesselmmsi(undefined)
+      setVesselDetails(undefined)
+      setLoading(true)
+    })
+  }
 
   useEffect(() => {
     const fetchDetails = async () => {
