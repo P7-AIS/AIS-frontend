@@ -27,11 +27,7 @@ export default function VesselMapPage() {
   const [streamManager] = useState(new StreamManager(clientHandler, setAllVessels, setMonitoredVessels))
 
   useEffect(() => {
-    streamManager.startStream()
-    // Cleanup function to close the stream when the component unmounts
-    return () => {
-      streamManager.endStream()
-    }
+    streamManager.fetchNewVesselData()
   }, [])
 
   useEffect(() => {

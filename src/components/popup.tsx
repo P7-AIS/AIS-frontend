@@ -13,7 +13,7 @@ export default function Popup({ mmsi }: IPopupProps) {
 
   useEffect(() => {
     const fetchDetails = async () => {
-      const details = await clientHandler.GetVesselInfo({ mmsi, timestamp: myDateTime.getTime() })
+      const details = await clientHandler.getVesselInfo({ mmsi, timestamp: myDateTime.getTime() })
       setVesselDetails(details)
     }
 

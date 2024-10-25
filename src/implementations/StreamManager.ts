@@ -3,12 +3,10 @@ import { IMonitoredVessel } from '../models/monitoredVessel'
 import { IPoint } from '../models/point'
 import { ISimpleVessel } from '../models/simpleVessel'
 import { IStreamManager } from '../interfaces/IStreamManager'
-import { Subscription } from 'rxjs'
 
 export default class StreamManager implements IStreamManager {
   private allVessels: ISimpleVessel[] | undefined
   private monitoredVessels: IMonitoredVessel[] | undefined
-  private subscription?: Subscription = undefined
   private zone: IPoint[] = []
   private myClockSpeed: number
   private myDateTime: Date
@@ -34,27 +32,31 @@ export default class StreamManager implements IStreamManager {
     this.myClockSpeed = speed
   }
 
-  public startStream() {
-    const stream = this.clientHandler.StartStreaming({
-      startTime: 1725844950, //Math.floor(this.myDateTime.getTime() / 1000),
-      selection: { points: this.zone },
-      timeSpeed: this.myClockSpeed,
+  public async fetchNewVesselData() {
+    const simpleVessels = await this.clientHandler.getSimpleVessles({
+      timestamp: 1725844950,
     })
-    this.subscription = stream.subscribe((data) => {
-      this.manageNewSimpleVessels(data.simpleVessels)
-      this.manageNewMonitoredVessels(data.monitoredVessels)
-    })
-  }
 
-  public endStream() {
-    this.subscription?.unsubscribe()
+    let monitoredVessels: IMonitoredVessel[] = []
+
+    if (this.zone.length >= 4) {
+      monitoredVessels = await this.clientHandler.getMonitoredVessels({
+        selection: { points: this.zone },
+        timestamp: 1725844950,
+      })
+    }
+    console.log(simpleVessels)
+    console.log(monitoredVessels)
+
+    this.manageNewSimpleVessels(simpleVessels)
+    this.manageNewMonitoredVessels(monitoredVessels)
   }
 
   public onMonitoringZoneChange(zone: IPoint[] | undefined) {
     this.zone = zone || []
-    this.endStream()
-    this.setMonitoredVessels([])
-    this.startStream()
+    this.setAllVessels(undefined)
+    this.setMonitoredVessels(undefined)
+    this.fetchNewVesselData()
   }
 
   private manageNewSimpleVessels(vessels: ISimpleVessel[]) {
