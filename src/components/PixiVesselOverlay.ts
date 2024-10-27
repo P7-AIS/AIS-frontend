@@ -1,11 +1,10 @@
 import * as PIXI from 'pixi.js'
-import L from 'leaflet'
+import L, { LatLng, marker } from 'leaflet'
 import { useMap } from 'react-leaflet'
 import 'leaflet-pixi-overlay'
 import { ISimpleVessel } from '../models/simpleVessel'
 
 const markerTexture = await PIXI.Assets.load('assets/arrow.svg')
-const markerLatLng = [56.15674, 10.21076]
 const targetWidth = 15
 const scaleFactor = targetWidth / markerTexture.width
 
@@ -14,28 +13,36 @@ interface ICusMarker {
   popup: L.Popup
   currentScale: number
   targetScale: number
+  vessel: ISimpleVessel
+}
+
+function vesselToMarker(mapRef: L.Map, vessel: ISimpleVessel): ICusMarker {
+  const sprite = new PIXI.Sprite(markerTexture)
+  sprite.eventMode = 'dynamic'
+  sprite.cursor = 'pointer'
+  sprite.rotation = vessel.location.heading ? (vessel.location.heading * Math.PI) / 180 : 0
+
+  const popup = L.popup({ className: 'pixi-popup' })
+    .setLatLng([vessel.location.point.lat, vessel.location.point.lon])
+    .setContent(`<b>Hello world!</b><br>I am a ${vessel.mmsi}`)
+    .openOn(mapRef)
+
+  return { sprite, popup, vessel, currentScale: 0, targetScale: 0 }
 }
 
 export default function PixiVesselOverlay({ vessels }: { vessels: ISimpleVessel[] }) {
   const mapRef = useMap()
 
+  if (vessels.length === 0) return null
+
   let frame: number | null = null
   let firstDraw = true
   let prevZoom: number | null = null
 
-  const sprite = new PIXI.Sprite(markerTexture)
-  sprite.eventMode = 'dynamic'
-  sprite.cursor = 'pointer'
-
-  const popup = L.popup({ className: 'pixi-popup' })
-    .setLatLng(markerLatLng as L.LatLngExpression)
-    .setContent('<b>Hello world!</b><br>I am a popup.')
-    .openOn(mapRef)
-
-  const cusMarker: ICusMarker = { sprite, popup, currentScale: 0, targetScale: 0 }
+  const markers = vessels.map((vessel) => vesselToMarker(mapRef, vessel))
 
   const pixiContainer = new PIXI.Container()
-  pixiContainer.addChild(cusMarker.sprite)
+  pixiContainer.addChild(...markers.map((marker) => marker.sprite))
 
   L.pixiOverlay(
     (utils) => {
@@ -55,27 +62,30 @@ export default function PixiVesselOverlay({ vessels }: { vessels: ISimpleVessel[
           const interaction = utils.getRenderer().events
           const pointerEvent = e.originalEvent
           const pixiPoint = new PIXI.Point()
-          // get global click position in pixiPoint:
           interaction.mapPositionToPoint(pixiPoint, pointerEvent.clientX, pointerEvent.clientY)
-          // get what is below the click if any:
           const target = boundary.hitTest(pixiPoint.x, pixiPoint.y)
-          if (target) {
-            cusMarker.popup.openOn(mapRef)
-          }
+          // if (target) {
+          //   cusMarker.popup.openOn(mapRef)
+          // }
         })
 
-        console.log(targetWidth)
-        const markerCoords = project(new L.LatLng(markerLatLng[0], markerLatLng[1]))
-        cusMarker.sprite.x = markerCoords.x
-        cusMarker.sprite.y = markerCoords.y
-        cusMarker.sprite.anchor.set(0.5, 0.2)
-        cusMarker.sprite.scale.set((1 / scale) * scaleFactor)
-        cusMarker.currentScale = (1 / scale) * scaleFactor
+        markers.forEach((marker) => {
+          const point = new LatLng(marker.vessel.location.point.lat, marker.vessel.location.point.lon)
+          const coords = project(point)
+
+          marker.sprite.x = coords.x
+          marker.sprite.y = coords.y
+          marker.sprite.anchor.set(0.5, 0.2)
+          marker.sprite.scale.set((1 / scale) * scaleFactor)
+          marker.currentScale = (1 / scale) * scaleFactor
+        })
       }
 
       if (firstDraw || prevZoom !== zoom) {
-        cusMarker.currentScale = cusMarker.sprite.scale.x
-        cusMarker.targetScale = (1 / scale) * scaleFactor
+        markers.forEach((marker) => {
+          marker.currentScale = marker.sprite.scale.x
+          marker.targetScale = (1 / scale) * scaleFactor
+        })
 
         // We can draw anything PIXI here. For example, a polygon:
       }
@@ -89,7 +99,11 @@ export default function PixiVesselOverlay({ vessels }: { vessels: ISimpleVessel[
         let lambda = progress / duration
         if (lambda > 1) lambda = 1
         lambda = lambda * (0.4 + lambda * (2.2 + lambda * -1.6))
-        cusMarker.sprite.scale.set(cusMarker.currentScale + lambda * (cusMarker.targetScale - cusMarker.currentScale))
+
+        markers.forEach((marker) => {
+          marker.sprite.scale.set(marker.currentScale + lambda * (marker.targetScale - marker.currentScale))
+        })
+
         renderer.render(container)
         if (progress < duration) {
           frame = requestAnimationFrame(animate)
