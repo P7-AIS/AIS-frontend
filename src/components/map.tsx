@@ -1,5 +1,6 @@
 import { MapContainer, TileLayer, useMap } from 'react-leaflet'
-import PixiOverlay from '../implementations/MapOverlay'
+import PixiVesselOverlay from './PixiVesselOverlay'
+import { ISimpleVessel } from '../models/simpleVessel'
 
 const ComponentResize = () => {
   const map = useMap()
@@ -11,7 +12,7 @@ const ComponentResize = () => {
   return null
 }
 
-const LMap = () => {
+const LMap = ({ vessels }: { vessels: ISimpleVessel[] }) => {
   return (
     <MapContainer
       style={{
@@ -26,11 +27,12 @@ const LMap = () => {
       scrollWheelZoom={true}
     >
       <ComponentResize />
+      {/* Provider preview https://leaflet-extras.github.io/leaflet-providers/preview/ */}
       <TileLayer
-        attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+        url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
       />
-      <PixiOverlay />
+      <PixiVesselOverlay vessels={vessels} />
     </MapContainer>
   )
 }

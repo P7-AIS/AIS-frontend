@@ -2,10 +2,11 @@ import * as PIXI from 'pixi.js'
 import L from 'leaflet'
 import { useMap } from 'react-leaflet'
 import 'leaflet-pixi-overlay'
+import { ISimpleVessel } from '../models/simpleVessel'
 
-const markerTexture = await PIXI.Assets.load('assets/marker.png')
+const markerTexture = await PIXI.Assets.load('assets/arrow.svg')
 const markerLatLng = [56.15674, 10.21076]
-const targetWidth = 30
+const targetWidth = 15
 const scaleFactor = targetWidth / markerTexture.width
 
 interface ICusMarker {
@@ -15,7 +16,7 @@ interface ICusMarker {
   targetScale: number
 }
 
-export default function PixiOverlay() {
+export default function PixiVesselOverlay({ vessels }: { vessels: ISimpleVessel[] }) {
   const mapRef = useMap()
 
   let frame: number | null = null
@@ -23,7 +24,7 @@ export default function PixiOverlay() {
   let prevZoom: number | null = null
 
   const sprite = new PIXI.Sprite(markerTexture)
-  sprite.interactive = true
+  sprite.eventMode = 'dynamic'
   sprite.cursor = 'pointer'
 
   const popup = L.popup({ className: 'pixi-popup' })
@@ -67,7 +68,7 @@ export default function PixiOverlay() {
         const markerCoords = project(new L.LatLng(markerLatLng[0], markerLatLng[1]))
         cusMarker.sprite.x = markerCoords.x
         cusMarker.sprite.y = markerCoords.y
-        cusMarker.sprite.anchor.set(0.5, 1)
+        cusMarker.sprite.anchor.set(0.5, 0.2)
         cusMarker.sprite.scale.set((1 / scale) * scaleFactor)
         cusMarker.currentScale = (1 / scale) * scaleFactor
       }

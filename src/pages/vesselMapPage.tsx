@@ -17,8 +17,8 @@ import StreamManager from '../implementations/StreamManager'
 import VesselMap from '../components/vesselMap'
 
 export default function VesselMapPage() {
-  const [allVessels, setAllVessels] = useState<ISimpleVessel[] | undefined>(undefined)
-  const [monitoredVessels, setMonitoredVessels] = useState<IMonitoredVessel[] | undefined>(undefined)
+  const [allVessels, setAllVessels] = useState<ISimpleVessel[]>([])
+  const [monitoredVessels, setMonitoredVessels] = useState<IMonitoredVessel[]>([])
   const [map, setMap] = useState<L.Map | null>(null)
   const { selectedVesselmmsi } = useVesselGuiContext()
   const { clientHandler, myClockSpeed, setMyClockSpeed, myDateTime, setMyDateTime } = useAppContext()
@@ -81,7 +81,7 @@ export default function VesselMapPage() {
       </div>
 
       <div className="h-screen w-screen absolute top-0 left-0 z-0">
-        <LMap />
+        <LMap vessels={allVessels} />
       </div>
       {/* <div id="timeline-container" className="absolute end-0 left-0 z-10">
         <TimeLine timestamps={[new Date(123456), new Date(54123), new Date(871263)]}></TimeLine>

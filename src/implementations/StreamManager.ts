@@ -14,8 +14,8 @@ export default class StreamManager implements IStreamManager {
 
   constructor(
     private readonly clientHandler: IClientHandler,
-    private readonly setAllVessels: React.Dispatch<React.SetStateAction<ISimpleVessel[] | undefined>>,
-    private readonly setMonitoredVessels: React.Dispatch<React.SetStateAction<IMonitoredVessel[] | undefined>>
+    private readonly setAllVessels: React.Dispatch<React.SetStateAction<ISimpleVessel[]>>,
+    private readonly setMonitoredVessels: React.Dispatch<React.SetStateAction<IMonitoredVessel[]>>
   ) {
     this.onMonitoringZoneChange = this.onMonitoringZoneChange.bind(this)
   }
@@ -60,7 +60,7 @@ export default class StreamManager implements IStreamManager {
     this.zone = zone || []
     if (this.monitoredVesselTimeout || !zone || zone.length < 4) {
       this.stopMonitoredVesselFetching()
-      this.setMonitoredVessels(undefined)
+      this.setMonitoredVessels([])
     } else {
       this.startMonitoredVesselFetching()
     }
