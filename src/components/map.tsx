@@ -1,6 +1,5 @@
 import { MapContainer, TileLayer, useMap } from 'react-leaflet'
-
-import L from 'leaflet'
+import PixiOverlay from '../implementations/MapOverlay'
 
 const ComponentResize = () => {
   const map = useMap()
@@ -12,12 +11,7 @@ const ComponentResize = () => {
   return null
 }
 
-interface IMap {
-  children: React.ReactNode
-  setMapRef: React.Dispatch<React.SetStateAction<L.Map | null>>
-}
-
-const LMap = ({ setMapRef, children }: IMap) => {
+const LMap = () => {
   return (
     <MapContainer
       style={{
@@ -30,14 +24,13 @@ const LMap = ({ setMapRef, children }: IMap) => {
       zoom={8}
       minZoom={3}
       scrollWheelZoom={true}
-      ref={setMapRef}
     >
       <ComponentResize />
       <TileLayer
         attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      {children}
+      <PixiOverlay />
     </MapContainer>
   )
 }
