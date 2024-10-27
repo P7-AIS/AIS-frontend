@@ -21,7 +21,7 @@ declare module 'leaflet' {
   interface PixiOverlayUtils {
     latLngToLayerPoint: LatLngToLayerPointFn
     layerPointToLatLng: LayerPointToLatLngFn
-    getScale: (zoom?: number) => number | undefined
+    getScale: (zoom?: number) => number
     getRenderer: () => PIXI.IRenderer
     getContainer: () => PIXI.Container
     getMap: () => L.Map

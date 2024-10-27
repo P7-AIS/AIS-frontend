@@ -5,12 +5,14 @@ import 'leaflet-pixi-overlay'
 
 const markerTexture = await PIXI.Assets.load('assets/marker.png')
 const markerLatLng = [56.15674, 10.21076]
+const targetWidth = 30
+const scaleFactor = targetWidth / markerTexture.width
 
 interface ICusMarker {
   sprite: PIXI.Sprite
   popup: L.Popup
-  currentScale?: number
-  targetScale?: number
+  currentScale: number
+  targetScale: number
 }
 
 export default function PixiOverlay() {
@@ -29,7 +31,7 @@ export default function PixiOverlay() {
     .setContent('<b>Hello world!</b><br>I am a popup.')
     .openOn(mapRef)
 
-  const cusMarker: ICusMarker = { sprite, popup }
+  const cusMarker: ICusMarker = { sprite, popup, currentScale: 0, targetScale: 0 }
 
   const pixiContainer = new PIXI.Container()
   pixiContainer.addChild(cusMarker.sprite)
@@ -56,21 +58,23 @@ export default function PixiOverlay() {
           interaction.mapPositionToPoint(pixiPoint, pointerEvent.clientX, pointerEvent.clientY)
           // get what is below the click if any:
           const target = boundary.hitTest(pixiPoint.x, pixiPoint.y)
-          if (target && target.uid === cusMarker.sprite.uid) {
+          if (target) {
             cusMarker.popup.openOn(mapRef)
           }
         })
 
+        console.log(targetWidth)
         const markerCoords = project(new L.LatLng(markerLatLng[0], markerLatLng[1]))
         cusMarker.sprite.x = markerCoords.x
         cusMarker.sprite.y = markerCoords.y
         cusMarker.sprite.anchor.set(0.5, 1)
-        cusMarker.sprite.scale.set(1 / scale!)
-        cusMarker.currentScale = 1 / scale!
+        cusMarker.sprite.scale.set((1 / scale) * scaleFactor)
+        cusMarker.currentScale = (1 / scale) * scaleFactor
       }
+
       if (firstDraw || prevZoom !== zoom) {
         cusMarker.currentScale = cusMarker.sprite.scale.x
-        cusMarker.targetScale = 1 / scale!
+        cusMarker.targetScale = (1 / scale) * scaleFactor
 
         // We can draw anything PIXI here. For example, a polygon:
       }
@@ -84,9 +88,7 @@ export default function PixiOverlay() {
         let lambda = progress / duration
         if (lambda > 1) lambda = 1
         lambda = lambda * (0.4 + lambda * (2.2 + lambda * -1.6))
-        cusMarker.sprite.scale.set(
-          cusMarker.currentScale! + lambda * (cusMarker.targetScale! - cusMarker.currentScale!)
-        )
+        cusMarker.sprite.scale.set(cusMarker.currentScale + lambda * (cusMarker.targetScale - cusMarker.currentScale))
         renderer.render(container)
         if (progress < duration) {
           frame = requestAnimationFrame(animate)

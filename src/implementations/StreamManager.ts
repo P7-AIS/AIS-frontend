@@ -42,10 +42,10 @@ export default class StreamManager implements IStreamManager {
   private async simpleVesselLoop() {
     try {
       await this.fetchSimpleVesselData()
-    } catch(e) {
+    } catch (e) {
       console.log(e)
     }
-    this.simpleVesselTimeout = setTimeout(this.simpleVesselLoop.bind(this), 10000)
+    this.simpleVesselTimeout = setTimeout(this.simpleVesselLoop.bind(this), 100000000)
   }
 
   public async startSimpleVesselFetching() {
@@ -55,7 +55,6 @@ export default class StreamManager implements IStreamManager {
   public async stopSimpleVesselFetching() {
     clearTimeout(this.simpleVesselTimeout)
   }
-
 
   public onMonitoringZoneChange(zone: IPoint[] | undefined) {
     this.zone = zone || []
@@ -69,8 +68,8 @@ export default class StreamManager implements IStreamManager {
 
   private async fetchMonitoredVessels() {
     const monitoredvessels = await this.clientHandler.getMonitoredVessels({
-      timestamp: Math.round(this.myDateTime.getTime()/1000),
-      selection: {points: this.zone}
+      timestamp: Math.round(this.myDateTime.getTime() / 1000),
+      selection: { points: this.zone },
     })
     console.log(monitoredvessels)
     this.manageNewMonitoredVessels(monitoredvessels)
@@ -79,7 +78,7 @@ export default class StreamManager implements IStreamManager {
   private async startMonitoredVesselFetching() {
     try {
       await this.fetchMonitoredVessels()
-    } catch(e) {
+    } catch (e) {
       console.error(e)
     }
     this.monitoredVesselTimeout = setTimeout(this.startMonitoredVesselFetching.bind(this), 10000)
