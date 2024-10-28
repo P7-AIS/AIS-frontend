@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
 import { AppContextProvider, useAppContext } from './contexts/appcontext'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
@@ -8,7 +8,18 @@ import 'leaflet/dist/leaflet.css'
 
 function App() {
   const [count, setCount] = useState(0)
-  const { myClockSpeed } = useAppContext()
+  const { myDateTime, setMyDateTime, myClockSpeed } = useAppContext()
+
+  //manage "fake" global clock
+  useEffect(() => {
+    function manageTimeChange() {
+      setMyDateTime((prevDateTime) => new Date(prevDateTime.getTime() + myClockSpeed * 1000)
+      );
+    }
+    const interval = setInterval(manageTimeChange, 1000);
+
+    return () => clearInterval(interval);
+  }, [myClockSpeed]);
 
   return (
     <BrowserRouter>
@@ -17,11 +28,9 @@ function App() {
           <Route
             index
             element={
-              <AppContextProvider>
-                <VesselGuiContextProvider>
-                  <VesselMapPage />
-                </VesselGuiContextProvider>
-              </AppContextProvider>
+              <VesselGuiContextProvider>
+                <VesselMapPage />
+              </VesselGuiContextProvider>
             }
           />
         </Route>

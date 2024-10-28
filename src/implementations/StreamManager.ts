@@ -8,7 +8,7 @@ export default class StreamManager implements IStreamManager {
   private allVessels: ISimpleVessel[] | undefined
   private monitoredVessels: IMonitoredVessel[] | undefined
   private zone: IPoint[] = []
-  private myDateTime: Date
+  private myDateTime: Date = new Date()
   private simpleVesselTimeout: NodeJS.Timeout | undefined = undefined
   private monitoredVesselTimeout: NodeJS.Timeout | undefined = undefined
 
@@ -32,7 +32,7 @@ export default class StreamManager implements IStreamManager {
 
   private async fetchSimpleVesselData() {
     const simpleVessels = await this.clientHandler.getSimpleVessles({
-      timestamp: 1725844950, // myDateTime.getTime() / 1000
+      timestamp: Math.round(this.myDateTime.getTime() / 1000)
     })
 
     console.log(simpleVessels)

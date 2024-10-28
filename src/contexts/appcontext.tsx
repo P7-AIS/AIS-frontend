@@ -24,8 +24,8 @@ export const useAppContext = () => {
 export default AppContext
 
 export const AppContextProvider = ({ children }: { children: React.ReactNode }) => {
-  const [myDateTime, setMyDateTime] = useState<Date>(new Date(1725844950)) ///this should be "new Date()" in the future
-  const [myClockSpeed, setMyClockSpeed] = useState<number>(1)
+  const [myDateTime, setMyDateTime] = useState<Date>(new Date(1725844950*1000)) ///this should be "new Date()" in the future
+  const [myClockSpeed, setMyClockSpeed] = useState<number>(100)
 
   const grpcWeb = new GrpcWebImpl('http://localhost:8080', {})
   const client = new AISServiceClientImpl(grpcWeb)
