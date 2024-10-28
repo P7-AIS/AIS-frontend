@@ -1,6 +1,7 @@
 import { MapContainer, TileLayer, useMap } from 'react-leaflet'
 import PixiVesselOverlay from './PixiVesselOverlay'
 import { ISimpleVessel } from '../models/simpleVessel'
+import { IMonitoredVessel } from '../models/monitoredVessel'
 
 const ComponentResize = () => {
   const map = useMap()
@@ -12,7 +13,13 @@ const ComponentResize = () => {
   return null
 }
 
-const LMap = ({ vessels }: { vessels: ISimpleVessel[] }) => {
+const LMap = ({
+  simpleVessels,
+  monitoredVessels,
+}: {
+  simpleVessels: ISimpleVessel[]
+  monitoredVessels: IMonitoredVessel[]
+}) => {
   return (
     <MapContainer
       style={{
@@ -32,7 +39,7 @@ const LMap = ({ vessels }: { vessels: ISimpleVessel[] }) => {
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
         url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
       />
-      <PixiVesselOverlay vessels={vessels} />
+      <PixiVesselOverlay simpleVessels={simpleVessels} monitoredVessels={monitoredVessels} />
     </MapContainer>
   )
 }

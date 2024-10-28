@@ -81,7 +81,7 @@ export default function VesselMapPage() {
       </div>
 
       <div className="h-screen w-screen absolute top-0 left-0 z-0">
-        <LMap vessels={allVessels} />
+        <LMap simpleVessels={allVessels} monitoredVessels={monitoredVessels} />
       </div>
       {/* <div id="timeline-container" className="absolute end-0 left-0 z-10">
         <TimeLine timestamps={[new Date(123456), new Date(54123), new Date(871263)]}></TimeLine>
