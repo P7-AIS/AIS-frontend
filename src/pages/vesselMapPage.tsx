@@ -24,7 +24,7 @@ export default function VesselMapPage() {
   const { selectedVesselmmsi } = useVesselGuiContext()
   const { clientHandler, myClockSpeed, setMyClockSpeed, myDateTime, setMyDateTime } = useAppContext()
 
-  const { pathHistory } = useVesselGuiContext()
+  const { selectedVesselPath } = useVesselGuiContext()
   const [streamManager] = useState(new StreamManager(clientHandler, setAllVessels, setMonitoredVessels))
   const streamStarted = useRef(false)
 
@@ -59,7 +59,7 @@ export default function VesselMapPage() {
   }
 
   return (
-    <div className="relative">
+    <div className="relative h-screen">
       <div className="absolute z-20 w-full">
         <Navbar></Navbar>
       </div>
@@ -89,9 +89,11 @@ export default function VesselMapPage() {
           {allVessels && allVessels.length > 0 ? <VesselMap vessels={allVessels} /> : <></>}
         </LMap>
       </div>
-      {/* <div id="timeline-container" className="absolute end-0 left-0 z-10">
-        <TimeLine timestamps={[new Date(123456), new Date(54123), new Date(871263)]}></TimeLine>
-      </div> */}
+      {selectedVesselPath && 
+        <div id="timeline-container" className="absolute bottom-5 transform z-10 w-full">
+          <TimeLine timestamps={selectedVesselPath.map((loc) => loc.timestamp)}></TimeLine>
+        </div>
+      }
     </div>
   )
 }

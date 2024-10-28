@@ -10,15 +10,17 @@ interface IPopupProps {
 
 export default function Popup({ mmsi, markerRef }: IPopupProps) {
   const { clientHandler, myDateTime } = useAppContext()
-  const  {setSelectedVesselmmsi } = useVesselGuiContext()
+  const  {setSelectedVesselmmsi, selectedVesselPath, setSelectedVesselPath } = useVesselGuiContext()
   const [vesselDetails, setVesselDetails] = useState<IDetailedVessel | undefined>(undefined)
   const [loading, setLoading] = useState(true)
+  const [pathDuration, setPathDuration] = useState<number>(1)
 
   if (markerRef) {
     markerRef.getPopup()?.on("remove", function() {
       setSelectedVesselmmsi(undefined)
       setVesselDetails(undefined)
       setLoading(true)
+      setSelectedVesselPath(undefined)
     })
   }
 
@@ -32,8 +34,23 @@ export default function Popup({ mmsi, markerRef }: IPopupProps) {
     setLoading(false)
   }, [])
 
+  async function getVesselPath() {
+    const res = await clientHandler.getVesselPath({mmsi: mmsi, endtime: myDateTime.getTime()/1000, starttime: myDateTime.getTime()/1000-(pathDuration*60*60)}) //time is in seconds
+    setSelectedVesselPath(res.pathHistory.locations) 
+  }
+
+  function handleDurationChange(val: string) {
+    try {
+      const parsed = parseFloat(val)
+      setPathDuration(parsed)
+    } catch(e) {
+      console.error(e)
+      setPathDuration(1)
+    }
+  }
+  
   return (
-    <div id="popup-container" className="h-[300px] w-[180px]">
+    <div id="popup-container" className="h-[350px] w-[180px]">
       {loading ? (
         <p>Loading...</p>
       ) : (
@@ -47,6 +64,11 @@ export default function Popup({ mmsi, markerRef }: IPopupProps) {
             <p>Length: {vesselDetails.length}</p>
             <p>Callsign: {vesselDetails.callSign}</p>
             <p>Pos fixing device: {vesselDetails.positionFixingDevice}</p>
+            <div className="flex flex-row items-center gap-2">
+              <div className="m-0 font-bold">Path Duration(h)</div>
+              <input className="w-16 h-8 border-2 border-neutral_2 rounded-md" type="number" placeholder="Path duration  Hours" value={pathDuration} onChange={(e) => handleDurationChange(e.target.value)}></input>
+            </div>
+            <button className="bg-blue-600 hover:bg-blue-400 p-2 rounded-md text-white" disabled={selectedVesselPath ? true : false} onClick={getVesselPath}>Show Path</button>
           </>
         )
       )}
