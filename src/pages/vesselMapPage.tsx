@@ -15,6 +15,7 @@ import { useAppContext } from '../contexts/appcontext'
 import TimeLine from '../components/timeline'
 import StreamManager from '../implementations/StreamManager'
 import VesselMap from '../components/vesselMap'
+import Navbar from '../components/Navbar'
 
 export default function VesselMapPage() {
   const [allVessels, setAllVessels] = useState<ISimpleVessel[] | undefined>(undefined)
@@ -59,7 +60,10 @@ export default function VesselMapPage() {
 
   return (
     <div className="relative">
-      <div id="toolbar-container" className="absolute z-10 w-fit top-5 left-5">
+      <div className="absolute z-20 w-full">
+        <Navbar></Navbar>
+      </div>
+      <div id="toolbar-container" className="absolute z-10 w-fit top-10 left-5">
         {map !== null && <Toolbar map={map} onMonitoringAreaChange={streamManager.onMonitoringZoneChange} />}
       </div>
 
