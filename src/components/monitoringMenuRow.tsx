@@ -14,9 +14,10 @@ export default function MonitoringMenuRow({ isSelected, monitoredVessel, zoomToC
     zoomToCallback(monitoredVessel)
   }
   return (
-    <span className={`${isSelected && 'font-bold'} grid grid-cols-3 gap-4`}>
+    <span className={`${isSelected && 'font-bold'} grid grid-cols-4 gap-4`}>
       <p className="text-left">{monitoredVessel.mmsi}</p>
-      <p className="text-right">{monitoredVessel.trustworthiness}</p>
+      <p className="text-right font-mono">{Math.round(monitoredVessel.trustworthiness*1000)/1000}%</p>
+      <p className="text-left">{monitoredVessel.reason}</p>
       <div className="flex items-center justify-center">
         <svg
           onClick={handleClick}
