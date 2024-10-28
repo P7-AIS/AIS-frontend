@@ -32,7 +32,7 @@ export default class StreamManager implements IStreamManager {
 
   private async fetchSimpleVesselData() {
     const simpleVessels = await this.clientHandler.getSimpleVessles({
-      timestamp: 1725844950, // myDateTime.getTime() / 1000
+      timestamp: Math.round(this.myDateTime.getTime() / 1000)
     })
 
     console.log(simpleVessels)
@@ -59,7 +59,7 @@ export default class StreamManager implements IStreamManager {
 
   public onMonitoringZoneChange(zone: IPoint[] | undefined) {
     this.zone = zone || []
-    if (this.monitoredVesselTimeout || !zone || zone.length < 4) {
+    if (!zone || zone.length < 4) {
       this.stopMonitoredVesselFetching()
       this.setMonitoredVessels(undefined)
     } else {
@@ -95,8 +95,8 @@ export default class StreamManager implements IStreamManager {
   }
 
   private manageNewMonitoredVessels(vessels: IMonitoredVessel[]) {
-    const newVessels = this.manageVesselsFromFetch(vessels, this.monitoredVessels)
-    this.setMonitoredVessels(newVessels)
+    // const newVessels = this.manageVesselsFromFetch(vessels, this.monitoredVessels)
+    this.setMonitoredVessels(vessels)
   }
 
   private manageVesselsFromFetch<T extends ISimpleVessel | IMonitoredVessel>(
