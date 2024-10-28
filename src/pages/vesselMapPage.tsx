@@ -1,8 +1,8 @@
 import { useVesselGuiContext } from '../contexts/vesselGuiContext'
-import { useState, useEffect, useMemo, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { ISimpleVessel } from '../models/simpleVessel'
 import { IMonitoredVessel } from '../models/monitoredVessel'
-import LMap from '../components/map'
+import VesselMap from '../components/vesselMap'
 import 'leaflet/dist/leaflet.css'
 import '@geoman-io/leaflet-geoman-free'
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css'
@@ -10,11 +10,8 @@ import L from 'leaflet'
 import MonitoringMenu from '../components/monitoringMenu'
 import MonitoringMenuRow from '../components/monitoringMenuRow'
 import Toolbar from '../components/toolbar'
-import Vessel from '../components/vessel'
 import { useAppContext } from '../contexts/appcontext'
-import TimeLine from '../components/timeline'
 import StreamManager from '../implementations/StreamManager'
-import VesselMap from '../components/vesselMap'
 
 export default function VesselMapPage() {
   const [allVessels, setAllVessels] = useState<ISimpleVessel[]>([])
@@ -81,7 +78,7 @@ export default function VesselMapPage() {
       </div>
 
       <div className="h-screen w-screen absolute top-0 left-0 z-0">
-        <LMap simpleVessels={allVessels} monitoredVessels={monitoredVessels} />
+        <VesselMap simpleVessels={allVessels} monitoredVessels={monitoredVessels} />
       </div>
       {/* <div id="timeline-container" className="absolute end-0 left-0 z-10">
         <TimeLine timestamps={[new Date(123456), new Date(54123), new Date(871263)]}></TimeLine>
