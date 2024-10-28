@@ -16,7 +16,7 @@ export default function MonitoringMenuRow({ isSelected, monitoredVessel, zoomToC
   return (
     <span className={`${isSelected && 'font-bold'} grid grid-cols-4 gap-4`}>
       <p className="text-left">{monitoredVessel.mmsi}</p>
-      <p className="text-right font-mono">{Math.round(monitoredVessel.trustworthiness*1000)/1000}%</p>
+      <p className="text-right font-mono">{Math.round(monitoredVessel.trustworthiness*1000)/10}%</p>
       <p className="text-left">{monitoredVessel.reason}</p>
       <div className="flex items-center justify-center">
         <svg
