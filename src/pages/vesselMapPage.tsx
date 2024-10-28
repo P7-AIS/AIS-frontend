@@ -67,7 +67,7 @@ export default function VesselMapPage() {
         {map !== null && <Toolbar map={map} onMonitoringAreaChange={streamManager.onMonitoringZoneChange} />}
       </div>
 
-      <div id="monitoring-menu-container" className="absolute max-w-96 max-h-98 top-5 right-5 z-10">
+      <div id="monitoring-menu-container" className="absolute max-w-96 max-h-98 top-10 right-5 z-10">
         {monitoredVessels && (
           <MonitoringMenu monitoredVessels={monitoredVessels}>
             {monitoredVessels.map((vessel: IMonitoredVessel) => {
