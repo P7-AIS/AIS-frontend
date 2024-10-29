@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useVesselGuiContext } from '../contexts/vesselGuiContext'
 interface ITimelineProps {
   timestamps: Date[];
@@ -20,6 +20,10 @@ export default function Timeline({ timestamps, onChange }: ITimelineProps) {
   function closePath() {
     setSelectedVesselPath(undefined)
   }
+
+  useEffect(() => {
+    setTimelineVal(timestamps.length - 1)
+  }, [timestamps])
 
   return (
     <div className="bg-neutral_2 rounded-xl mx-4 px-4 py-2 shadow">
