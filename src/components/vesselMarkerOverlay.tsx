@@ -5,8 +5,9 @@ import { ISimpleVessel } from '../models/simpleVessel'
 import { IMonitoredVessel } from '../models/monitoredVessel'
 import { useVesselGuiContext } from '../contexts/vesselGuiContext'
 import { useEffect, useState } from 'react'
-import SpriteMarkerOverlay from './spriteMarkerOverlay'
 import { SpriteMarker } from '../models/spriteMarker'
+import SpriteMarkerOverlay from '../implementations/SpriteMarkerOverlay'
+import { useMap } from 'react-leaflet'
 
 interface DisplayVessel {
   simpleVessel: ISimpleVessel
@@ -78,9 +79,11 @@ export default function VesselMarkerOverlay({
   const { selectedVesselmmsi } = useVesselGuiContext()
   const [markers] = useState<SpriteMarker[]>([])
   const [pixiContainer] = useState(new PIXI.Container())
-
+  const [overlay] = useState(new SpriteMarkerOverlay(markers, pixiContainer))
   const [arrowTexture, setArrowTexture] = useState<PIXI.Texture | null>(null)
   const [circleTexture, setCircleTexture] = useState<PIXI.Texture | null>(null)
+
+  const map = useMap()
 
   useEffect(() => {
     const loadTextures = async () => {
@@ -90,14 +93,16 @@ export default function VesselMarkerOverlay({
       setCircleTexture(loadedCircleTexture)
     }
     loadTextures()
-  }, [])
+  })
+
+  useEffect(() => {
+    overlay.applyToMap(map)
+  }, [map, overlay])
 
   useEffect(() => {
     if (arrowTexture === null || circleTexture === null) {
       return
     }
-
-    pixiContainer.removeChildren()
 
     const displayVessels = getDisplayVessels(simpleVessels, monitoredVessels)
 
@@ -113,10 +118,10 @@ export default function VesselMarkerOverlay({
       selectedMarker.sprite.tint = 0xff0000
     }
 
-    if (markers.length === 0) {
+    if (markers.length !== 0) {
       pixiContainer.addChild(...markers.map((marker) => marker.sprite))
     }
   }, [simpleVessels, monitoredVessels, selectedVesselmmsi, markers, arrowTexture, circleTexture, pixiContainer])
 
-  return <SpriteMarkerOverlay markers={markers} pixiContainer={pixiContainer} />
+  return null
 }
