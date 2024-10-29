@@ -7,20 +7,6 @@ import { VesselGuiContextProvider } from './contexts/vesselGuiContext'
 import 'leaflet/dist/leaflet.css'
 
 function App() {
-  const [count, setCount] = useState(0)
-  const { myDateTime, setMyDateTime, myClockSpeed } = useAppContext()
-
-  //manage "fake" global clock
-  useEffect(() => {
-    function manageTimeChange() {
-      setMyDateTime((prevDateTime) => new Date(prevDateTime.getTime() + myClockSpeed * 1000)
-      );
-    }
-    const interval = setInterval(manageTimeChange, 1000);
-
-    return () => clearInterval(interval);
-  }, [myClockSpeed]);
-
   return (
     <BrowserRouter>
       <Routes>

@@ -15,8 +15,7 @@ import { useAppContext } from '../contexts/appcontext'
 import TimeLine from '../components/timeline'
 import StreamManager from '../implementations/StreamManager'
 import VesselMap from '../components/vesselMap'
-import Navbar from '../components/Navbar'
-import { VesselPath } from '../../proto/AIS-protobuf/ais'
+import Navbar from '../components/navbar'
 import Path from '../components/path'
 
 export default function VesselMapPage() {
@@ -24,7 +23,7 @@ export default function VesselMapPage() {
   const [monitoredVessels, setMonitoredVessels] = useState<IMonitoredVessel[] | undefined>(undefined)
   const [map, setMap] = useState<L.Map | null>(null)
   const { selectedVesselmmsi } = useVesselGuiContext()
-  const { clientHandler, myClockSpeed, setMyClockSpeed, myDateTime, setMyDateTime } = useAppContext()
+  const { clientHandler, myDateTime} = useAppContext()
 
   const { selectedVesselPath } = useVesselGuiContext()
   const [streamManager] = useState(new StreamManager(clientHandler, setAllVessels, setMonitoredVessels))

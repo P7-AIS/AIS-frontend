@@ -10,7 +10,7 @@ interface IPopupProps {
 
 export default function Popup({ mmsi, markerRef }: IPopupProps) {
   const { clientHandler, myDateTime } = useAppContext()
-  const  {setSelectedVesselmmsi, selectedVesselPath, setSelectedVesselPath } = useVesselGuiContext()
+  const  {setSelectedVesselmmsi, setSelectedVesselPath } = useVesselGuiContext()
   const [vesselDetails, setVesselDetails] = useState<IDetailedVessel | undefined>(undefined)
   const [loading, setLoading] = useState(true)
   const [pathDuration, setPathDuration] = useState<number>(1)

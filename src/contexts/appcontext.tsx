@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from 'react'
+import { createContext, useContext, useEffect, useState } from 'react'
 import { IClientHandler } from '../interfaces/IClientHandler'
 import { AISServiceClientImpl, GrpcWebImpl } from '../../proto/AIS-protobuf/ais'
 import GRPCClientHandler from '../implementations/GRPCClientHandler'
@@ -30,6 +30,17 @@ export const AppContextProvider = ({ children }: { children: React.ReactNode }) 
   const grpcWeb = new GrpcWebImpl('http://localhost:8080', {})
   const client = new AISServiceClientImpl(grpcWeb)
   const clientHandler = new GRPCClientHandler(client)
+
+  //manage "fake" global clock
+  useEffect(() => {
+    function manageTimeChange() {
+      setMyDateTime((prevDateTime) => new Date(prevDateTime.getTime() + myClockSpeed * 1000)
+      );
+    }
+    const interval = setInterval(manageTimeChange, 1000);
+
+    return () => clearInterval(interval);
+  }, [myClockSpeed]);
 
   return (
     <AppContext.Provider value={{ myDateTime, setMyDateTime, myClockSpeed, setMyClockSpeed, clientHandler }}>
