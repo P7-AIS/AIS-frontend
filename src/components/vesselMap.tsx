@@ -1,7 +1,7 @@
 import { MapContainer, TileLayer } from 'react-leaflet'
-import PixiVesselOverlay from './VesselMapOverlay'
 import { ISimpleVessel } from '../models/simpleVessel'
 import { IMonitoredVessel } from '../models/monitoredVessel'
+import VesselMarkerOverlay from './vesselMarkerOverlay'
 
 const VesselMap = ({
   simpleVessels,
@@ -28,7 +28,7 @@ const VesselMap = ({
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
         url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
       />
-      <PixiVesselOverlay simpleVessels={simpleVessels} monitoredVessels={monitoredVessels} />
+      <VesselMarkerOverlay simpleVessels={simpleVessels} monitoredVessels={monitoredVessels} />
     </MapContainer>
   )
 }
