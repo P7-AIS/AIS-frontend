@@ -3,19 +3,20 @@ import { IMonitoredVessel } from '../models/monitoredVessel'
 import { IPoint } from '../models/point'
 import { ISimpleVessel } from '../models/simpleVessel'
 import { IStreamManager } from '../interfaces/IStreamManager'
+import { RefObject } from 'react'
 
 export default class StreamManager implements IStreamManager {
   private allVessels: ISimpleVessel[] | undefined
   private monitoredVessels: IMonitoredVessel[] | undefined
   private zone: IPoint[] = []
-  private myDateTime: Date = new Date(1725844950*1000)
   private simpleVesselTimeout: NodeJS.Timeout | undefined = undefined
   private monitoredVesselTimeout: NodeJS.Timeout | undefined = undefined
 
   constructor(
     private readonly clientHandler: IClientHandler,
     private readonly setAllVessels: React.Dispatch<React.SetStateAction<ISimpleVessel[] | undefined>>,
-    private readonly setMonitoredVessels: React.Dispatch<React.SetStateAction<IMonitoredVessel[] | undefined>>
+    private readonly setMonitoredVessels: React.Dispatch<React.SetStateAction<IMonitoredVessel[] | undefined>>,
+    private readonly myDateTimeRef: RefObject<Date>
   ) {
     this.onMonitoringZoneChange = this.onMonitoringZoneChange.bind(this)
   }
@@ -27,12 +28,12 @@ export default class StreamManager implements IStreamManager {
     this.monitoredVessels = vessels
   }
   public syncMyDatetime(date: Date) {
-    this.myDateTime = date
+    // this.myDateTime = date
   }
 
   private async fetchSimpleVesselData() {
     const simpleVessels = await this.clientHandler.getSimpleVessles({
-      timestamp: Math.round(this.myDateTime.getTime() / 1000)
+      timestamp: Math.round(this.myDateTimeRef.current!.getTime() / 1000)
     })
 
     console.log(simpleVessels)
@@ -69,7 +70,7 @@ export default class StreamManager implements IStreamManager {
 
   private async fetchMonitoredVessels() {
     const monitoredvessels = await this.clientHandler.getMonitoredVessels({
-      timestamp: Math.round(this.myDateTime.getTime()/1000),
+      timestamp: Math.round(this.myDateTimeRef.current!.getTime()/1000),
       selection: {points: this.zone}
     })
     console.log(monitoredvessels)
