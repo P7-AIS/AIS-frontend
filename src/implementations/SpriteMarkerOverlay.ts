@@ -24,6 +24,7 @@ export default class SpriteMarkerOverlay {
 
   removeFromMap() {
     // this.overlay.utils.getRenderer().destroy()
+    console.log('removed')
     this.overlay.remove()
   }
 
@@ -32,15 +33,18 @@ export default class SpriteMarkerOverlay {
     let firstDraw = true
     let prevZoom: number | null = null
 
-    const markers = this.markers.map((marker) => ({
-      ...marker,
-      targetScale: 0,
-      currentScale: 0,
-      scaleFactor: marker.size / marker.sprite.width,
-    }))
+    const getMarkers = () =>
+      this.markers.map((marker) => ({
+        ...marker,
+        targetScale: 0,
+        currentScale: 0,
+        scaleFactor: marker.size / marker.sprite.texture.width,
+      }))
 
     return (utils) => {
-      console.log(this.pixiContainer.children)
+      const markers = getMarkers()
+
+      if (markers.length === 0) return
 
       if (frame) {
         cancelAnimationFrame(frame)
@@ -76,8 +80,8 @@ export default class SpriteMarkerOverlay {
 
           marker.sprite.x = coords.x
           marker.sprite.y = coords.y
-          marker.sprite.scale.set((1 / scale) * marker.scaleFactor)
-          marker.currentScale = (1 / scale) * marker.scaleFactor
+          marker.sprite.scale.set(marker.scaleFactor / scale)
+          marker.currentScale = marker.scaleFactor / scale
         })
       }
 
@@ -85,7 +89,7 @@ export default class SpriteMarkerOverlay {
       if (firstDraw || prevZoom !== zoom) {
         markers.forEach((marker) => {
           marker.currentScale = marker.sprite.scale.x
-          marker.targetScale = (1 / scale) * marker.scaleFactor
+          marker.targetScale = marker.scaleFactor / scale
         })
       }
 

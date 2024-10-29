@@ -32,7 +32,7 @@ function displayVesselToSpriteMarker(
   vessel: DisplayVessel,
   arrowTexture: PIXI.Texture,
   circleTexture: PIXI.Texture,
-  onClick: () => void
+  onClick: (sprite: PIXI.Sprite) => void
 ): SpriteMarker {
   const { simpleVessel, monitoredInfo } = vessel
 
@@ -58,7 +58,7 @@ function displayVesselToSpriteMarker(
 
   sprite.eventMode = 'dynamic'
   sprite.cursor = 'pointer'
-  sprite.on('click', onClick)
+  sprite.on('click', () => onClick(sprite))
 
   const popup = L.popup({ className: 'pixi-popup' })
     .setLatLng([simpleVessel.location.point.lat, simpleVessel.location.point.lon])
@@ -104,6 +104,8 @@ export default function VesselMarkerOverlay({
       return
     }
 
+    pixiContainer.removeChildren()
+
     const displayVessels = getDisplayVessels(simpleVessels, monitoredVessels)
 
     displayVessels.forEach((vessel) => {
@@ -120,8 +122,19 @@ export default function VesselMarkerOverlay({
 
     if (markers.length !== 0) {
       pixiContainer.addChild(...markers.map((marker) => marker.sprite))
+      overlay.redraw()
     }
-  }, [simpleVessels, monitoredVessels, selectedVesselmmsi, markers, arrowTexture, circleTexture, pixiContainer])
+  }, [
+    simpleVessels,
+    monitoredVessels,
+    selectedVesselmmsi,
+    markers,
+    arrowTexture,
+    circleTexture,
+    pixiContainer,
+    overlay,
+    map,
+  ])
 
   return null
 }
