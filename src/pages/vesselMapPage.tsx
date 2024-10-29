@@ -16,6 +16,8 @@ import TimeLine from '../components/timeline'
 import StreamManager from '../implementations/StreamManager'
 import VesselMap from '../components/vesselMap'
 import Navbar from '../components/Navbar'
+import { VesselPath } from '../../proto/AIS-protobuf/ais'
+import Path from '../components/path'
 
 export default function VesselMapPage() {
   const [allVessels, setAllVessels] = useState<ISimpleVessel[] | undefined>(undefined)
@@ -99,9 +101,14 @@ export default function VesselMapPage() {
         </LMap>
       </div>
       {selectedVesselPath && 
-        <div id="timeline-container" className="absolute bottom-5 transform z-10 w-full">
-          <TimeLine onChange={manageTimelineChange} timestamps={selectedVesselPath.map((loc) => loc.timestamp)}></TimeLine>
-        </div>
+        <>
+          <div id="timeline-container" className="absolute bottom-5 transform z-10 w-full">
+            <TimeLine onChange={manageTimelineChange} timestamps={selectedVesselPath.map((loc) => loc.timestamp)}></TimeLine>
+          </div>
+          {map && 
+            <Path map={map} path={selectedVesselPath}></Path>
+          }
+        </>
       }
     </div>
   )
