@@ -20,7 +20,6 @@ export default function Popup({ mmsi, markerRef }: IPopupProps) {
       setSelectedVesselmmsi(undefined)
       setVesselDetails(undefined)
       setLoading(true)
-      setSelectedVesselPath(undefined)
     })
   }
 
@@ -66,7 +65,7 @@ export default function Popup({ mmsi, markerRef }: IPopupProps) {
             <p>Pos fixing device: {vesselDetails.positionFixingDevice}</p>
             <div className="flex flex-row items-center gap-2">
               <div className="m-0 font-bold">Path Duration(h)</div>
-              <input className="w-16 h-8 border-2 border-neutral_2 rounded-md" type="number" placeholder="Path duration  Hours" value={pathDuration} onChange={(e) => handleDurationChange(e.target.value)}></input>
+              <input className="w-16 h-8 border-2 border-neutral_2 rounded-md text-right" type="number" placeholder="Path duration  Hours" value={pathDuration} onChange={(e) => handleDurationChange(e.target.value)}></input>
             </div>
             <button className="bg-blue-600 hover:bg-blue-400 p-2 rounded-md text-white" disabled={selectedVesselPath ? true : false} onClick={getVesselPath}>Show Path</button>
           </>
