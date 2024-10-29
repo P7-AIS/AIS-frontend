@@ -8,7 +8,7 @@ export default class StreamManager implements IStreamManager {
   private allVessels: ISimpleVessel[] | undefined
   private monitoredVessels: IMonitoredVessel[] | undefined
   private zone: IPoint[] = []
-  private myDateTime: Date
+  private myDateTime: Date = new Date(1725844950*1000)
   private simpleVesselTimeout: NodeJS.Timeout | undefined = undefined
   private monitoredVesselTimeout: NodeJS.Timeout | undefined = undefined
 

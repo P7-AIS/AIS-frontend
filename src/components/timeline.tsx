@@ -25,7 +25,7 @@ export default function Timeline({ timestamps, onChange }: ITimelineProps) {
     <div className="bg-neutral_2 rounded-xl mx-4 px-4 py-2 shadow">
       <div className="w-full flex items-center relative">
         <p className="absolute left-1/2 transform -translate-x-1/2 font-bold text-center">
-          Timestamp: {timelineVal ? timestamps[timelineVal].toISOString().replace("T", " ").replace("Z", "").slice(0, 19) : "unknown"}
+          Timestamp: {timelineVal && timestamps[timelineVal] ? timestamps[timelineVal].toISOString().replace("T", " ").replace("Z", "").slice(0, 19) : "unknown"}
         </p>
         <button
           onClick={closePath}
