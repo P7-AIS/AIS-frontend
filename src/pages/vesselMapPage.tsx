@@ -58,6 +58,15 @@ export default function VesselMapPage() {
     }
   }
 
+  function manageTimelineChange(index: number) {
+    if (!selectedVesselPath) {
+      console.error("timeline change without any path information")
+      return
+    }
+    console.log(selectedVesselPath[index])
+
+  }
+
   return (
     <div className="relative h-screen">
       <div className="absolute z-20 w-full">
@@ -91,7 +100,7 @@ export default function VesselMapPage() {
       </div>
       {selectedVesselPath && 
         <div id="timeline-container" className="absolute bottom-5 transform z-10 w-full">
-          <TimeLine timestamps={selectedVesselPath.map((loc) => loc.timestamp)}></TimeLine>
+          <TimeLine onChange={manageTimelineChange} timestamps={selectedVesselPath.map((loc) => loc.timestamp)}></TimeLine>
         </div>
       }
     </div>
