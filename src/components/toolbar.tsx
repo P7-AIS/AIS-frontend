@@ -15,7 +15,7 @@ export default function Toolbar({ map, onMonitoringAreaChange }: IToolbarProps) 
   const clearTool = useCallback(() => {
     if (map !== null) {
       map.eachLayer(function (layer: L.Layer) {
-        if (!(layer instanceof L.TileLayer || layer instanceof L.Marker)) {
+        if (!(layer instanceof L.TileLayer || layer instanceof L.Marker) && layer.options.pane === 'monitoring-area') {
           map.removeLayer(layer)
         }
       })
@@ -40,6 +40,8 @@ export default function Toolbar({ map, onMonitoringAreaChange }: IToolbarProps) 
     if (map !== null) {
       map.on('pm:create', function (e) {
         if (['Polygon', 'Rectangle'].includes(e.shape)) {
+          e.layer.options.pane = 'monitoring-area'
+
           console.log((e.layer as Polygon).toGeoJSON())
           //change in monitored area
           onMonitoringAreaChange(
@@ -62,9 +64,13 @@ export default function Toolbar({ map, onMonitoringAreaChange }: IToolbarProps) 
   return (
     <div className="flex flex-col gap-4 bg-gray-700 text-gray-300 rounded-lg p-4">
       <p className="text-white">Focus area tools</p>
-      
+
       <div id="tools" className="flex gap-4 items-center">
-        <button title="Draw monitoring area as rectangle" className={`hover:text-gray-100 ${activeTool===ActiveGuiTool.Rectangle ? "text-blue-500" : ""}`} onClick={() => setActiveTool(ActiveGuiTool.Rectangle)}>
+        <button
+          title="Draw monitoring area as rectangle"
+          className={`hover:text-gray-100 ${activeTool === ActiveGuiTool.Rectangle ? 'text-blue-500' : ''}`}
+          onClick={() => setActiveTool(ActiveGuiTool.Rectangle)}
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="32"
@@ -77,7 +83,11 @@ export default function Toolbar({ map, onMonitoringAreaChange }: IToolbarProps) 
           </svg>
         </button>
 
-        <button title="Draw monitoring area as polygon" className={`hover:text-gray-100 ${activeTool===ActiveGuiTool.Polygon ? "text-blue-500" : ""}`} onClick={() => setActiveTool(ActiveGuiTool.Polygon)}>
+        <button
+          title="Draw monitoring area as polygon"
+          className={`hover:text-gray-100 ${activeTool === ActiveGuiTool.Polygon ? 'text-blue-500' : ''}`}
+          onClick={() => setActiveTool(ActiveGuiTool.Polygon)}
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="32"

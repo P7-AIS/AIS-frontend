@@ -6,9 +6,11 @@ import VesselMarkerOverlay from './vesselMarkerOverlay'
 const VesselMap = ({
   simpleVessels,
   monitoredVessels,
+  setMapRef,
 }: {
   simpleVessels: ISimpleVessel[]
   monitoredVessels: IMonitoredVessel[]
+  setMapRef: React.Dispatch<React.SetStateAction<L.Map | null>>
 }) => {
   return (
     <MapContainer
@@ -22,6 +24,7 @@ const VesselMap = ({
       zoom={8}
       minZoom={3}
       scrollWheelZoom={true}
+      ref={setMapRef}
     >
       {/* Provider preview https://leaflet-extras.github.io/leaflet-providers/preview/ */}
       <TileLayer

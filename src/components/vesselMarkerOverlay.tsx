@@ -108,11 +108,9 @@ export default function VesselMarkerOverlay({
       return
     }
 
-    const displayVessels = getDisplayVessels(simpleVessels, monitoredVessels)
-
     markers.splice(0, markers.length)
 
-    displayVessels.forEach((vessel) => {
+    getDisplayVessels(simpleVessels, monitoredVessels).forEach((vessel) => {
       {
         markers.push(
           displayVesselToSpriteMarker(vessel, arrowTexture, circleTexture, () => {
