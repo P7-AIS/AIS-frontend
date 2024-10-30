@@ -1,16 +1,21 @@
 import * as PIXI from 'pixi.js'
 import L, { LatLng } from 'leaflet'
 import 'leaflet-pixi-overlay'
-import { SpriteMarker } from '../models/spriteMarker'
+import { ISpriteMarker } from '../models/spriteMarker'
 
 export default class SpriteMarkerOverlay {
   private readonly overlay: L.LeafletPixiOverlayDefnition
+  private isMarkersUpdated = true
 
-  constructor(private readonly markers: SpriteMarker[], private readonly pixiContainer: PIXI.Container) {
+  constructor(private readonly markers: ISpriteMarker[], private readonly pixiContainer: PIXI.Container) {
     this.overlay = L.pixiOverlay(this.getDrawCallback(), pixiContainer, {
       doubleBuffering: true,
       autoPreventDefault: false,
     })
+  }
+
+  updatedMarkers() {
+    this.isMarkersUpdated = true
   }
 
   redraw() {
@@ -23,14 +28,12 @@ export default class SpriteMarkerOverlay {
   }
 
   removeFromMap() {
-    // this.overlay.utils.getRenderer().destroy()
     console.log('removed')
     this.overlay.remove()
   }
 
   private getDrawCallback(): L.DrawCallbackFn {
     let frame: number | null = null
-    let firstDraw = true
     let prevZoom: number | null = null
 
     const getMarkers = () =>
@@ -39,17 +42,16 @@ export default class SpriteMarkerOverlay {
         targetScale: 0,
         currentScale: 0,
         scaleFactor: marker.size / marker.sprite.texture.width,
+        popup: L.popup({ className: 'pixi-popup' }).setLatLng(marker.position).setContent(marker.popupContent),
       }))
 
     return (utils) => {
-      const markers = getMarkers()
-
-      if (markers.length === 0) return
-
       if (frame) {
         cancelAnimationFrame(frame)
         frame = null
       }
+
+      const markers = getMarkers()
       const container = utils.getContainer()
       const renderer = utils.getRenderer()
       const project = utils.latLngToLayerPoint
@@ -57,7 +59,7 @@ export default class SpriteMarkerOverlay {
       const map = utils.getMap()
       const zoom = map.getZoom()
 
-      if (firstDraw) {
+      if (this.isMarkersUpdated) {
         const boundary = new PIXI.EventBoundary(container)
         map.on('click', (e) => {
           const interaction = utils.getRenderer().events
@@ -86,7 +88,7 @@ export default class SpriteMarkerOverlay {
       }
 
       // Rescale markers on zoom change
-      if (firstDraw || prevZoom !== zoom) {
+      if (this.isMarkersUpdated || prevZoom !== zoom) {
         markers.forEach((marker) => {
           marker.currentScale = marker.sprite.scale.x
           marker.targetScale = marker.scaleFactor / scale
@@ -114,12 +116,12 @@ export default class SpriteMarkerOverlay {
         }
       }
 
-      if (!firstDraw && prevZoom !== zoom) {
+      if (!this.isMarkersUpdated && prevZoom !== zoom) {
         start = null
         frame = requestAnimationFrame(animate)
       }
 
-      firstDraw = false
+      this.isMarkersUpdated = false
       prevZoom = zoom
       renderer.render(container)
     }

@@ -5,7 +5,7 @@ import { ISimpleVessel } from '../models/simpleVessel'
 import { IMonitoredVessel } from '../models/monitoredVessel'
 import { useVesselGuiContext } from '../contexts/vesselGuiContext'
 import { useEffect, useState } from 'react'
-import { SpriteMarker } from '../models/spriteMarker'
+import { ISpriteMarker } from '../models/spriteMarker'
 import SpriteMarkerOverlay from '../implementations/SpriteMarkerOverlay'
 import { useMap } from 'react-leaflet'
 
@@ -33,7 +33,7 @@ function displayVesselToSpriteMarker(
   arrowTexture: PIXI.Texture,
   circleTexture: PIXI.Texture,
   onClick: (sprite: PIXI.Sprite) => void
-): SpriteMarker {
+): ISpriteMarker {
   const { simpleVessel, monitoredInfo } = vessel
 
   const id = vessel.simpleVessel.mmsi
@@ -43,7 +43,8 @@ function displayVesselToSpriteMarker(
   if (simpleVessel.location.heading !== undefined) {
     sprite = new PIXI.Sprite(arrowTexture)
     sprite.anchor.set(0.5, 0.5)
-    sprite.rotation = simpleVessel.location.heading ? (simpleVessel.location.heading * Math.PI) / 180 : 0
+    sprite.rotation =
+      Math.PI / 2 + (simpleVessel.location.heading ? (simpleVessel.location.heading * Math.PI) / 180 : 0)
   } else {
     sprite = new PIXI.Sprite(circleTexture)
     sprite.anchor.set(0.5, 0.5)
@@ -60,13 +61,11 @@ function displayVesselToSpriteMarker(
   sprite.cursor = 'pointer'
   sprite.on('click', () => onClick(sprite))
 
-  const popup = L.popup({ className: 'pixi-popup' })
-    .setLatLng([simpleVessel.location.point.lat, simpleVessel.location.point.lon])
-    .setContent(`Hello im a popup for vessel ${simpleVessel.mmsi}`)
+  const popupContent = `Hello im a popup for vessel ${simpleVessel.mmsi}`
 
   const position: L.LatLngTuple = [simpleVessel.location.point.lat, simpleVessel.location.point.lon]
 
-  return { id, sprite, popup, position, size: 10 }
+  return { id, sprite, popupContent, position, size: 10 }
 }
 
 export default function VesselMarkerOverlay({
@@ -76,8 +75,8 @@ export default function VesselMarkerOverlay({
   simpleVessels: ISimpleVessel[]
   monitoredVessels: IMonitoredVessel[]
 }) {
-  const { selectedVesselmmsi } = useVesselGuiContext()
-  const [markers] = useState<SpriteMarker[]>([])
+  const { selectedVesselmmsi, setSelectedVesselmmsi } = useVesselGuiContext()
+  const [markers] = useState<ISpriteMarker[]>([])
   const [pixiContainer] = useState(new PIXI.Container())
   const [overlay] = useState(new SpriteMarkerOverlay(markers, pixiContainer))
   const [arrowTexture, setArrowTexture] = useState<PIXI.Texture | null>(null)
@@ -85,6 +84,7 @@ export default function VesselMarkerOverlay({
 
   const map = useMap()
 
+  //Load textures
   useEffect(() => {
     const loadTextures = async () => {
       const loadedArrowTexture = await PIXI.Assets.load('assets/arrow.svg')
@@ -93,10 +93,14 @@ export default function VesselMarkerOverlay({
       setCircleTexture(loadedCircleTexture)
     }
     loadTextures()
-  })
+  }, [])
 
+  // Apply overlay to map should only ever happen once
   useEffect(() => {
     overlay.applyToMap(map)
+    return () => {
+      overlay.removeFromMap()
+    }
   }, [map, overlay])
 
   useEffect(() => {
@@ -104,36 +108,35 @@ export default function VesselMarkerOverlay({
       return
     }
 
-    pixiContainer.removeChildren()
-
     const displayVessels = getDisplayVessels(simpleVessels, monitoredVessels)
 
+    markers.splice(0, markers.length)
+
     displayVessels.forEach((vessel) => {
-      if (!markers.find((marker) => marker.id === vessel.simpleVessel.mmsi)) {
-        markers.push(displayVesselToSpriteMarker(vessel, arrowTexture, circleTexture, () => {}))
+      {
+        markers.push(
+          displayVesselToSpriteMarker(vessel, arrowTexture, circleTexture, () => {
+            setSelectedVesselmmsi(vessel.simpleVessel.mmsi)
+          })
+        )
       }
     })
 
-    const selectedMarker = markers.find((marker) => marker.id === selectedVesselmmsi)
-
-    if (selectedMarker) {
-      selectedMarker.sprite.tint = 0xff0000
-    }
-
     if (markers.length !== 0) {
+      pixiContainer.removeChildren()
       pixiContainer.addChild(...markers.map((marker) => marker.sprite))
+      overlay.updatedMarkers()
       overlay.redraw()
     }
   }, [
-    simpleVessels,
-    monitoredVessels,
-    selectedVesselmmsi,
-    markers,
     arrowTexture,
     circleTexture,
-    pixiContainer,
+    markers,
+    monitoredVessels,
     overlay,
-    map,
+    pixiContainer,
+    setSelectedVesselmmsi,
+    simpleVessels,
   ])
 
   return null

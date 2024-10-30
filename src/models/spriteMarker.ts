@@ -1,9 +1,9 @@
 import * as PIXI from 'pixi.js'
 
-export interface SpriteMarker {
+export interface ISpriteMarker {
   id: number
   sprite: PIXI.Sprite
-  popup: L.Popup
+  popupContent: string
   position: L.LatLngTuple
   size: number
 }

@@ -4,6 +4,8 @@ import { IPoint } from '../models/point'
 import { ISimpleVessel } from '../models/simpleVessel'
 import { IStreamManager } from '../interfaces/IStreamManager'
 
+let timestamp = 1725844950
+
 export default class StreamManager implements IStreamManager {
   private allVessels: ISimpleVessel[] | undefined
   private monitoredVessels: IMonitoredVessel[] | undefined
@@ -32,10 +34,11 @@ export default class StreamManager implements IStreamManager {
 
   private async fetchSimpleVesselData() {
     const simpleVessels = await this.clientHandler.getSimpleVessles({
-      timestamp: 1725844950, // myDateTime.getTime() / 1000
+      timestamp: timestamp, // myDateTime.getTime() / 1000
     })
 
-    console.log(simpleVessels)
+    timestamp += 100
+
     this.manageNewSimpleVessels(simpleVessels)
   }
 
@@ -45,7 +48,7 @@ export default class StreamManager implements IStreamManager {
     } catch (e) {
       console.log(e)
     }
-    this.simpleVesselTimeout = setTimeout(this.simpleVesselLoop.bind(this), 100000000)
+    this.simpleVesselTimeout = setTimeout(this.simpleVesselLoop.bind(this), 5000)
   }
 
   public async startSimpleVesselFetching() {
@@ -68,7 +71,7 @@ export default class StreamManager implements IStreamManager {
 
   private async fetchMonitoredVessels() {
     const monitoredvessels = await this.clientHandler.getMonitoredVessels({
-      timestamp: Math.round(this.myDateTime.getTime() / 1000),
+      timestamp: timestamp, //Math.round(this.myDateTime.getTime() / 1000),
       selection: { points: this.zone },
     })
     console.log(monitoredvessels)
