@@ -70,10 +70,8 @@ export default function VesselMapPage() {
 
   return (
     <div className="relative h-screen">
-      <div className="absolute z-20 w-full">
+      <div className="absolute z-20 w-fit flex flex-col top-5 left-5 gap-3">
         <Navbar></Navbar>
-      </div>
-      <div id="toolbar-container" className="absolute z-10 w-fit top-10 left-5">
         {map !== null && <Toolbar map={map} onMonitoringAreaChange={streamManager.onMonitoringZoneChange} />}
       </div>
 
