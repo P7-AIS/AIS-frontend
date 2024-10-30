@@ -8,6 +8,92 @@ import { useEffect, useState } from 'react'
 import { ISpriteMarker } from '../models/spriteMarker'
 import SpriteMarkerOverlay from '../implementations/SpriteMarkerOverlay'
 import { useMap } from 'react-leaflet'
+import { useAppContext } from '../contexts/appcontext'
+import { IDetailedVessel } from '../models/detailedVessel'
+import { renderToString } from 'react-dom/server'
+import Popup from './popup'
+
+export default function VesselMarkerOverlay({
+  simpleVessels,
+  monitoredVessels,
+}: {
+  simpleVessels: ISimpleVessel[]
+  monitoredVessels: IMonitoredVessel[]
+}) {
+  const { setSelectedVesselmmsi } = useVesselGuiContext()
+  const [markers] = useState<ISpriteMarker[]>([])
+  const [pixiContainer] = useState(new PIXI.Container())
+  const [overlay] = useState(new SpriteMarkerOverlay(markers, pixiContainer))
+  const [arrowTexture, setArrowTexture] = useState<PIXI.Texture | null>(null)
+  const [circleTexture, setCircleTexture] = useState<PIXI.Texture | null>(null)
+  const { clientHandler } = useAppContext()
+
+  const map = useMap()
+
+  //Load textures
+  useEffect(() => {
+    const loadTextures = async () => {
+      const loadedArrowTexture = await PIXI.Assets.load('assets/arrow.svg')
+      const loadedCircleTexture = await PIXI.Assets.load('assets/circle.svg')
+      setArrowTexture(loadedArrowTexture)
+      setCircleTexture(loadedCircleTexture)
+    }
+    loadTextures()
+  }, [])
+
+  // Apply overlay to map should only ever happen once
+  useEffect(() => {
+    overlay.applyToMap(map)
+    return () => {
+      overlay.removeFromMap()
+    }
+  }, [map, overlay])
+
+  // Update markers
+  useEffect(() => {
+    if (arrowTexture === null || circleTexture === null) {
+      return
+    }
+
+    markers.splice(0, markers.length)
+
+    getDisplayVessels(simpleVessels, monitoredVessels).forEach((vessel) => {
+      {
+        const getVesselInfo = () =>
+          clientHandler.getVesselInfo({
+            mmsi: vessel.simpleVessel.mmsi,
+            timestamp: parseInt((new Date().getTime() / 1000).toFixed(0)),
+          })
+
+        const onClick = () =>
+          setSelectedVesselmmsi((selectedVesselmmsi) =>
+            selectedVesselmmsi === vessel.simpleVessel.mmsi ? undefined : vessel.simpleVessel.mmsi
+          )
+
+        markers.push(displayVesselToSpriteMarker(vessel, arrowTexture, circleTexture, onClick, getVesselInfo))
+      }
+    })
+
+    if (markers.length !== 0) {
+      pixiContainer.removeChildren()
+      pixiContainer.addChild(...markers.map((marker) => marker.sprite))
+      overlay.updatedMarkers()
+      overlay.redraw()
+    }
+  }, [
+    arrowTexture,
+    circleTexture,
+    clientHandler,
+    markers,
+    monitoredVessels,
+    overlay,
+    pixiContainer,
+    setSelectedVesselmmsi,
+    simpleVessels,
+  ])
+
+  return null
+}
 
 interface DisplayVessel {
   simpleVessel: ISimpleVessel
@@ -32,7 +118,8 @@ function displayVesselToSpriteMarker(
   vessel: DisplayVessel,
   arrowTexture: PIXI.Texture,
   circleTexture: PIXI.Texture,
-  onClick: (sprite: PIXI.Sprite) => void
+  onClick: () => void,
+  getVesselInfo: () => Promise<IDetailedVessel>
 ): ISpriteMarker {
   const { simpleVessel, monitoredInfo } = vessel
 
@@ -59,83 +146,14 @@ function displayVesselToSpriteMarker(
 
   sprite.eventMode = 'dynamic'
   sprite.cursor = 'pointer'
-  sprite.on('click', () => onClick(sprite))
+  sprite.on('click', onClick)
 
-  const popupContent = `Hello im a popup for vessel ${simpleVessel.mmsi}`
+  const getPopupContent = async () => {
+    const vesselInfo = await getVesselInfo()
+    return renderToString(<Popup vesselDetails={vesselInfo} />)
+  }
 
   const position: L.LatLngTuple = [simpleVessel.location.point.lat, simpleVessel.location.point.lon]
 
-  return { id, sprite, popupContent, position, size: 10 }
-}
-
-export default function VesselMarkerOverlay({
-  simpleVessels,
-  monitoredVessels,
-}: {
-  simpleVessels: ISimpleVessel[]
-  monitoredVessels: IMonitoredVessel[]
-}) {
-  const { selectedVesselmmsi, setSelectedVesselmmsi } = useVesselGuiContext()
-  const [markers] = useState<ISpriteMarker[]>([])
-  const [pixiContainer] = useState(new PIXI.Container())
-  const [overlay] = useState(new SpriteMarkerOverlay(markers, pixiContainer))
-  const [arrowTexture, setArrowTexture] = useState<PIXI.Texture | null>(null)
-  const [circleTexture, setCircleTexture] = useState<PIXI.Texture | null>(null)
-
-  const map = useMap()
-
-  //Load textures
-  useEffect(() => {
-    const loadTextures = async () => {
-      const loadedArrowTexture = await PIXI.Assets.load('assets/arrow.svg')
-      const loadedCircleTexture = await PIXI.Assets.load('assets/circle.svg')
-      setArrowTexture(loadedArrowTexture)
-      setCircleTexture(loadedCircleTexture)
-    }
-    loadTextures()
-  }, [])
-
-  // Apply overlay to map should only ever happen once
-  useEffect(() => {
-    overlay.applyToMap(map)
-    return () => {
-      overlay.removeFromMap()
-    }
-  }, [map, overlay])
-
-  useEffect(() => {
-    if (arrowTexture === null || circleTexture === null) {
-      return
-    }
-
-    markers.splice(0, markers.length)
-
-    getDisplayVessels(simpleVessels, monitoredVessels).forEach((vessel) => {
-      {
-        markers.push(
-          displayVesselToSpriteMarker(vessel, arrowTexture, circleTexture, () => {
-            setSelectedVesselmmsi(vessel.simpleVessel.mmsi)
-          })
-        )
-      }
-    })
-
-    if (markers.length !== 0) {
-      pixiContainer.removeChildren()
-      pixiContainer.addChild(...markers.map((marker) => marker.sprite))
-      overlay.updatedMarkers()
-      overlay.redraw()
-    }
-  }, [
-    arrowTexture,
-    circleTexture,
-    markers,
-    monitoredVessels,
-    overlay,
-    pixiContainer,
-    setSelectedVesselmmsi,
-    simpleVessels,
-  ])
-
-  return null
+  return { id, sprite, getPopupContent, position, size: 10 }
 }

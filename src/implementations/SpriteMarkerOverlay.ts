@@ -42,7 +42,6 @@ export default class SpriteMarkerOverlay {
         targetScale: 0,
         currentScale: 0,
         scaleFactor: marker.size / marker.sprite.texture.width,
-        popup: L.popup({ className: 'pixi-popup' }).setLatLng(marker.position).setContent(marker.popupContent),
       }))
 
     return (utils) => {
@@ -61,7 +60,7 @@ export default class SpriteMarkerOverlay {
 
       if (this.isMarkersUpdated) {
         const boundary = new PIXI.EventBoundary(container)
-        map.on('click', (e) => {
+        map.on('click', async (e) => {
           const interaction = utils.getRenderer().events
           const pointerEvent = e.originalEvent
           const pixiPoint = new PIXI.Point()
@@ -71,7 +70,12 @@ export default class SpriteMarkerOverlay {
           if (target) {
             const marker = markers.find((marker) => marker.sprite === target)
             if (marker) {
-              marker.popup.openOn(map)
+              const popup = L.popup({ className: 'pixi-popup' }).setLatLng(marker.position)
+              popup.setContent('Loading...')
+              popup.openOn(map)
+
+              const content = await marker.getPopupContent()
+              popup.setContent(content)
             }
           }
         })
