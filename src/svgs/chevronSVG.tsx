@@ -14,7 +14,7 @@ export default function ChevronSVG({ width, height, rotate }: IChevronProps) {
       width={width}
       height={height}
       fill="currentColor"
-      className={'bi bi-chevron-down' + (rotate ? ' rotate-' + rotate : '')}
+      className={`bi bi-chevron-down ${rotate && `rotate-${rotate}`}`}
       viewBox="0 0 16 16"
     >
       <path

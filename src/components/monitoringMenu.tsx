@@ -5,11 +5,12 @@ import ChevronSVG from '../svgs/chevronSVG'
 
 interface IMonitoringMenuProps {
   monitoredVessels: IMonitoredVessel[]
-  children: React.ReactElement<typeof MonitoringMenuRow>[]
+  zoomToVessel: (vessel: IMonitoredVessel) => void
 }
 
-export default function MonitoringMenu({ monitoredVessels, children }: IMonitoringMenuProps) {
+export default function MonitoringMenu({ monitoredVessels, zoomToVessel }: IMonitoringMenuProps) {
   const [isCollapsed, setIsCollapsed] = useState<boolean>(false)
+  const sortedMonitoredVessels = monitoredVessels.sort((a, b) => b.trustworthiness - a.trustworthiness)
 
   return (
     <div className="flex flex-col h-full rounded-lg bg-gray-200 px-2 shadow-xl">
@@ -28,9 +29,13 @@ export default function MonitoringMenu({ monitoredVessels, children }: IMonitori
             <p className="text-center">Follow</p>
           </div>
           <div id="rows-container" className="max-h-[50vh] overflow-y-auto divide-y rounded-md">
-            {children.map((child, index) => (
+            {sortedMonitoredVessels.map((vessel, index) => (
               <div className="py-2 px-3 odd:bg-gray-100 even:bg-gray-200" key={index}>
-                {child}
+                <MonitoringMenuRow
+                  key={vessel.mmsi}
+                  monitoredVessel={vessel}
+                  zoomToCallback={zoomToVessel}
+                />
               </div>
             ))}
           </div>

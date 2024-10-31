@@ -74,17 +74,8 @@ export default function VesselMapPage() {
       </div>
 
       <div id="monitoring-menu-container" className="absolute min-w-[25vw] max-h-[75vh] top-5 right-5 z-10">
-        {monitoredVessels && (
-          <MonitoringMenu monitoredVessels={monitoredVessels}>
-            {monitoredVessels.map((vessel: IMonitoredVessel) => (
-              <MonitoringMenuRow
-                key={vessel.mmsi}
-                monitoredVessel={vessel}
-                isSelected={selectedVesselmmsi === vessel.mmsi}
-                zoomToCallback={zoomToVessel}
-              />
-            ))}
-          </MonitoringMenu>
+        {monitoredVessels.length !== 0 && (
+          <MonitoringMenu monitoredVessels={monitoredVessels} zoomToVessel={zoomToVessel} />
         )}
       </div>
 
