@@ -14,6 +14,9 @@ import VesselMap from '../components/vesselMap'
 import { ISelectionArea } from '../models/selectionArea'
 import Navbar from '../components/navbar'
 import Path from '../components/path'
+import SelectionAreaOverlay from '../components/selectionAreaOverlay'
+import VesselMarkerOverlay from '../components/vesselMarkerOverlay'
+import PathOverlay from '../components/pathOverlay'
 
 export default function VesselMapPage() {
   const [allVessels, setAllVessels] = useState<ISimpleVessel[]>([])
@@ -92,9 +95,19 @@ export default function VesselMapPage() {
       <div className="h-screen w-screen absolute top-0 left-0 z-0">
         <VesselMap
           setMapRef={setMap}
-          simpleVessels={allVessels}
-          monitoredVessels={monitoredVessels}
-          selectionArea={selectionArea}
+          overlays={
+            <>
+              <SelectionAreaOverlay selectionArea={selectionArea} />
+              <VesselMarkerOverlay simpleVessels={allVessels} monitoredVessels={monitoredVessels} />
+              <PathOverlay
+                path={[
+                  { point: { lat: 55, lon: 10 }, heading: 180, timestamp: new Date() },
+                  { point: { lat: 56, lon: 11 }, heading: 0, timestamp: new Date('2024-10-30') },
+                ]}
+                idx={1}
+              />
+            </>
+          }
         />
       </div>
 
