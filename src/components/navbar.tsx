@@ -4,9 +4,7 @@ import FaviconSVG from '../svgs/faviconSVG'
 import HamburgerSVG from '../svgs/hamburgerSVG'
 import CloseSVG from '../svgs/closeSVG'
 
-interface INavbar {}
-
-export default function Navbar({}: INavbar) {
+export default function Navbar() {
   const { myClockSpeed, setMyClockSpeed, myDateTimeRef } = useAppContext()
   const [opened, setOpened] = useState<boolean>(false)
   const [localClock, setLocalClock] = useState<Date>(myDateTimeRef.current)
@@ -49,22 +47,21 @@ export default function Navbar({}: INavbar) {
     >
       <div className="flex flex-row gap-4 items-center">
         <FaviconSVG></FaviconSVG>
-        <h1 className="text-xl font-bold">Suspicios Vessel Finder</h1>
+        <h1 className="text-xl font-bold">Suspicious Vessel Finder</h1>
       </div>
       {opened && (
         <div
           id="settings-container"
-          className="absolute left-[101%] top-0 bg-gray-200 text-gray-800 flex flex-col gap-4 p-4 w-fit rounded-md shadow-lg"
+          className="absolute left-[101%] top-0 bg-gray-700 opacity-80 text-white flex flex-col gap-4 p-4 w-fit rounded-xl shadow-lg"
         >
           <h2 className="text-lg font-bold">Simulation settings</h2>
-
           <div className="flex flex-row justify-between gap-4">
             <label className="font-medium whitespace-nowrap" htmlFor="my-speed">
               Simulated Speed
             </label>
             <input
               id="my-speed"
-              className="w-20 text-right bg-transparent"
+              className="w-20 text-right input-field"
               type="number"
               step="1"
               onChange={(e) => manageSpeedChange(e.target.value)}
@@ -77,7 +74,7 @@ export default function Navbar({}: INavbar) {
             </label>
             <input
               id="date-picker"
-              className="w-40 text-right bg-transparent"
+              className="w-fit text-right input-field"
               type="datetime-local"
               onChange={(e) => manageDateChange(e.target.value)}
               value={convertedMyDateTime}

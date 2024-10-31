@@ -38,4 +38,7 @@ body {
   .small-blue-btn {
     @apply bg-blue-800 hover:bg-blue-700 border-2 transition-all border-blue-700 px-1 py-1 text-sm rounded-md text-white;
   }
+  .input-field {
+    @apply bg-gray-600 rounded-md outline-none focus:outline-blue-700;
+  }
 }
