@@ -8,7 +8,10 @@ export default class GraphicOverlayHandler implements IMapOverlay {
   private readonly overlay: L.LeafletPixiOverlayDefnition
   private isGraphicsUpdated = true
 
-  constructor(private readonly pixiContainer: PIXI.Container, private readonly graphicOptions: IGraphicOptions[]) {
+  constructor(
+    private readonly pixiContainer: PIXI.Container,
+    private readonly graphicOptions: IGraphicOptions[]
+  ) {
     this.overlay = L.pixiOverlay(this.getDrawCallback(), pixiContainer, {
       doubleBuffering: true,
       autoPreventDefault: false,

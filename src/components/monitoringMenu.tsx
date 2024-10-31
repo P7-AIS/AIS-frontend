@@ -15,7 +15,9 @@ export default function MonitoringMenu({ monitoredVessels, children }: IMonitori
     <div className="flex flex-col h-full rounded-lg bg-gray-200 px-2 shadow-xl">
       <div className={`flex flex-row justify-between items-center ${!isCollapsed && 'border-b-2'} gap-4 p-2`}>
         <h1 className="text-xl font-bold">Monitored vessels</h1>
-        <p className="text-sm rounded-md bg-gray-300 py-1 px-2">{monitoredVessels.length} {monitoredVessels.length == 1 ? "vessel" : "vessels"}</p>
+        <p className="text-sm rounded-md bg-gray-300 py-1 px-2">
+          {monitoredVessels.length} {monitoredVessels.length == 1 ? 'vessel' : 'vessels'}
+        </p>
       </div>
       {!isCollapsed && (
         <>
@@ -34,12 +36,12 @@ export default function MonitoringMenu({ monitoredVessels, children }: IMonitori
           </div>
         </>
       )}
-      <button title="Show/hide list of monitored vessels" onClick={() => setIsCollapsed(!isCollapsed)} className="w-full flex flex-cols items-center justify-center bottom-0">
-        {isCollapsed ? (
-          <ChevronSVG />
-        ) : (
-          <ChevronSVG rotate={180}/>
-        )}
+      <button
+        title="Show/hide list of monitored vessels"
+        onClick={() => setIsCollapsed(!isCollapsed)}
+        className="w-full flex flex-cols items-center justify-center bottom-0"
+      >
+        {isCollapsed ? <ChevronSVG /> : <ChevronSVG rotate={180} />}
       </button>
     </div>
   )

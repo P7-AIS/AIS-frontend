@@ -8,7 +8,10 @@ export default class SpriteMarkerOverlayHandler implements IMapOverlay {
   private readonly overlay: L.LeafletPixiOverlayDefnition
   private isMarkersUpdated = true
 
-  constructor(private readonly markerOptions: ISpriteMarkerOptions[], private readonly pixiContainer: PIXI.Container) {
+  constructor(
+    private readonly markerOptions: ISpriteMarkerOptions[],
+    private readonly pixiContainer: PIXI.Container
+  ) {
     this.overlay = L.pixiOverlay(this.getDrawCallback(), pixiContainer, {
       doubleBuffering: true,
       autoPreventDefault: false,

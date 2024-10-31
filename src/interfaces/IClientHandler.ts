@@ -13,7 +13,7 @@ export interface IClientHandler {
   getVesselInfo(request: { mmsi: number; timestamp: number }): Promise<IDetailedVessel>
   getSimpleVessles(request: { timestamp: number }): Promise<ISimpleVessel[]>
   getMonitoredVessels(request: { timestamp: number; selection: ISelectionArea }): Promise<IMonitoredVessel[]>
-  getVesselPath(request: {mmsi: number, starttime: number, endtime: number}): Promise<IVesselPath>
+  getVesselPath(request: { mmsi: number; starttime: number; endtime: number }): Promise<IVesselPath>
 
   //Deprecated cant close stream
   startStreaming(request: {

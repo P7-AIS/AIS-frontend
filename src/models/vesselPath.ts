@@ -1,7 +1,7 @@
 import { ILocation } from './location'
 
 interface IPath {
-    locations: ILocation[]
+  locations: ILocation[]
 }
 
 export interface IVesselPath {
@@ -11,5 +11,9 @@ export interface IVesselPath {
 }
 
 export default class VesselPath implements IVesselPath {
-  constructor(public mmsi: number, public pathForecast: IPath, public pathHistory: IPath) {}
+  constructor(
+    public mmsi: number,
+    public pathForecast: IPath,
+    public pathHistory: IPath
+  ) {}
 }

@@ -102,20 +102,24 @@ export default class GRPCClientHandler implements IClientHandler {
     }
   }
 
-  private convertToVesselPath(grpcVesselPath: VesselPathResponse): IVesselPath{
+  private convertToVesselPath(grpcVesselPath: VesselPathResponse): IVesselPath {
     return {
       mmsi: grpcVesselPath.mmsi,
       pathForecast: {
-        locations: []
+        locations: [],
         // grpcVesselPath.pathForecast!.locations.map((loc) => {
         //   return { point: { lon: loc.point!.lon, lat: loc.point!.lat }, heading: loc.heading, timestamp: new Date(loc.timestamp) }
         // })
       },
       pathHistory: {
         locations: grpcVesselPath.pathHistory!.locations.map((loc) => {
-          return { point: { lon: loc.point!.lon, lat: loc.point!.lat }, heading: loc.heading, timestamp: new Date(loc.timestamp) }
-        })
-      }
+          return {
+            point: { lon: loc.point!.lon, lat: loc.point!.lat },
+            heading: loc.heading,
+            timestamp: new Date(loc.timestamp),
+          }
+        }),
+      },
     }
   }
 

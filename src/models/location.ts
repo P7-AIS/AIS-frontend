@@ -7,5 +7,9 @@ export interface ILocation {
 }
 
 export default class Location implements ILocation {
-  constructor(public point: IPoint, public heading: number, public timestamp: Date) {}
+  constructor(
+    public point: IPoint,
+    public heading: number,
+    public timestamp: Date
+  ) {}
 }
