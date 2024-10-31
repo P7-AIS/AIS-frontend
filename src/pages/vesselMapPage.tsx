@@ -73,7 +73,7 @@ export default function VesselMapPage() {
         )}
       </div>
 
-      <div id="monitoring-menu-container" className="absolute w-[25vw] max-h-[75vh] top-5 right-5 z-10">
+      <div id="monitoring-menu-container" className="absolute min-w-[25vw] max-h-[75vh] top-5 right-5 z-10">
         {monitoredVessels && (
           <MonitoringMenu monitoredVessels={monitoredVessels}>
             {monitoredVessels.map((vessel: IMonitoredVessel) => (
