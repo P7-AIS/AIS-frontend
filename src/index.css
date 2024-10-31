@@ -35,4 +35,7 @@ body {
   .blue-btn {
     @apply bg-blue-800 hover:bg-blue-700 border-2 transition-all border-blue-700 px-2 py-1 rounded-md text-white;
   }
+  .small-blue-btn {
+    @apply bg-blue-800 hover:bg-blue-700 border-2 transition-all border-blue-700 px-1 py-1 text-sm rounded-md text-white;
+  }
 }
