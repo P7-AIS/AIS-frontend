@@ -50,43 +50,65 @@ function selectionAreaToGraphicOption(selectionArea: ISelectionArea): IGraphicOp
   const graphic = new PIXI.Graphics()
 
   const drawGraphic = (project: (latLng: L.LatLng) => L.Point, scale: number, bounds: L.LatLngBounds) => {
-    const outerBounds = [
-      bounds.getNorthWest(),
-      bounds.getNorthEast(),
-      bounds.getSouthEast(),
-      bounds.getSouthWest(),
-    ].map(project)
+    const boundToPoint = (point: L.LatLng) => {
+      const coords = new L.LatLng(point.lat, point.lng)
+      return project(coords)
+    }
+
+    const corners = {
+      ne: boundToPoint(bounds.getNorthEast()),
+      se: boundToPoint(bounds.getSouthEast()),
+      sw: boundToPoint(bounds.getSouthWest()),
+      nw: boundToPoint(bounds.getNorthWest()),
+    }
 
     const projectedCords = selectionArea.points.map((point) => {
       const coords = new L.LatLng(point.lat, point.lon)
       const projection = project(coords)
-      console.log(point, projection)
+
+      if (projection.x < corners.sw.x) {
+        projection.x = corners.sw.x
+      }
+      if (projection.x > corners.ne.x) {
+        projection.x = corners.ne.x
+      }
+      if (projection.y > corners.sw.y) {
+        projection.y = corners.sw.y
+      }
+      if (projection.y < corners.ne.y) {
+        projection.y = corners.ne.y
+      }
+
       return projection
     })
 
+    const outerBounds = [corners.ne, corners.se, corners.sw, corners.nw]
+
+    projectedCords.splice(0, 0, projectedCords[projectedCords.length - 1])
+
     graphic.clear()
 
-    // graphic.lineStyle(3 / scale, 0x3388ff, 1)
-    // graphic.x = outerBounds[0].x
-    // graphic.y = outerBounds[0].y
-    // outerBounds.forEach((coords, index) => {
-    //   if (index == 0) graphic.moveTo(0, 0)
-    //   else graphic.lineTo(coords.x - graphic.x, coords.y - graphic.y)
-    // })
+    graphic.beginFill(0x000000, 0.2)
+    outerBounds.forEach((coords) => {
+      graphic.lineTo(coords.x - graphic.x, coords.y - graphic.y)
+    })
+    graphic.endFill()
 
-    // graphic.beginHole()
+    graphic.beginHole()
+    graphic.moveTo(projectedCords[0].x - graphic.x, projectedCords[0].y - graphic.y)
+    projectedCords.forEach((coords) => {
+      graphic.lineTo(coords.x - graphic.x, coords.y - graphic.y)
+    })
+    graphic.endHole()
 
-    // graphic.beginFill(0xff0000, 0.2)
-    // graphic.lineStyle(3 / scale, 0x3388ff, 1)
-    // graphic.x = projectedCords[0].x
-    // graphic.y = projectedCords[0].y
-    // projectedCords.forEach((coords, index) => {
-    //   if (index == 0) graphic.moveTo(0, 0)
-    //   else graphic.lineTo(coords.x - graphic.x, coords.y - graphic.y)
-    // })
-    // graphic.endFill()
+    graphic.lineStyle(1 / scale, 0x000000, 0.3)
 
-    // graphic.endHole()
+    graphic.beginFill(0x000000, 0)
+    graphic.moveTo(projectedCords[0].x - graphic.x, projectedCords[0].y - graphic.y)
+    projectedCords.forEach((coords) => {
+      graphic.lineTo(coords.x - graphic.x, coords.y - graphic.y)
+    })
+    graphic.endFill()
   }
 
   return { graphic, drawGraphic }
