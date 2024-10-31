@@ -7,14 +7,15 @@ interface IChevronProps {
 export default function ChevronSVG({ width, height, rotate }: IChevronProps) {
   width = width ? width : 24
   height = height ? height : 24
-
+  rotate = rotate ? rotate : 0
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       width={width}
       height={height}
       fill="currentColor"
-      className={'bi bi-chevron-down' + (rotate ? ' rotate-' + rotate : '')}
+      style={{ transform: `rotate(${rotate}deg)` }}
+      className="bi bi-chevron-down"
       viewBox="0 0 16 16"
     >
       <path

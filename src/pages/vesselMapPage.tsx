@@ -5,7 +5,6 @@ import { IMonitoredVessel } from '../models/monitoredVessel'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import MonitoringMenu from '../components/monitoringMenu'
-import MonitoringMenuRow from '../components/monitoringMenuRow'
 import Toolbar from '../components/toolbar'
 import { useAppContext } from '../contexts/appcontext'
 import TimeLine from '../components/timeline'
@@ -17,6 +16,7 @@ import Path from '../components/path'
 import SelectionAreaOverlay from '../components/selectionAreaOverlay'
 import VesselMarkerOverlay from '../components/vesselMarkerOverlay'
 import PathOverlay from '../components/pathOverlay'
+import VesselDetailsBox from '../components/vesselDetailsBox'
 
 export default function VesselMapPage() {
   const [allVessels, setAllVessels] = useState<ISimpleVessel[]>([])
@@ -66,7 +66,7 @@ export default function VesselMapPage() {
 
   return (
     <div className="relative h-screen">
-      <div className="absolute z-20 w-fit flex flex-col top-5 left-5 gap-3">
+      <div className="absolute z-20 w-[350px] flex flex-col top-5 left-5 gap-3">
         <Navbar />
         {map && (
           <Toolbar
@@ -75,20 +75,12 @@ export default function VesselMapPage() {
             setSelectionArea={setSelectionArea}
           />
         )}
+        {selectedVesselmmsi && <VesselDetailsBox />}
       </div>
 
       <div id="monitoring-menu-container" className="absolute min-w-[25vw] max-h-[75vh] top-5 right-5 z-10">
-        {monitoredVessels && (
-          <MonitoringMenu monitoredVessels={monitoredVessels}>
-            {monitoredVessels.map((vessel: IMonitoredVessel) => (
-              <MonitoringMenuRow
-                key={vessel.mmsi}
-                monitoredVessel={vessel}
-                isSelected={selectedVesselmmsi === vessel.mmsi}
-                zoomToCallback={zoomToVessel}
-              />
-            ))}
-          </MonitoringMenu>
+        {monitoredVessels.length !== 0 && (
+          <MonitoringMenu monitoredVessels={monitoredVessels} zoomToVessel={zoomToVessel} />
         )}
       </div>
 
@@ -98,7 +90,6 @@ export default function VesselMapPage() {
           overlays={
             <>
               <SelectionAreaOverlay selectionArea={selectionArea} />
-              <VesselMarkerOverlay simpleVessels={allVessels} monitoredVessels={monitoredVessels} />
               <PathOverlay
                 path={[
                   { point: { lat: 55, lon: 10 }, heading: 180, timestamp: new Date() },
@@ -106,6 +97,7 @@ export default function VesselMapPage() {
                 ]}
                 idx={1}
               />
+              <VesselMarkerOverlay simpleVessels={allVessels} monitoredVessels={monitoredVessels} />
             </>
           }
         />
