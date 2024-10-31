@@ -27,13 +27,11 @@ export default class StreamManager implements IStreamManager {
   public syncMonitoredVessels(vessels: IMonitoredVessel[]) {
     this.monitoredVessels = vessels
   }
-  public syncMyDatetime(date: Date) {
-    // this.myDateTime = date
-  }
 
   private async fetchSimpleVesselData() {
     const simpleVessels = await this.clientHandler.getSimpleVessles({
       timestamp: Math.round(this.myDateTimeRef.current!.getTime() / 1000),
+      // timestamp: Math.round(new Date(1725844950 * 1000).getTime() / 1000),
     })
 
     this.manageNewSimpleVessels(simpleVessels)
@@ -69,6 +67,7 @@ export default class StreamManager implements IStreamManager {
   private async fetchMonitoredVessels() {
     const monitoredvessels = await this.clientHandler.getMonitoredVessels({
       timestamp: Math.round(this.myDateTimeRef.current!.getTime() / 1000),
+      // timestamp: Math.round(new Date(1725844950 * 1000).getTime() / 1000),
       selection: { points: this.zone },
     })
     console.log(monitoredvessels)

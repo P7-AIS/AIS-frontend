@@ -57,7 +57,8 @@ export default function VesselMapPage() {
       console.error('timeline change without any path information')
       return
     }
-    console.log(selectedVesselPath[index])
+    // console.log(selectedVesselPath[index])
+    console.log('Timelinechange: index ' + index)
   }
 
   return (
@@ -97,14 +98,18 @@ export default function VesselMapPage() {
         />
       </div>
 
-      {selectedVesselPath && (
+      {
         <>
           <div id="timeline-container" className="absolute bottom-5 transform z-10 w-full">
-            <TimeLine onChange={manageTimelineChange} timestamps={selectedVesselPath.map((loc) => loc.timestamp)} />
+            {/* <TimeLine onChange={manageTimelineChange} timestamps={selectedVesselPath.map((loc) => loc.timestamp)} /> */}
+            <TimeLine
+              onChange={manageTimelineChange}
+              timestamps={[new Date(), new Date('2024-10-30'), new Date('2024-10-29')]}
+            />
           </div>
-          {map && <Path map={map} path={selectedVesselPath} />}
+          {/* {map && <Path map={map} path={selectedVesselPath} />} */}
         </>
-      )}
+      }
     </div>
   )
 }

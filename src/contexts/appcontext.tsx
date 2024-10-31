@@ -1,12 +1,10 @@
-import { createContext, RefObject, useContext, useEffect, useRef, useState } from 'react'
+import { createContext, useContext, useEffect, useRef, useState } from 'react'
 import { IClientHandler } from '../interfaces/IClientHandler'
 import { AISServiceClientImpl, GrpcWebImpl } from '../../proto/AIS-protobuf/ais'
 import GRPCClientHandler from '../implementations/GRPCClientHandler'
 
 interface IAppContext {
-  myDateTime: Date
-  myDateTimeRef: RefObject<Date>
-  setMyDateTime: React.Dispatch<React.SetStateAction<Date>>
+  myDateTimeRef: React.MutableRefObject<Date>
   myClockSpeed: number
   setMyClockSpeed: React.Dispatch<React.SetStateAction<number>>
   clientHandler: IClientHandler
@@ -23,7 +21,6 @@ export const useAppContext = () => {
 }
 
 export const AppContextProvider = ({ children }: { children: React.ReactNode }) => {
-  const [myDateTime, setMyDateTime] = useState<Date>(new Date(1725844950 * 1000)) // Initialized with current time
   const [myClockSpeed, setMyClockSpeed] = useState<number>(100)
   const myDateTimeRef = useRef(new Date(1725844950 * 1000)) // Initialize ref with current time
 
@@ -34,7 +31,6 @@ export const AppContextProvider = ({ children }: { children: React.ReactNode }) 
   // Manage "fake" global clock
   useEffect(() => {
     const manageTimeChange = () => {
-      setMyDateTime((prevDateTime) => new Date(prevDateTime.getTime() + myClockSpeed * 1000))
       myDateTimeRef.current = new Date(myDateTimeRef.current.getTime() + myClockSpeed * 1000)
     }
 
@@ -44,9 +40,7 @@ export const AppContextProvider = ({ children }: { children: React.ReactNode }) 
   }, [myClockSpeed]) // Re-run the effect if myClockSpeed changes
 
   return (
-    <AppContext.Provider
-      value={{ myDateTime, setMyDateTime, myClockSpeed, setMyClockSpeed, clientHandler, myDateTimeRef }}
-    >
+    <AppContext.Provider value={{ myClockSpeed, setMyClockSpeed, clientHandler, myDateTimeRef }}>
       {children}
     </AppContext.Provider>
   )

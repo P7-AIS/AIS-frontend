@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useVesselGuiContext } from '../contexts/vesselGuiContext'
 interface ITimelineProps {
   timestamps: Date[]
@@ -6,12 +6,12 @@ interface ITimelineProps {
 }
 
 export default function Timeline({ timestamps, onChange }: ITimelineProps) {
-  const [timelineVal, setTimelineVal] = useState<number>(timestamps.length - 1)
+  const timelineVal = useRef<number>(timestamps.length - 1)
   const { setSelectedVesselPath } = useVesselGuiContext()
   function handleChange(val: string) {
     try {
       const intVal: number = parseInt(val)
-      setTimelineVal(intVal)
+      timelineVal.current = intVal
       onChange(intVal)
     } catch (e) {
       console.error(e)
@@ -21,17 +21,13 @@ export default function Timeline({ timestamps, onChange }: ITimelineProps) {
     setSelectedVesselPath(undefined)
   }
 
-  useEffect(() => {
-    setTimelineVal(timestamps.length - 1)
-  }, [timestamps])
-
   return (
     <div className="bg-neutral_2 rounded-xl mx-4 px-4 py-2 shadow">
       <div className="w-full flex items-center relative">
         <p className="absolute left-1/2 transform -translate-x-1/2 font-bold text-center">
           Timestamp:{' '}
-          {timelineVal && timestamps[timelineVal]
-            ? timestamps[timelineVal].toISOString().replace('T', ' ').replace('Z', '').slice(0, 19)
+          {timelineVal && timestamps[timelineVal.current]
+            ? timestamps[timelineVal.current].toISOString().replace('T', ' ').replace('Z', '').slice(0, 19)
             : 'unknown'}
         </p>
         <button
@@ -45,7 +41,7 @@ export default function Timeline({ timestamps, onChange }: ITimelineProps) {
         className="w-full"
         type="range"
         id="timeline"
-        min="1"
+        min="0"
         max={`${timestamps.length - 1}`}
         value={`${timelineVal}`}
         onChange={(e) => handleChange(e.target.value)}

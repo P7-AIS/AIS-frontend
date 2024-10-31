@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useAppContext } from '../contexts/appcontext'
 import FaviconSVG from '../svgs/faviconSVG'
 import HamburgerSVG from '../svgs/hamburgerSVG'
@@ -7,13 +7,29 @@ import CloseSVG from '../svgs/closeSVG'
 interface INavbar {}
 
 export default function Navbar({}: INavbar) {
+  const { myClockSpeed, setMyClockSpeed, myDateTimeRef } = useAppContext()
   const [opened, setOpened] = useState<boolean>(false)
-  const { myDateTime, myClockSpeed, setMyDateTime, setMyClockSpeed } = useAppContext()
-  const convertedMyDateTime = `${myDateTime.getFullYear()}-${myDateTime.getMonth().toString().padStart(2, '0')}-${myDateTime.getDate().toString().padStart(2, '0')}T${myDateTime.getHours().toString().padStart(2, '0')}:${myDateTime.getMinutes().toString().padStart(2, '0')}`
+  const [localClock, setLocalClock] = useState<Date>(myDateTimeRef.current)
+  const [localSpeed, setLocalSpeed] = useState<string>(myClockSpeed.toString())
+  const convertedMyDateTime = `${localClock.getFullYear()}-${(localClock.getMonth() + 1).toString().padStart(2, '0')}-${localClock.getDate().toString().padStart(2, '0')}T${localClock.getHours().toString().padStart(2, '0')}:${localClock.getMinutes().toString().padStart(2, '0')}`
+
+  useEffect(() => {
+    function updateLocalClock() {
+      setLocalClock(myDateTimeRef.current)
+    }
+    const interval = setInterval(updateLocalClock, 1000)
+    return () => {
+      clearInterval(interval)
+    }
+  }, [])
 
   function manageSpeedChange(val: string) {
+    setLocalSpeed(val)
     try {
       const parsed = parseInt(val)
+      if (isNaN(parsed)) {
+        return
+      }
       setMyClockSpeed(parsed)
     } catch (e) {
       console.error(e)
@@ -23,7 +39,7 @@ export default function Navbar({}: INavbar) {
 
   function manageDateChange(val: string) {
     const parsed = new Date(val)
-    setMyDateTime(parsed)
+    myDateTimeRef.current = parsed
   }
 
   return (
@@ -47,11 +63,11 @@ export default function Navbar({}: INavbar) {
               </label>
               <input
                 id="my-speed"
-                className="w-20 text-right bg-transparent"
+                className="w-20 text-right bg-transparent border border-neutral_3 rounded-md"
                 type="number"
                 step="1"
                 onChange={(e) => manageSpeedChange(e.target.value)}
-                value={myClockSpeed}
+                value={localSpeed}
               />
             </div>
             <div className="flex flex-row justify-between gap-4">
@@ -60,7 +76,7 @@ export default function Navbar({}: INavbar) {
               </label>
               <input
                 id="date-picker"
-                className="w-40 text-right bg-transparent"
+                className="text-right bg-transparent border border-neutral_3 rounded-md"
                 type="datetime-local"
                 onChange={(e) => manageDateChange(e.target.value)}
                 value={convertedMyDateTime}
