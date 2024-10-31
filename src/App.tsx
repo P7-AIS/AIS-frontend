@@ -1,15 +1,10 @@
-import { useState } from 'react'
 import './App.css'
-import { AppContextProvider, useAppContext } from './contexts/appcontext'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import VesselMapPage from './pages/vesselMapPage'
 import { VesselGuiContextProvider } from './contexts/vesselGuiContext'
 import 'leaflet/dist/leaflet.css'
 
 function App() {
-  const [count, setCount] = useState(0)
-  const { myClockSpeed } = useAppContext()
-
   return (
     <BrowserRouter>
       <Routes>
@@ -17,11 +12,9 @@ function App() {
           <Route
             index
             element={
-              <AppContextProvider>
-                <VesselGuiContextProvider>
-                  <VesselMapPage />
-                </VesselGuiContextProvider>
-              </AppContextProvider>
+              <VesselGuiContextProvider>
+                <VesselMapPage />
+              </VesselGuiContextProvider>
             }
           />
         </Route>

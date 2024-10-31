@@ -7,6 +7,7 @@ import {
   StreamingResponse,
   VesselInfoRequest,
   VesselInfoResponse,
+  VesselPathResponse,
 } from '../../proto/AIS-protobuf/ais'
 import { IClientHandler } from '../interfaces/IClientHandler'
 import { IDetailedVessel } from '../models/detailedVessel'
@@ -15,6 +16,7 @@ import { IStreamResponse } from '../models/streamResponse'
 import { ISimpleVessel } from '../models/simpleVessel'
 import { IMonitoredVessel } from '../models/monitoredVessel'
 import { ILocation } from '../models/location'
+import { IVesselPath } from '../models/vesselPath'
 
 export default class GRPCClientHandler implements IClientHandler {
   constructor(private readonly client: AISServiceClientImpl) {}
@@ -28,6 +30,11 @@ export default class GRPCClientHandler implements IClientHandler {
     const response = await this.client.GetVesselInfo(grpcReq)
 
     return this.convertToDetailedVessel(response)
+  }
+
+  async getVesselPath(request: { mmsi: number; starttime: number; endtime: number }): Promise<IVesselPath> {
+    const response = await this.client.GetVesselPath(request)
+    return this.convertToVesselPath(response)
   }
 
   async getSimpleVessles(request: { timestamp: number }): Promise<ISimpleVessel[]> {
@@ -92,6 +99,23 @@ export default class GRPCClientHandler implements IClientHandler {
       width: grpcVessel.width,
       length: grpcVessel.length,
       positionFixingDevice: grpcVessel.positionFixingDevice,
+    }
+  }
+
+  private convertToVesselPath(grpcVesselPath: VesselPathResponse): IVesselPath{
+    return {
+      mmsi: grpcVesselPath.mmsi,
+      pathForecast: {
+        locations: []
+        // grpcVesselPath.pathForecast!.locations.map((loc) => {
+        //   return { point: { lon: loc.point!.lon, lat: loc.point!.lat }, heading: loc.heading, timestamp: new Date(loc.timestamp) }
+        // })
+      },
+      pathHistory: {
+        locations: grpcVesselPath.pathHistory!.locations.map((loc) => {
+          return { point: { lon: loc.point!.lon, lat: loc.point!.lat }, heading: loc.heading, timestamp: new Date(loc.timestamp) }
+        })
+      }
     }
   }
 

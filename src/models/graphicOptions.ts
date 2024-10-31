@@ -1,4 +1,5 @@
 import * as PIXI from 'pixi.js'
+import L from 'leaflet'
 
 export interface IGraphicOptions {
   graphic: PIXI.Graphics

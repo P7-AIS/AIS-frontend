@@ -3,41 +3,38 @@ import { IMonitoredVessel } from '../models/monitoredVessel'
 import { IPoint } from '../models/point'
 import { ISimpleVessel } from '../models/simpleVessel'
 import { IStreamManager } from '../interfaces/IStreamManager'
-
-let timestamp = 1725844950
+import { RefObject } from 'react'
 
 export default class StreamManager implements IStreamManager {
-  private allVessels: ISimpleVessel[] | undefined
-  private monitoredVessels: IMonitoredVessel[] | undefined
+  private allVessels: ISimpleVessel[]
+  private monitoredVessels: IMonitoredVessel[]
   private zone: IPoint[] = []
-  private myDateTime: Date
   private simpleVesselTimeout: NodeJS.Timeout | undefined = undefined
   private monitoredVesselTimeout: NodeJS.Timeout | undefined = undefined
 
   constructor(
     private readonly clientHandler: IClientHandler,
     private readonly setAllVessels: React.Dispatch<React.SetStateAction<ISimpleVessel[]>>,
-    private readonly setMonitoredVessels: React.Dispatch<React.SetStateAction<IMonitoredVessel[]>>
+    private readonly setMonitoredVessels: React.Dispatch<React.SetStateAction<IMonitoredVessel[]>>,
+    private readonly myDateTimeRef: RefObject<Date>
   ) {
     this.onMonitoringZoneChange = this.onMonitoringZoneChange.bind(this)
   }
 
-  public syncAllVessels(vessels: ISimpleVessel[] | undefined) {
+  public syncAllVessels(vessels: ISimpleVessel[]) {
     this.allVessels = vessels
   }
-  public syncMonitoredVessels(vessels: IMonitoredVessel[] | undefined) {
+  public syncMonitoredVessels(vessels: IMonitoredVessel[]) {
     this.monitoredVessels = vessels
   }
   public syncMyDatetime(date: Date) {
-    this.myDateTime = date
+    // this.myDateTime = date
   }
 
   private async fetchSimpleVesselData() {
     const simpleVessels = await this.clientHandler.getSimpleVessles({
-      timestamp: timestamp, // myDateTime.getTime() / 1000
+      timestamp: Math.round(this.myDateTimeRef.current!.getTime() / 1000),
     })
-
-    timestamp += 100
 
     this.manageNewSimpleVessels(simpleVessels)
   }
@@ -61,7 +58,7 @@ export default class StreamManager implements IStreamManager {
 
   public onMonitoringZoneChange(zone: IPoint[] | undefined) {
     this.zone = zone || []
-    if (this.monitoredVesselTimeout || !zone || zone.length < 4) {
+    if (!zone || zone.length < 4) {
       this.stopMonitoredVesselFetching()
       this.setMonitoredVessels([])
     } else {
@@ -71,7 +68,7 @@ export default class StreamManager implements IStreamManager {
 
   private async fetchMonitoredVessels() {
     const monitoredvessels = await this.clientHandler.getMonitoredVessels({
-      timestamp: timestamp, //Math.round(this.myDateTime.getTime() / 1000),
+      timestamp: Math.round(this.myDateTimeRef.current!.getTime() / 1000),
       selection: { points: this.zone },
     })
     console.log(monitoredvessels)
@@ -97,8 +94,8 @@ export default class StreamManager implements IStreamManager {
   }
 
   private manageNewMonitoredVessels(vessels: IMonitoredVessel[]) {
-    const newVessels = this.manageVesselsFromFetch(vessels, this.monitoredVessels)
-    this.setMonitoredVessels(newVessels)
+    // const newVessels = this.manageVesselsFromFetch(vessels, this.monitoredVessels)
+    this.setMonitoredVessels(vessels)
   }
 
   private manageVesselsFromFetch<T extends ISimpleVessel | IMonitoredVessel>(
