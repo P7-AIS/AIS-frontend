@@ -1,20 +1,21 @@
 import * as PIXI from 'pixi.js'
 import L, { LatLng } from 'leaflet'
 import 'leaflet-pixi-overlay'
-import { ISpriteMarker } from '../models/spriteMarker'
+import { ISpriteMarkerOptions } from '../models/spriteMarkerOptions'
+import { IMapOverlay } from '../interfaces/IMapOverlay'
 
-export default class SpriteMarkerOverlay {
+export default class SpriteMarkerOverlayHandler implements IMapOverlay {
   private readonly overlay: L.LeafletPixiOverlayDefnition
   private isMarkersUpdated = true
 
-  constructor(private readonly markers: ISpriteMarker[], private readonly pixiContainer: PIXI.Container) {
+  constructor(private readonly markerOptions: ISpriteMarkerOptions[], private readonly pixiContainer: PIXI.Container) {
     this.overlay = L.pixiOverlay(this.getDrawCallback(), pixiContainer, {
       doubleBuffering: true,
       autoPreventDefault: false,
     })
   }
 
-  updatedMarkers() {
+  updated() {
     this.isMarkersUpdated = true
   }
 
@@ -37,7 +38,7 @@ export default class SpriteMarkerOverlay {
     let prevZoom: number | null = null
 
     const getMarkers = () =>
-      this.markers.map((marker) => ({
+      this.markerOptions.map((marker) => ({
         ...marker,
         targetScale: 0,
         currentScale: 0,
@@ -66,6 +67,8 @@ export default class SpriteMarkerOverlay {
           const pixiPoint = new PIXI.Point()
           interaction.mapPositionToPoint(pixiPoint, pointerEvent.clientX, pointerEvent.clientY)
           const target = boundary.hitTest(pixiPoint.x, pixiPoint.y)
+
+          // console.log(pixiPoint)
 
           if (target) {
             const marker = markers.find((marker) => marker.sprite === target)

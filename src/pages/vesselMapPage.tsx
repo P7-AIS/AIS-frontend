@@ -12,9 +12,11 @@ import MonitoringMenuRow from '../components/monitoringMenuRow'
 import Toolbar from '../components/toolbar'
 import { useAppContext } from '../contexts/appcontext'
 import StreamManager from '../implementations/StreamManager'
+import { ISelectionArea } from '../models/selectionArea'
 
 export default function VesselMapPage() {
   const [allVessels, setAllVessels] = useState<ISimpleVessel[]>([])
+  const [selectionArea, setSelectionArea] = useState<ISelectionArea>({ points: [] })
   const [monitoredVessels, setMonitoredVessels] = useState<IMonitoredVessel[]>([])
   const [map, setMap] = useState<L.Map | null>(null)
   const { selectedVesselmmsi } = useVesselGuiContext()
@@ -57,7 +59,13 @@ export default function VesselMapPage() {
   return (
     <div className="relative">
       <div id="toolbar-container" className="absolute z-10 w-fit top-5 left-5">
-        {map !== null && <Toolbar map={map} onMonitoringAreaChange={streamManager.onMonitoringZoneChange} />}
+        {map !== null && (
+          <Toolbar
+            map={map}
+            onMonitoringAreaChange={streamManager.onMonitoringZoneChange}
+            setSelectionArea={setSelectionArea}
+          />
+        )}
       </div>
 
       <div id="monitoring-menu-container" className="absolute max-w-96 max-h-98 top-5 right-5 z-10">
@@ -78,7 +86,12 @@ export default function VesselMapPage() {
       </div>
 
       <div className="h-screen w-screen absolute top-0 left-0 z-0">
-        <VesselMap setMapRef={setMap} simpleVessels={allVessels} monitoredVessels={monitoredVessels} />
+        <VesselMap
+          setMapRef={setMap}
+          simpleVessels={allVessels}
+          monitoredVessels={monitoredVessels}
+          selectionArea={selectionArea}
+        />
       </div>
       {/* <div id="timeline-container" className="absolute end-0 left-0 z-10">
         <TimeLine timestamps={[new Date(123456), new Date(54123), new Date(871263)]}></TimeLine>

@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js'
 
-export interface ISpriteMarker {
+export interface ISpriteMarkerOptions {
   id: number
   sprite: PIXI.Sprite
   getPopupContent: () => Promise<string>

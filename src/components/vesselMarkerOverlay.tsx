@@ -5,8 +5,8 @@ import { ISimpleVessel } from '../models/simpleVessel'
 import { IMonitoredVessel } from '../models/monitoredVessel'
 import { useVesselGuiContext } from '../contexts/vesselGuiContext'
 import { useEffect, useState } from 'react'
-import { ISpriteMarker } from '../models/spriteMarker'
-import SpriteMarkerOverlay from '../implementations/SpriteMarkerOverlay'
+import { ISpriteMarkerOptions } from '../models/spriteMarkerOptions'
+import SpriteMarkerOverlayHandler from '../implementations/SpriteMarkerOverlayHandler'
 import { useMap } from 'react-leaflet'
 import { useAppContext } from '../contexts/appcontext'
 import { IDetailedVessel } from '../models/detailedVessel'
@@ -21,9 +21,9 @@ export default function VesselMarkerOverlay({
   monitoredVessels: IMonitoredVessel[]
 }) {
   const { setSelectedVesselmmsi } = useVesselGuiContext()
-  const [markers] = useState<ISpriteMarker[]>([])
+  const [markerOptions] = useState<ISpriteMarkerOptions[]>([])
   const [pixiContainer] = useState(new PIXI.Container())
-  const [overlay] = useState(new SpriteMarkerOverlay(markers, pixiContainer))
+  const [overlay] = useState(new SpriteMarkerOverlayHandler(markerOptions, pixiContainer))
   const [arrowTexture, setArrowTexture] = useState<PIXI.Texture | null>(null)
   const [circleTexture, setCircleTexture] = useState<PIXI.Texture | null>(null)
   const { clientHandler } = useAppContext()
@@ -55,7 +55,8 @@ export default function VesselMarkerOverlay({
       return
     }
 
-    markers.splice(0, markers.length)
+    pixiContainer.removeChildren()
+    markerOptions.splice(0, markerOptions.length)
 
     getDisplayVessels(simpleVessels, monitoredVessels).forEach((vessel) => {
       {
@@ -70,21 +71,22 @@ export default function VesselMarkerOverlay({
             selectedVesselmmsi === vessel.simpleVessel.mmsi ? undefined : vessel.simpleVessel.mmsi
           )
 
-        markers.push(displayVesselToSpriteMarker(vessel, arrowTexture, circleTexture, onClick, getVesselInfo))
+        markerOptions.push(
+          displayVesselToSpriteMarkerOption(vessel, arrowTexture, circleTexture, onClick, getVesselInfo)
+        )
       }
     })
 
-    if (markers.length !== 0) {
-      pixiContainer.removeChildren()
-      pixiContainer.addChild(...markers.map((marker) => marker.sprite))
-      overlay.updatedMarkers()
+    if (markerOptions.length !== 0) {
+      pixiContainer.addChild(...markerOptions.map((option) => option.sprite))
+      overlay.updated()
       overlay.redraw()
     }
   }, [
     arrowTexture,
     circleTexture,
     clientHandler,
-    markers,
+    markerOptions,
     monitoredVessels,
     overlay,
     pixiContainer,
@@ -114,13 +116,13 @@ function trustworthinessToColor(trustworthiness?: number): number {
   return 0x00ff00
 }
 
-function displayVesselToSpriteMarker(
+function displayVesselToSpriteMarkerOption(
   vessel: DisplayVessel,
   arrowTexture: PIXI.Texture,
   circleTexture: PIXI.Texture,
   onClick: () => void,
   getVesselInfo: () => Promise<IDetailedVessel>
-): ISpriteMarker {
+): ISpriteMarkerOptions {
   const { simpleVessel, monitoredInfo } = vessel
 
   const id = vessel.simpleVessel.mmsi

@@ -3,13 +3,15 @@ import { Polygon } from 'leaflet'
 import L from 'leaflet'
 import { useCallback, useEffect } from 'react'
 import Point, { IPoint } from '../models/point'
+import { ISelectionArea } from '../models/selectionArea'
 
 interface IToolbarProps {
   map: L.Map
   onMonitoringAreaChange: (area: IPoint[] | undefined) => void
+  setSelectionArea: React.Dispatch<React.SetStateAction<ISelectionArea>>
 }
 
-export default function Toolbar({ map, onMonitoringAreaChange }: IToolbarProps) {
+export default function Toolbar({ map, onMonitoringAreaChange, setSelectionArea }: IToolbarProps) {
   const { activeTool, setActiveTool } = useVesselGuiContext()
 
   const clearTool = useCallback(() => {
@@ -20,7 +22,8 @@ export default function Toolbar({ map, onMonitoringAreaChange }: IToolbarProps) 
         }
       })
     }
-  }, [map, onMonitoringAreaChange])
+    setSelectionArea({ points: [] })
+  }, [map, onMonitoringAreaChange, setSelectionArea])
 
   function clearOnClick() {
     clearTool()
@@ -43,12 +46,15 @@ export default function Toolbar({ map, onMonitoringAreaChange }: IToolbarProps) 
           e.layer.options.pane = 'monitoring-area'
 
           console.log((e.layer as Polygon).toGeoJSON())
+
+          const points = (e.layer as Polygon)
+            .toGeoJSON()
+            .geometry.coordinates[0].map((loc) => new Point(loc[1] as number, loc[0] as number))
+
           //change in monitored area
-          onMonitoringAreaChange(
-            (e.layer as Polygon)
-              .toGeoJSON()
-              .geometry.coordinates[0].map((loc) => new Point(loc[1] as number, loc[0] as number))
-          )
+          onMonitoringAreaChange(points)
+          setSelectionArea({ points })
+
           setActiveTool(ActiveGuiTool.Mouse)
         }
       })
@@ -59,7 +65,7 @@ export default function Toolbar({ map, onMonitoringAreaChange }: IToolbarProps) 
         map.off('pm:create')
       }
     }
-  }, [map, setActiveTool, onMonitoringAreaChange])
+  }, [map, setActiveTool, onMonitoringAreaChange, setSelectionArea])
 
   return (
     <div className="flex flex-col gap-4 bg-gray-700 text-gray-300 rounded-lg p-4">
