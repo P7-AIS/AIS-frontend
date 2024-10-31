@@ -1,40 +1,44 @@
-import L from 'leaflet'
-import { useState, useEffect } from 'react'
-import { useMapEvents } from 'react-leaflet'
+import { MapContainer, TileLayer } from 'react-leaflet'
 import { ISimpleVessel } from '../models/simpleVessel'
-import Vessel from './vessel'
+import { IMonitoredVessel } from '../models/monitoredVessel'
+import VesselMarkerOverlay from './vesselMarkerOverlay'
+import { ISelectionArea } from '../models/selectionArea'
+import SelectionAreaOverlay from './selectionAreaOverlay'
 
-interface IVesselMapProps {
-  vessels: ISimpleVessel[]
-}
-
-export default function VesselMap({ vessels }: IVesselMapProps) {
-  const [mapBounds, setMapBounds] = useState<L.LatLngBounds | null>(null)
-
-  const map = useMapEvents({
-    moveend() {
-      setMapBounds(map.getBounds())
-    },
-    zoomend() {
-      setMapBounds(map.getBounds())
-    },
-  })
-
-  useEffect(() => {
-    setMapBounds(map.getBounds())
-  }, [map])
-
-  const visibleVessels = vessels.filter((vessel) => {
-    if (!mapBounds) return true
-    const vesselLatLng = new L.LatLng(vessel.location.point.lat, vessel.location.point.lon)
-    return mapBounds.contains(vesselLatLng)
-  })
-
+const VesselMap = ({
+  simpleVessels,
+  monitoredVessels,
+  selectionArea,
+  setMapRef,
+}: {
+  simpleVessels: ISimpleVessel[]
+  monitoredVessels: IMonitoredVessel[]
+  selectionArea: ISelectionArea
+  setMapRef: React.Dispatch<React.SetStateAction<L.Map | null>>
+}) => {
   return (
-    <>
-      {visibleVessels.map((vessel) => (
-        <Vessel vessel={vessel} key={vessel.mmsi}></Vessel>
-      ))}
-    </>
+    <MapContainer
+      style={{
+        height: '100%',
+        width: '100%',
+      }}
+      center={[56.15674, 10.21076]}
+      attributionControl={true}
+      zoomControl={false}
+      zoom={8}
+      minZoom={3}
+      scrollWheelZoom={true}
+      ref={setMapRef}
+    >
+      {/* Provider preview https://leaflet-extras.github.io/leaflet-providers/preview/ */}
+      <TileLayer
+        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+        url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+      />
+      <SelectionAreaOverlay selectionArea={selectionArea} />
+      <VesselMarkerOverlay simpleVessels={simpleVessels} monitoredVessels={monitoredVessels} />
+    </MapContainer>
   )
 }
+
+export default VesselMap

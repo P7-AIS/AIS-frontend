@@ -7,5 +7,9 @@ export interface ISimpleVessel {
 }
 
 export default class SimpleVessel implements ISimpleVessel {
-  constructor(public location: ILocation, public mmsi: number, public heading?: number) {}
+  constructor(
+    public location: ILocation,
+    public mmsi: number,
+    public heading?: number
+  ) {}
 }

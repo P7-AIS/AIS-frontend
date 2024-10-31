@@ -60,10 +60,10 @@ export const VesselGuiContextProvider = ({ children }: { children: React.ReactNo
         setActiveTime,
         selectionArea,
         setSelectionArea,
-        selectedVesselmmsi, 
+        selectedVesselmmsi,
         setSelectedVesselmmsi,
-        selectedVesselPath, 
-        setSelectedVesselPath
+        selectedVesselPath,
+        setSelectedVesselPath,
       }}
     >
       {children}
