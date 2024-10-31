@@ -63,14 +63,12 @@ export default function VesselMapPage() {
 
   return (
     <div className="relative h-screen">
-      <div className="absolute z-20 w-full">
+      <div className="absolute z-20 w-fit flex flex-col top-5 left-5 gap-3">
         <Navbar />
-      </div>
-      <div id="toolbar-container" className="absolute z-10 w-fit top-10 left-5">
         {map && <Toolbar map={map} onMonitoringAreaChange={streamManagerRef.current.onMonitoringZoneChange} />}
       </div>
 
-      <div id="monitoring-menu-container" className="absolute max-w-96 max-h-98 top-10 right-5 z-10">
+      <div id="monitoring-menu-container" className="absolute w-[25vw] max-h-[75vh] top-5 right-5 z-10">
         {monitoredVessels && (
           <MonitoringMenu monitoredVessels={monitoredVessels}>
             {monitoredVessels.map((vessel: IMonitoredVessel) => (
