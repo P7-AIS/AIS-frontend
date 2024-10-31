@@ -10,7 +10,7 @@ interface IMonitoringMenuProps {
 
 export default function MonitoringMenu({ monitoredVessels, zoomToVessel }: IMonitoringMenuProps) {
   const [isCollapsed, setIsCollapsed] = useState<boolean>(false)
-  const sortedMonitoredVessels = monitoredVessels.sort((a, b) => b.trustworthiness - a.trustworthiness)
+  const sortedMonitoredVessels = monitoredVessels.sort((a, b) => a.trustworthiness - b.trustworthiness)
 
   return (
     <div className="flex flex-col h-full rounded-lg bg-gray-200 px-2 shadow-xl">

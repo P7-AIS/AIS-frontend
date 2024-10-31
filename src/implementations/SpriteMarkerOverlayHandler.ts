@@ -73,17 +73,17 @@ export default class SpriteMarkerOverlayHandler implements IMapOverlay {
 
           // console.log(pixiPoint)
 
-          if (target) {
-            const marker = markers.find((marker) => marker.sprite === target)
-            if (marker) {
-              const popup = L.popup({ className: 'pixi-popup' }).setLatLng(marker.position)
-              popup.setContent('Loading...')
-              popup.openOn(map)
+          // if (target) {
+          //   const marker = markers.find((marker) => marker.sprite === target)
+          //   if (marker) {
+          //     const popup = L.popup({ className: 'pixi-popup' }).setLatLng(marker.position)
+          //     popup.setContent('Loading...')
+          //     popup.openOn(map)
 
-              const content = await marker.getPopupContent()
-              popup.setContent(content)
-            }
-          }
+          //     const content = await marker.getPopupContent()
+          //     popup.setContent(content)
+          //   }
+          // }
         })
 
         markers.forEach((marker) => {

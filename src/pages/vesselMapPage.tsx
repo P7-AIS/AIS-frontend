@@ -5,7 +5,6 @@ import { IMonitoredVessel } from '../models/monitoredVessel'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import MonitoringMenu from '../components/monitoringMenu'
-import MonitoringMenuRow from '../components/monitoringMenuRow'
 import Toolbar from '../components/toolbar'
 import { useAppContext } from '../contexts/appcontext'
 import TimeLine from '../components/timeline'
@@ -14,6 +13,7 @@ import VesselMap from '../components/vesselMap'
 import { ISelectionArea } from '../models/selectionArea'
 import Navbar from '../components/navbar'
 import Path from '../components/path'
+import VesselDetailsBox from '../components/vesselDetailsBox'
 
 export default function VesselMapPage() {
   const [allVessels, setAllVessels] = useState<ISimpleVessel[]>([])
@@ -62,7 +62,7 @@ export default function VesselMapPage() {
 
   return (
     <div className="relative h-screen">
-      <div className="absolute z-20 w-fit flex flex-col top-5 left-5 gap-3">
+      <div className="absolute z-20 w-[350px] flex flex-col top-5 left-5 gap-3">
         <Navbar />
         {map && (
           <Toolbar
@@ -71,6 +71,9 @@ export default function VesselMapPage() {
             setSelectionArea={setSelectionArea}
           />
         )}
+        {selectedVesselmmsi &&
+          <VesselDetailsBox />
+        }
       </div>
 
       <div id="monitoring-menu-container" className="absolute min-w-[25vw] max-h-[75vh] top-5 right-5 z-10">
