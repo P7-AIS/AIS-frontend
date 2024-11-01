@@ -54,7 +54,7 @@ export default function VesselMarkerOverlay({
 
   // Update markers
   useEffect(() => {
-    if (arrowTexture === null || circleTexture === null) {
+    if (arrowTexture === null || selectedArrowTexture === null || circleTexture === null || selectedCircleTexture === null) {
       return
     }
 
