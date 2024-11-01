@@ -2,6 +2,7 @@ import { IMonitoredVessel } from '../models/monitoredVessel'
 import { useState } from 'react'
 import MonitoringMenuRow from './monitoringMenuRow'
 import ChevronSVG from '../svgs/chevronSVG'
+import { useVesselGuiContext } from '../contexts/vesselGuiContext'
 
 interface IMonitoringMenuProps {
   monitoredVessels: IMonitoredVessel[]
@@ -11,6 +12,7 @@ interface IMonitoringMenuProps {
 export default function MonitoringMenu({ monitoredVessels, zoomToVessel }: IMonitoringMenuProps) {
   const [isCollapsed, setIsCollapsed] = useState<boolean>(false)
   const sortedMonitoredVessels = monitoredVessels.sort((a, b) => a.trustworthiness - b.trustworthiness)
+  const { selectedVesselmmsi } = useVesselGuiContext()
 
   return (
     <div className="flex flex-col h-full rounded-lg bg-gray-700 text-white p-4">
@@ -30,7 +32,7 @@ export default function MonitoringMenu({ monitoredVessels, zoomToVessel }: IMoni
           </div>
           <div id="rows-container" className="max-h-[50vh] overflow-y-auto divide-y rounded-md">
             {sortedMonitoredVessels.map((vessel, index) => (
-              <div className="py-1 px-2 odd:bg-gray-600 even:bg-gray-700 rounded-lg border-none mr-2" key={index}>
+              <div className={`py-1 px-2 ${vessel.mmsi === selectedVesselmmsi ? "bg-blue-800" : "odd:bg-gray-600 even:bg-gray-700"} rounded-lg border-none mr-2`} key={index}>
                 <MonitoringMenuRow
                   key={vessel.mmsi}
                   monitoredVessel={vessel}

@@ -1,6 +1,5 @@
 import { useVesselGuiContext } from '../contexts/vesselGuiContext'
 import { IMonitoredVessel } from '../models/monitoredVessel'
-import EyeSVG from '../svgs/eyeSVG'
 
 interface IMonitoringMenuRowProps {
   monitoredVessel: IMonitoredVessel
