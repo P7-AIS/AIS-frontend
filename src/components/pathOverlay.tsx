@@ -14,8 +14,17 @@ export default function PathOverlay({ path, idx }: IPathOverlayProps) {
   const [graphicOptions] = useState<IGraphicOptions[]>([])
   const [pixiContainer] = useState(new PIXI.Container())
   const [overlay] = useState(new GraphicOverlayHandler(pixiContainer, graphicOptions))
+  const [arrowTexture, setArrowTexture] = useState<PIXI.Texture | null>(null)
 
   const map = useMap()
+
+  useEffect(() => {
+    const loadTextures = async () => {
+      const loadedArrowTexture = await PIXI.Assets.load('assets/arrow.svg')
+      setArrowTexture(loadedArrowTexture)
+    }
+    loadTextures()
+  }, [])
 
   useEffect(() => {
     overlay.applyToMap(map)
@@ -25,6 +34,9 @@ export default function PathOverlay({ path, idx }: IPathOverlayProps) {
   }, [map, overlay])
 
   useEffect(() => {
+    if (arrowTexture === null) {
+      return
+    }
     pixiContainer.removeChildren()
     graphicOptions.splice(0, graphicOptions.length)
 
@@ -32,17 +44,17 @@ export default function PathOverlay({ path, idx }: IPathOverlayProps) {
       //clear path and draw nothing if path is empty
       overlay.updated()
       overlay.redraw()
+    } else {
+      graphicOptions.push(pathToGraphic(path))
+      graphicOptions.push(vesselToGraphic(path[idx], arrowTexture))
     }
-
-    graphicOptions.push(pathToGraphic(path))
-    // graphicOptions.push(vesselToGraphic(path[idx]))
 
     if (graphicOptions.length !== 0) {
       pixiContainer.addChild(...graphicOptions.map((option) => option.graphic))
       overlay.updated()
       overlay.redraw()
     }
-  }, [path, pixiContainer, graphicOptions, overlay])
+  }, [path, pixiContainer, graphicOptions, overlay, arrowTexture, idx])
 
   return null
 }
@@ -68,4 +80,21 @@ function pathToGraphic(path: ILocation[]): IGraphicOptions {
   return { graphic, drawGraphic }
 }
 
-// function vesselToGraphic(point: ILocation): IGraphicOptions {}
+function vesselToGraphic(location: ILocation, textture: PIXI.Texture): IGraphicOptions {
+  const graphic = new PIXI.Graphics()
+
+  const drawGraphic = (project: (latLng: L.LatLng) => L.Point, scale: number, bounds: L.LatLngBounds) => {
+    const projectedCords = project(new L.LatLng(location.point.lat, location.point.lon))
+    graphic.removeChildren()
+    const sprite: PIXI.Sprite = new PIXI.Sprite(textture)
+    sprite.anchor.set(0.5, 0.5)
+    sprite.rotation = Math.PI / 2 + (location.heading ? (location.heading * Math.PI) / 180 : 0)
+    sprite.tint = 0xff0000
+    sprite.x = projectedCords.x
+    sprite.y = projectedCords.y
+    sprite.scale.set(0.01 / scale)
+    graphic.addChild(sprite)
+  }
+
+  return { graphic, drawGraphic }
+}
