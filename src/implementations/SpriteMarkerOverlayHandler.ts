@@ -63,29 +63,6 @@ export default class SpriteMarkerOverlayHandler implements IMapOverlay {
       const zoom = map.getZoom()
 
       if (this.isMarkersUpdated) {
-        const boundary = new PIXI.EventBoundary(container)
-        map.on('click', async (e) => {
-          const interaction = utils.getRenderer().events
-          const pointerEvent = e.originalEvent
-          const pixiPoint = new PIXI.Point()
-          interaction.mapPositionToPoint(pixiPoint, pointerEvent.clientX, pointerEvent.clientY)
-          const target = boundary.hitTest(pixiPoint.x, pixiPoint.y)
-
-          // console.log(pixiPoint)
-
-          // if (target) {
-          //   const marker = markers.find((marker) => marker.sprite === target)
-          //   if (marker) {
-          //     const popup = L.popup({ className: 'pixi-popup' }).setLatLng(marker.position)
-          //     popup.setContent('Loading...')
-          //     popup.openOn(map)
-
-          //     const content = await marker.getPopupContent()
-          //     popup.setContent(content)
-          //   }
-          // }
-        })
-
         markers.forEach((marker) => {
           const point = new LatLng(marker.position[0], marker.position[1])
           const coords = project(point)
