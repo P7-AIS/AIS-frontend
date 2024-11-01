@@ -71,8 +71,6 @@ export default class SpriteMarkerOverlayHandler implements IMapOverlay {
           interaction.mapPositionToPoint(pixiPoint, pointerEvent.clientX, pointerEvent.clientY)
           const target = boundary.hitTest(pixiPoint.x, pixiPoint.y)
 
-          console.log(project(new LatLng(e.latlng.lat, e.latlng.lng)))
-
           if (target) {
             const marker = markers.find((marker) => marker.sprite === target)
             if (marker) {

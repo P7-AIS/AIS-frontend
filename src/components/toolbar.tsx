@@ -72,6 +72,11 @@ export default function Toolbar({ map, onMonitoringAreaChange, setSelectionArea 
     }
   }, [map, setActiveTool, onMonitoringAreaChange, setSelectionArea, clearTool])
 
+  const handleChangeTool = (tool: ActiveGuiTool) => {
+    onMonitoringAreaChange(undefined)
+    setActiveTool(tool)
+  }
+
   return (
     <div className="flex flex-col gap-4 bg-gray-700 text-gray-300 rounded-lg p-4 w-fit">
       <h2 className="text-white text-lg font-bold">Focus area tools</h2>
@@ -82,7 +87,7 @@ export default function Toolbar({ map, onMonitoringAreaChange, setSelectionArea 
           className={`hover:text-gray-100 hover:scale-110 transition-all ${
             activeTool === ActiveGuiTool.Rectangle ? 'text-blue-500' : ''
           }`}
-          onClick={() => setActiveTool(ActiveGuiTool.Rectangle)}
+          onClick={() => handleChangeTool(ActiveGuiTool.Rectangle)}
         >
           <RectangleSVG />
         </button>
@@ -91,7 +96,7 @@ export default function Toolbar({ map, onMonitoringAreaChange, setSelectionArea 
           className={`hover:text-gray-100 hover:scale-110 transition-all ${
             activeTool === ActiveGuiTool.Polygon ? 'text-blue-500' : ''
           }`}
-          onClick={() => setActiveTool(ActiveGuiTool.Polygon)}
+          onClick={() => handleChangeTool(ActiveGuiTool.Polygon)}
         >
           <PolygonSVG />
         </button>
