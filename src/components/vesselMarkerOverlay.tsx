@@ -22,7 +22,9 @@ export default function VesselMarkerOverlay({
   const [pixiContainer] = useState(new PIXI.Container())
   const [overlay] = useState(new SpriteMarkerOverlayHandler(markerOptions, pixiContainer))
   const [arrowTexture, setArrowTexture] = useState<PIXI.Texture | null>(null)
+  const [selectedArrowTexture, setSelectedArrowTexture] = useState<PIXI.Texture | null>(null)
   const [circleTexture, setCircleTexture] = useState<PIXI.Texture | null>(null)
+  const [selectedCircleTexture, setSelectedCircleTexture] = useState<PIXI.Texture | null>(null)
   const { clientHandler } = useAppContext()
 
   const map = useMap()
@@ -31,9 +33,13 @@ export default function VesselMarkerOverlay({
   useEffect(() => {
     const loadTextures = async () => {
       const loadedArrowTexture = await PIXI.Assets.load('assets/arrow.svg')
+      const loadedSelectedArrowTexture = await PIXI.Assets.load('assets/selectedArrow.svg')
       const loadedCircleTexture = await PIXI.Assets.load('assets/circle.svg')
+      const loadedSelectedCircleTexture = await PIXI.Assets.load('assets/selectedCircle.svg')
       setArrowTexture(loadedArrowTexture)
+      setSelectedArrowTexture(loadedSelectedArrowTexture)
       setCircleTexture(loadedCircleTexture)
+      setSelectedCircleTexture(loadedSelectedCircleTexture)
     }
     loadTextures()
   }, [])
@@ -63,7 +69,7 @@ export default function VesselMarkerOverlay({
           )
 
         markerOptions.push(
-          displayVesselToSpriteMarkerOption(vessel, arrowTexture, circleTexture, selectedVesselmmsi === vessel.simpleVessel.mmsi, onClick)
+          displayVesselToSpriteMarkerOption(vessel, arrowTexture, selectedArrowTexture, circleTexture, selectedCircleTexture, selectedVesselmmsi === vessel.simpleVessel.mmsi, onClick)
         )
       }
     })
@@ -75,7 +81,9 @@ export default function VesselMarkerOverlay({
     }
   }, [
     arrowTexture,
+    selectedArrowTexture,
     circleTexture,
+    selectedCircleTexture,
     clientHandler,
     markerOptions,
     monitoredVessels,
@@ -111,7 +119,9 @@ function trustworthinessToColor(trustworthiness?: number): number {
 function displayVesselToSpriteMarkerOption(
   vessel: DisplayVessel,
   arrowTexture: PIXI.Texture,
+  selectedArrowTexture: PIXI.Texture,
   circleTexture: PIXI.Texture,
+  selectedCircleTexture: PIXI.Texture,
   isSelected: boolean,
   onClick: () => void,
 ): ISpriteMarkerOptions {
@@ -120,12 +130,12 @@ function displayVesselToSpriteMarkerOption(
   let sprite: PIXI.Sprite
 
   if (simpleVessel.location.heading !== undefined) {
-    sprite = new PIXI.Sprite(arrowTexture)
+    sprite = new PIXI.Sprite(isSelected ? selectedArrowTexture : arrowTexture)
     sprite.anchor.set(0.5, 0.5)
     sprite.rotation =
       Math.PI / 2 + (simpleVessel.location.heading ? (simpleVessel.location.heading * Math.PI) / 180 : 0)
   } else {
-    sprite = new PIXI.Sprite(circleTexture)
+    sprite = new PIXI.Sprite(isSelected ? selectedCircleTexture : circleTexture)
     sprite.anchor.set(0.5, 0.5)
   }
 
@@ -136,16 +146,12 @@ function displayVesselToSpriteMarkerOption(
     sprite.tint = 0x000000
   }
 
-  if (isSelected) {
-    sprite.alpha = 1
-    sprite.tint = 0x1d4ed8
-  }
-
   sprite.eventMode = 'dynamic'
   sprite.cursor = 'pointer'
   sprite.on('click', onClick)
 
+  const size = isSelected ? 20 : 13
   const position: L.LatLngTuple = [simpleVessel.location.point.lat, simpleVessel.location.point.lon]
 
-  return { sprite, position, size: 12 }
+  return { sprite, position, size }
 }
