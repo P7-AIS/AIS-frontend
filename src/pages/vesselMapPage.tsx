@@ -10,7 +10,6 @@ import { useAppContext } from '../contexts/appcontext'
 import TimeLine from '../components/timeline'
 import StreamManager from '../implementations/StreamManager'
 import VesselMap from '../components/vesselMap'
-import { ISelectionArea } from '../models/selectionArea'
 import Navbar from '../components/navbar'
 import Path from '../components/path'
 import SelectionAreaOverlay from '../components/selectionAreaOverlay'
@@ -20,10 +19,9 @@ import VesselDetailsBox from '../components/vesselDetailsBox'
 
 export default function VesselMapPage() {
   const [allVessels, setAllVessels] = useState<ISimpleVessel[]>([])
-  const [selectionArea, setSelectionArea] = useState<ISelectionArea>({ points: [] })
   const [monitoredVessels, setMonitoredVessels] = useState<IMonitoredVessel[]>([])
   const [map, setMap] = useState<L.Map | null>(null)
-  const { selectedVesselmmsi, selectedVesselPath } = useVesselGuiContext()
+  const { selectedVesselmmsi, selectedVesselPath, selectionArea, setSelectionArea } = useVesselGuiContext()
   const { clientHandler, myDateTimeRef } = useAppContext()
 
   // Use a ref to store the StreamManager instance

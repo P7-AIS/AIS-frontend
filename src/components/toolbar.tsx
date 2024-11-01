@@ -28,7 +28,7 @@ export default function Toolbar({ map, onMonitoringAreaChange, setSelectionArea 
       })
     }
     setSelectionArea({ points: [] })
-  }, [map, onMonitoringAreaChange, setSelectionArea])
+  }, [map, setSelectionArea])
 
   function clearOnClick() {
     clearTool()
@@ -50,8 +50,6 @@ export default function Toolbar({ map, onMonitoringAreaChange, setSelectionArea 
         if (['Polygon', 'Rectangle'].includes(e.shape)) {
           e.layer.options.pane = 'monitoring-area'
 
-          console.log((e.layer as Polygon).toGeoJSON())
-
           const points = (e.layer as Polygon)
             .toGeoJSON()
             .geometry.coordinates[0].map((loc) => new Point(loc[1] as number, loc[0] as number))
@@ -59,6 +57,8 @@ export default function Toolbar({ map, onMonitoringAreaChange, setSelectionArea 
           //change in monitored area
           onMonitoringAreaChange(points)
           setSelectionArea({ points })
+
+          map.removeLayer(e.layer)
 
           setActiveTool(ActiveGuiTool.Mouse)
         }
@@ -70,7 +70,12 @@ export default function Toolbar({ map, onMonitoringAreaChange, setSelectionArea 
         map.off('pm:create')
       }
     }
-  }, [map, setActiveTool, onMonitoringAreaChange, setSelectionArea])
+  }, [map, setActiveTool, onMonitoringAreaChange, setSelectionArea, clearTool])
+
+  const handleChangeTool = (tool: ActiveGuiTool) => {
+    onMonitoringAreaChange(undefined)
+    setActiveTool(tool)
+  }
 
   return (
     <div className="flex flex-row gap-4 bg-gray-700 text-gray-300 rounded-lg p-4 justify-between w-full">
@@ -81,7 +86,7 @@ export default function Toolbar({ map, onMonitoringAreaChange, setSelectionArea 
           title="Draw focus area as rectangle"
           className={`hover:text-gray-100 hover:scale-110 transition-all ${activeTool === ActiveGuiTool.Rectangle ? 'text-blue-500' : ''
             }`}
-          onClick={() => setActiveTool(ActiveGuiTool.Rectangle)}
+          onClick={() => handleChangeTool(ActiveGuiTool.Rectangle)}
         >
           <RectangleSVG />
         </button>
@@ -89,7 +94,7 @@ export default function Toolbar({ map, onMonitoringAreaChange, setSelectionArea 
           title="Draw focus area as polygon"
           className={`hover:text-gray-100 hover:scale-110 transition-all ${activeTool === ActiveGuiTool.Polygon ? 'text-blue-500' : ''
             }`}
-          onClick={() => setActiveTool(ActiveGuiTool.Polygon)}
+          onClick={() => handleChangeTool(ActiveGuiTool.Polygon)}
         >
           <PolygonSVG />
         </button>

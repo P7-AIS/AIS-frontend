@@ -49,44 +49,45 @@ export default function SelectionAreaOverlay({ selectionArea }: { selectionArea:
 function selectionAreaToGraphicOption(selectionArea: ISelectionArea): IGraphicOptions {
   const graphic = new PIXI.Graphics()
 
-  const drawGraphic = (project: (latLng: L.LatLng) => L.Point, scale: number, bounds: L.LatLngBounds) => {
-    const outerBounds = [
-      bounds.getNorthWest(),
-      bounds.getNorthEast(),
-      bounds.getSouthEast(),
-      bounds.getSouthWest(),
-    ].map(project)
+  const outerBounds = [
+    { x: 0, y: 0 },
+    { x: 0, y: 370727 },
+    { x: 370727, y: 370727 },
+    { x: 370727, y: 0 },
+  ]
+
+  const drawGraphic = (project: (latLng: L.LatLng) => L.Point, scale: number) => {
+    graphic.clear()
+
+    graphic.beginFill(0x000000, 0.2)
+    outerBounds.forEach((coords) => {
+      graphic.lineTo(coords.x - graphic.x, coords.y - graphic.y)
+    })
+    graphic.endFill()
 
     const projectedCords = selectionArea.points.map((point) => {
       const coords = new L.LatLng(point.lat, point.lon)
       const projection = project(coords)
-      console.log(point, projection)
       return projection
     })
 
-    graphic.clear()
+    graphic.beginHole()
+    graphic.moveTo(projectedCords[0].x - graphic.x, projectedCords[0].y - graphic.y)
+    projectedCords.forEach((coords) => {
+      graphic.lineTo(coords.x - graphic.x, coords.y - graphic.y)
+    })
+    graphic.endHole()
 
-    // graphic.lineStyle(3 / scale, 0x3388ff, 1)
-    // graphic.x = outerBounds[0].x
-    // graphic.y = outerBounds[0].y
-    // outerBounds.forEach((coords, index) => {
-    //   if (index == 0) graphic.moveTo(0, 0)
-    //   else graphic.lineTo(coords.x - graphic.x, coords.y - graphic.y)
-    // })
+    // Glem det jones
+    // graphic.lineStyle(2 / scale, 0x3388ff, 1)
+    graphic.lineStyle(1 / scale, 0x000, 0.3)
 
-    // graphic.beginHole()
-
-    // graphic.beginFill(0xff0000, 0.2)
-    // graphic.lineStyle(3 / scale, 0x3388ff, 1)
-    // graphic.x = projectedCords[0].x
-    // graphic.y = projectedCords[0].y
-    // projectedCords.forEach((coords, index) => {
-    //   if (index == 0) graphic.moveTo(0, 0)
-    //   else graphic.lineTo(coords.x - graphic.x, coords.y - graphic.y)
-    // })
-    // graphic.endFill()
-
-    // graphic.endHole()
+    graphic.beginFill(0x000000, 0)
+    graphic.moveTo(projectedCords[0].x - graphic.x, projectedCords[0].y - graphic.y)
+    projectedCords.forEach((coords) => {
+      graphic.lineTo(coords.x - graphic.x, coords.y - graphic.y)
+    })
+    graphic.endFill()
   }
 
   return { graphic, drawGraphic }
