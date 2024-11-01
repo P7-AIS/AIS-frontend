@@ -1,6 +1,5 @@
 import { createContext, useContext, useState } from 'react'
 import { ISelectionArea } from '../models/selectionArea'
-import { IDetailedVessel } from '../models/detailedVessel'
 import { ILocation } from '../models/location'
 
 export enum ActiveGuiTool {
@@ -18,8 +17,8 @@ interface IVesselGuiContext {
   setActiveTool: React.Dispatch<React.SetStateAction<ActiveGuiTool>>
   activeTime: Date
   setActiveTime: React.Dispatch<React.SetStateAction<Date>>
-  selectionArea?: ISelectionArea
-  setSelectionArea: React.Dispatch<React.SetStateAction<ISelectionArea | undefined>>
+  selectionArea: ISelectionArea
+  setSelectionArea: React.Dispatch<React.SetStateAction<ISelectionArea>>
   selectedVesselmmsi?: number
   setSelectedVesselmmsi: React.Dispatch<React.SetStateAction<number | undefined>>
   selectedVesselPath?: ILocation[]
@@ -43,7 +42,7 @@ export const VesselGuiContextProvider = ({ children }: { children: React.ReactNo
   const [pathForecast, setPathForecast] = useState<boolean>(false)
   const [activeTool, setActiveTool] = useState<ActiveGuiTool>(ActiveGuiTool.Mouse)
   const [activeTime, setActiveTime] = useState<Date>(new Date())
-  const [selectionArea, setSelectionArea] = useState<ISelectionArea | undefined>()
+  const [selectionArea, setSelectionArea] = useState<ISelectionArea>({ points: [] })
   const [selectedVesselmmsi, setSelectedVesselmmsi] = useState<number | undefined>()
   const [selectedVesselPath, setSelectedVesselPath] = useState<ILocation[] | undefined>()
 
