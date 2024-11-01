@@ -7,7 +7,7 @@ import CloseSVG from '../svgs/closeSVG'
 
 export default function VesselDetailsBox() {
   const { clientHandler, myDateTimeRef } = useAppContext()
-  const { selectedVesselmmsi, setSelectedVesselmmsi, setSelectedVesselPath } = useVesselGuiContext()
+  const { selectedVesselmmsi, setSelectedVesselmmsi, selectedVesselPath, setSelectedVesselPath } = useVesselGuiContext()
   const [vesselDetails, setVesselDetails] = useState<IDetailedVessel | undefined>(undefined)
   const [loading, setLoading] = useState(true)
   const [pathDuration, setPathDuration] = useState<number>(1)
@@ -27,8 +27,12 @@ export default function VesselDetailsBox() {
     setLoading(false)
   }, [clientHandler, selectedVesselmmsi])
 
-  async function getVesselPath() {
+  async function controlVesselPath() {
     if (!selectedVesselmmsi) return
+    if (selectedVesselPath.length > 0) {
+      setSelectedVesselPath([])
+      return
+    }
     const res = await clientHandler.getVesselPath({
       mmsi: selectedVesselmmsi,
       endtime: myDateTimeRef.current.getTime() / 1000,
@@ -100,8 +104,9 @@ export default function VesselDetailsBox() {
                       onChange={(e) => handleDurationChange(e.target.value)}
                     ></input>
                   </div>
-                  <button className="blue-btn" onClick={getVesselPath}>
-                    Show Path
+
+                  <button className="blue-btn" onClick={controlVesselPath}>
+                    {selectedVesselPath.length > 0 ? 'Close Path' : 'Show Path'}
                   </button>
                 </div>
               </>
