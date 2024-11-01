@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect } from 'react'
 import { useVesselGuiContext } from '../contexts/vesselGuiContext'
 interface ITimelineProps {
   timestamps: Date[]
@@ -8,7 +8,6 @@ interface ITimelineProps {
 }
 
 export default function Timeline({ timestamps, onChange, timelineVal, setTimelineVal }: ITimelineProps) {
-  // const timelineVal = useRef<number>(timestamps.length - 1)
   const { setSelectedVesselPath, selectedVesselmmsi, selectedVesselPath } = useVesselGuiContext()
   function handleChange(val: string) {
     try {
@@ -28,6 +27,9 @@ export default function Timeline({ timestamps, onChange, timelineVal, setTimelin
     setTimelineVal(0)
     console.log(timestamps[timelineVal])
     if (selectedVesselmmsi === undefined) setSelectedVesselPath([])
+    return () => {
+      setSelectedVesselPath([])
+    }
   }, [selectedVesselmmsi, setSelectedVesselPath])
 
   return selectedVesselPath.length !== 0 ? (

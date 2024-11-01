@@ -12,7 +12,6 @@ import StreamManager from '../implementations/StreamManager'
 import VesselMap from '../components/vesselMap'
 import { ISelectionArea } from '../models/selectionArea'
 import Navbar from '../components/navbar'
-import Path from '../components/path'
 import SelectionAreaOverlay from '../components/selectionAreaOverlay'
 import VesselMarkerOverlay from '../components/vesselMarkerOverlay'
 import PathOverlay from '../components/pathOverlay'
@@ -25,7 +24,7 @@ export default function VesselMapPage() {
   const [map, setMap] = useState<L.Map | null>(null)
   const { selectedVesselmmsi, selectedVesselPath } = useVesselGuiContext()
   const { clientHandler, myDateTimeRef } = useAppContext()
-  const [timelineVal, setTimelineVal] = useState<number>(selectedVesselPath.length - 1)
+  const [timelineVal, setTimelineVal] = useState<number>(0)
 
   // Use a ref to store the StreamManager instance
   const streamManagerRef = useRef(new StreamManager(clientHandler, setAllVessels, setMonitoredVessels, myDateTimeRef))
@@ -49,6 +48,10 @@ export default function VesselMapPage() {
     streamManagerRef.current.syncMonitoredVessels(monitoredVessels)
   }, [monitoredVessels])
 
+  useEffect(() => {
+    if (selectedVesselPath.length > 0) setTimelineVal(selectedVesselPath.length - 1)
+  }, [selectedVesselPath])
+
   function zoomToVessel(vessel: IMonitoredVessel) {
     const simpleVessel = allVessels?.find((v) => v.mmsi === vessel.mmsi)
     if (simpleVessel && map) {
@@ -61,9 +64,7 @@ export default function VesselMapPage() {
       console.error('timeline change without any path information')
       return
     }
-    // setTimelineVal(index)
-    // console.log(selectedVesselPath[index])
-    console.log('Timelinechange: index ' + index)
+    setTimelineVal(index)
   }
 
   return (
