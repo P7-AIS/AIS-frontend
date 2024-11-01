@@ -117,8 +117,6 @@ function displayVesselToSpriteMarkerOption(
 ): ISpriteMarkerOptions {
   const { simpleVessel, monitoredInfo } = vessel
 
-  const id = vessel.simpleVessel.mmsi
-
   let sprite: PIXI.Sprite
 
   if (simpleVessel.location.heading !== undefined) {
@@ -149,5 +147,5 @@ function displayVesselToSpriteMarkerOption(
 
   const position: L.LatLngTuple = [simpleVessel.location.point.lat, simpleVessel.location.point.lon]
 
-  return { id, sprite, position, size: 12 }
+  return { sprite, position, size: 12 }
 }
