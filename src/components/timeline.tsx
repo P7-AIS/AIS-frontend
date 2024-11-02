@@ -25,15 +25,14 @@ export default function Timeline({ timestamps, onChange, timelineVal, setTimelin
 
   useEffect(() => {
     setTimelineVal(0)
-    console.log(timestamps[timelineVal])
     if (selectedVesselmmsi === undefined) setSelectedVesselPath([])
     return () => {
       setSelectedVesselPath([])
     }
-  }, [selectedVesselmmsi, setSelectedVesselPath])
+  }, [selectedVesselmmsi, setSelectedVesselPath, setTimelineVal])
 
   return selectedVesselPath.length !== 0 ? (
-    <div className="bg-neutral_2 rounded-xl mx-4 px-4 py-2 shadow">
+    <div className="bg-gray-700 text-white rounded-xl mx-4 px-4 py-2 shadow max-w-[700px] w-full">
       <div className="w-full flex items-center relative">
         <p className="absolute left-1/2 transform -translate-x-1/2 font-bold text-center">
           Timestamp:{' '}
@@ -41,10 +40,7 @@ export default function Timeline({ timestamps, onChange, timelineVal, setTimelin
             ? timestamps[timelineVal].toISOString().replace('T', ' ').replace('Z', '').slice(0, 19)
             : 'unknown'}
         </p>
-        <button
-          onClick={closePath}
-          className="ml-auto text-bold rounded-md bg-blue-600 hover:bg-blue-400 px-2 text-white"
-        >
+        <button onClick={closePath} className="ml-auto small-blue-btn">
           Close
         </button>
       </div>

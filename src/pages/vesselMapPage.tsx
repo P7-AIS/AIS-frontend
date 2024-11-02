@@ -99,7 +99,7 @@ export default function VesselMapPage() {
       </div>
 
       {selectedVesselPath && (
-        <div id="timeline-container" className="absolute bottom-5 transform z-10 w-full">
+        <div id="timeline-container" className="flex absolute bottom-5 transform z-10 w-full justify-center">
           <TimeLine
             onChange={manageTimelineChange}
             timestamps={selectedVesselPath.map((loc) => loc.timestamp)}
