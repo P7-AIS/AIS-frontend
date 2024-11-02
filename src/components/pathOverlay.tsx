@@ -62,7 +62,7 @@ export default function PathOverlay({ path, idx }: IPathOverlayProps) {
 function pathToGraphic(path: ILocation[]): IGraphicOptions {
   const graphic = new PIXI.Graphics()
 
-  const drawGraphic = (project: (latLng: L.LatLng) => L.Point) => {
+  const drawGraphic = (project: (latLng: L.LatLng) => L.Point, scale: number) => {
     const projectedCords = path.map((loc) => {
       const coords = new L.LatLng(loc.point.lat, loc.point.lon)
       const projection = project(coords)
@@ -70,7 +70,7 @@ function pathToGraphic(path: ILocation[]): IGraphicOptions {
     })
     graphic.clear()
 
-    graphic.lineStyle(2, 0xff0000, 1)
+    graphic.lineStyle(1 / scale, 0xff0000, 1)
     graphic.moveTo(projectedCords[0].x, projectedCords[0].y)
     for (let i = 1; i < projectedCords.length; i++) {
       graphic.lineTo(projectedCords[i].x, projectedCords[i].y)
@@ -80,13 +80,13 @@ function pathToGraphic(path: ILocation[]): IGraphicOptions {
   return { graphic, drawGraphic }
 }
 
-function vesselToGraphic(location: ILocation, textture: PIXI.Texture): IGraphicOptions {
+function vesselToGraphic(location: ILocation, texture: PIXI.Texture): IGraphicOptions {
   const graphic = new PIXI.Graphics()
 
   const drawGraphic = (project: (latLng: L.LatLng) => L.Point, scale: number) => {
     const projectedCords = project(new L.LatLng(location.point.lat, location.point.lon))
     graphic.removeChildren()
-    const sprite: PIXI.Sprite = new PIXI.Sprite(textture)
+    const sprite: PIXI.Sprite = new PIXI.Sprite(texture)
     sprite.anchor.set(0.5, 0.5)
     sprite.rotation = Math.PI / 2 + (location.heading ? (location.heading * Math.PI) / 180 : 0)
     sprite.tint = 0xff0000
