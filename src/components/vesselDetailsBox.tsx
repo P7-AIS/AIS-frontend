@@ -82,7 +82,7 @@ export default function VesselDetailsBox() {
                 <div id="vessel-info" className="flex flex-col">
                   {vesselDetailsContent.map((content, index) => (
                     <div
-                      className="flex flex-row gap-3 py-1 px-2 rounded-md even:bg-gray-700 odd:bg-gray-600"
+                      className="flex flex-row gap-3 py-1 px-2 rounded-md even:bg-gray-700 odd:bg-gray-600 text-sm"
                       key={index}
                     >
                       <p className="w-20 font-semibold">{content.displayName}</p>
@@ -105,8 +105,8 @@ export default function VesselDetailsBox() {
                     ></input>
                   </div>
 
-                  <button className="blue-btn" onClick={controlVesselPath}>
-                    {selectedVesselPath.length > 0 ? 'Close Path' : 'Show Path'}
+                  <button className="blue-badge w-24 py-1" onClick={controlVesselPath}>
+                    {selectedVesselPath.length > 0 ? 'Hide Path' : 'Show Path'}
                   </button>
                 </div>
               </>

@@ -47,12 +47,12 @@ export default function Navbar() {
     >
       <div className="flex flex-row gap-4 items-center">
         <FaviconSVG></FaviconSVG>
-        <h1 className="text-xl font-bold">Suspicious Vessel Finder</h1>
+        <h1 className="text-lg font-bold">Suspicious Vessel Finder</h1>
       </div>
       {opened && (
         <div
           id="settings-container"
-          className="absolute left-[101%] top-0 bg-gray-700 opacity-80 text-white flex flex-col gap-4 p-4 w-fit rounded-xl shadow-lg"
+          className="absolute left-[101%] top-0 bg-gray-700 opacity-90 text-white flex flex-col gap-4 p-4 min-w-96 rounded-lg shadow-lg"
         >
           <h2 className="text-lg font-bold">Simulation settings</h2>
           <div className="flex flex-row justify-between gap-4">

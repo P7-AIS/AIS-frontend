@@ -70,7 +70,7 @@ function pathToGraphic(path: ILocation[]): IGraphicOptions {
     })
     graphic.clear()
 
-    graphic.lineStyle(1 / scale, 0xff0000, 1)
+    graphic.lineStyle(1 / scale, 0x5858ff, 1)
     graphic.moveTo(projectedCords[0].x, projectedCords[0].y)
     for (let i = 1; i < projectedCords.length; i++) {
       graphic.lineTo(projectedCords[i].x, projectedCords[i].y)
@@ -89,7 +89,7 @@ function vesselToGraphic(location: ILocation, texture: PIXI.Texture): IGraphicOp
     const sprite: PIXI.Sprite = new PIXI.Sprite(texture)
     sprite.anchor.set(0.5, 0.5)
     sprite.rotation = Math.PI / 2 + (location.heading ? (location.heading * Math.PI) / 180 : 0)
-    sprite.tint = 0xff0000
+    sprite.tint = 0x5858ff
     sprite.x = projectedCords.x
     sprite.y = projectedCords.y
     sprite.scale.set(0.01 / scale)

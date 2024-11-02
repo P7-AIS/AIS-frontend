@@ -84,26 +84,28 @@ export default function Toolbar({ map, onMonitoringAreaChange, setSelectionArea 
       <div id="tools" className="flex gap-4 items-center">
         <button
           title="Draw focus area as rectangle"
-          className={`hover:text-gray-100 hover:scale-110 transition-all ${activeTool === ActiveGuiTool.Rectangle ? 'text-blue-500' : ''
-            }`}
+          className={`hover:text-gray-100 hover:scale-110 transition-all ${
+            activeTool === ActiveGuiTool.Rectangle ? 'text-blue-500' : ''
+          }`}
           onClick={() => handleChangeTool(ActiveGuiTool.Rectangle)}
         >
-          <RectangleSVG />
+          <RectangleSVG width={24} />
         </button>
         <button
           title="Draw focus area as polygon"
-          className={`hover:text-gray-100 hover:scale-110 transition-all ${activeTool === ActiveGuiTool.Polygon ? 'text-blue-500' : ''
-            }`}
+          className={`hover:text-gray-100 hover:scale-110 transition-all ${
+            activeTool === ActiveGuiTool.Polygon ? 'text-blue-500' : ''
+          }`}
           onClick={() => handleChangeTool(ActiveGuiTool.Polygon)}
         >
-          <PolygonSVG />
+          <PolygonSVG width={24} />
         </button>
         <button
           title="Clear focus area"
           className="bi bi-eraser hover:text-gray-100 hover:scale-110 transition-all"
           onClick={clearOnClick}
         >
-          <ClearSVG />
+          <ClearSVG width={24} />
         </button>
       </div>
     </div>

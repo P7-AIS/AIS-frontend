@@ -17,7 +17,7 @@ export default function MonitoringMenu({ monitoredVessels, zoomToVessel }: IMoni
   return (
     <div className="flex flex-col h-full rounded-lg bg-gray-700 text-white p-4">
       <div className={`flex flex-row justify-between items-center gap-4 pb-2`}>
-        <h1 className="text-xl font-bold pb-2">Monitored vessels</h1>
+        <h1 className="text-lg font-bold pb-2">Monitored vessels</h1>
         <p className="text-sm rounded-md bg-gray-800 px-2 py-1">
           {monitoredVessels.length} {monitoredVessels.length == 1 ? 'vessel' : 'vessels'}
         </p>
@@ -32,12 +32,12 @@ export default function MonitoringMenu({ monitoredVessels, zoomToVessel }: IMoni
           </div>
           <div id="rows-container" className="max-h-[50vh] overflow-y-auto divide-y rounded-md">
             {sortedMonitoredVessels.map((vessel, index) => (
-              <div className={`py-1 px-2 ${vessel.mmsi === selectedVesselmmsi ? "bg-blue-800" : "odd:bg-gray-600 even:bg-gray-700"} rounded-lg border-none mr-2`} key={index}>
-                <MonitoringMenuRow
-                  key={vessel.mmsi}
-                  monitoredVessel={vessel}
-                  zoomToCallback={zoomToVessel}
-                />
+              <div
+                className={`py-1 px-2 ${vessel.mmsi === selectedVesselmmsi ? 'bg-blue-800' : 'odd:bg-gray-600 even:bg-gray-700'} rounded-lg border-none mr-2 
+                `}
+                key={index}
+              >
+                <MonitoringMenuRow key={vessel.mmsi} monitoredVessel={vessel} zoomToCallback={zoomToVessel} />
               </div>
             ))}
           </div>

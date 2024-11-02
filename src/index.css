@@ -41,4 +41,10 @@ body {
   .input-field {
     @apply bg-gray-600 rounded-md outline-none focus:outline-blue-700;
   }
+  .blue-badge {
+    @apply bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded border-blue-400;
+  }
+  .grey-badge {
+    @apply bg-gray-800 text-gray-400 text-xs font-medium px-2.5 py-0.5 rounded border-gray-200;
+  }
 }

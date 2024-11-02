@@ -40,12 +40,12 @@ export default function Timeline({ timestamps, onChange, timelineVal, setTimelin
             ? timestamps[timelineVal].toISOString().replace('T', ' ').replace('Z', '').slice(0, 19)
             : 'unknown'}
         </p>
-        <button onClick={closePath} className="ml-auto small-blue-btn">
+        <button onClick={closePath} className="ml-auto blue-badge">
           Close
         </button>
       </div>
       <input
-        className="w-full"
+        className="w-full mt-3 hover:cursor-pointer"
         type="range"
         id="timeline"
         min="0"
