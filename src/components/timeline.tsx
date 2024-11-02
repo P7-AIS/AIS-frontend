@@ -1,33 +1,44 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect } from 'react'
 import { useVesselGuiContext } from '../contexts/vesselGuiContext'
 interface ITimelineProps {
   timestamps: Date[]
   onChange(index: number): void
+  timelineVal: number
+  setTimelineVal: React.Dispatch<React.SetStateAction<number>>
 }
 
-export default function Timeline({ timestamps, onChange }: ITimelineProps) {
-  const timelineVal = useRef<number>(timestamps.length - 1)
-  const { setSelectedVesselPath } = useVesselGuiContext()
+export default function Timeline({ timestamps, onChange, timelineVal, setTimelineVal }: ITimelineProps) {
+  const { setSelectedVesselPath, selectedVesselmmsi, selectedVesselPath } = useVesselGuiContext()
   function handleChange(val: string) {
     try {
       const intVal: number = parseInt(val)
-      timelineVal.current = intVal
+      setTimelineVal(intVal)
       onChange(intVal)
     } catch (e) {
       console.error(e)
     }
   }
+
   function closePath() {
-    setSelectedVesselPath(undefined)
+    setSelectedVesselPath([])
   }
 
-  return (
+  useEffect(() => {
+    setTimelineVal(0)
+    console.log(timestamps[timelineVal])
+    if (selectedVesselmmsi === undefined) setSelectedVesselPath([])
+    return () => {
+      setSelectedVesselPath([])
+    }
+  }, [selectedVesselmmsi, setSelectedVesselPath])
+
+  return selectedVesselPath.length !== 0 ? (
     <div className="bg-neutral_2 rounded-xl mx-4 px-4 py-2 shadow">
       <div className="w-full flex items-center relative">
         <p className="absolute left-1/2 transform -translate-x-1/2 font-bold text-center">
           Timestamp:{' '}
-          {timelineVal && timestamps[timelineVal.current]
-            ? timestamps[timelineVal.current].toISOString().replace('T', ' ').replace('Z', '').slice(0, 19)
+          {timelineVal && timestamps[timelineVal]
+            ? timestamps[timelineVal].toISOString().replace('T', ' ').replace('Z', '').slice(0, 19)
             : 'unknown'}
         </p>
         <button
@@ -47,5 +58,7 @@ export default function Timeline({ timestamps, onChange }: ITimelineProps) {
         onChange={(e) => handleChange(e.target.value)}
       />
     </div>
+  ) : (
+    <></>
   )
 }

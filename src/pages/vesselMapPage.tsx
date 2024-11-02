@@ -11,7 +11,6 @@ import TimeLine from '../components/timeline'
 import StreamManager from '../implementations/StreamManager'
 import VesselMap from '../components/vesselMap'
 import Navbar from '../components/navbar'
-import Path from '../components/path'
 import SelectionAreaOverlay from '../components/selectionAreaOverlay'
 import VesselMarkerOverlay from '../components/vesselMarkerOverlay'
 import PathOverlay from '../components/pathOverlay'
@@ -23,6 +22,7 @@ export default function VesselMapPage() {
   const [map, setMap] = useState<L.Map | null>(null)
   const { selectedVesselmmsi, selectedVesselPath, selectionArea, setSelectionArea } = useVesselGuiContext()
   const { clientHandler, myDateTimeRef } = useAppContext()
+  const [timelineVal, setTimelineVal] = useState<number>(0)
 
   // Use a ref to store the StreamManager instance
   const streamManagerRef = useRef(new StreamManager(clientHandler, setAllVessels, setMonitoredVessels, myDateTimeRef))
@@ -46,6 +46,10 @@ export default function VesselMapPage() {
     streamManagerRef.current.syncMonitoredVessels(monitoredVessels)
   }, [monitoredVessels])
 
+  useEffect(() => {
+    if (selectedVesselPath.length > 0) setTimelineVal(selectedVesselPath.length - 1)
+  }, [selectedVesselPath])
+
   function zoomToVessel(vessel: IMonitoredVessel) {
     const simpleVessel = allVessels?.find((v) => v.mmsi === vessel.mmsi)
     if (simpleVessel && map) {
@@ -54,12 +58,11 @@ export default function VesselMapPage() {
   }
 
   function manageTimelineChange(index: number) {
-    if (!selectedVesselPath) {
+    if (selectedVesselPath.length === 0) {
       console.error('timeline change without any path information')
       return
     }
-    // console.log(selectedVesselPath[index])
-    console.log('Timelinechange: index ' + index)
+    setTimelineVal(index)
   }
 
   return (
@@ -87,32 +90,24 @@ export default function VesselMapPage() {
           setMapRef={setMap}
           overlays={
             <>
+              <PathOverlay path={selectedVesselPath} idx={timelineVal} />
               <SelectionAreaOverlay selectionArea={selectionArea} />
-              <PathOverlay
-                path={[
-                  { point: { lat: 55, lon: 10 }, heading: 180, timestamp: new Date() },
-                  { point: { lat: 56, lon: 11 }, heading: 0, timestamp: new Date('2024-10-30') },
-                ]}
-                idx={1}
-              />
               <VesselMarkerOverlay simpleVessels={allVessels} monitoredVessels={monitoredVessels} />
             </>
           }
         />
       </div>
 
-      {
-        <>
-          <div id="timeline-container" className="absolute bottom-5 transform z-10 w-full">
-            {/* <TimeLine onChange={manageTimelineChange} timestamps={selectedVesselPath.map((loc) => loc.timestamp)} /> */}
-            <TimeLine
-              onChange={manageTimelineChange}
-              timestamps={[new Date(), new Date('2024-10-30'), new Date('2024-10-29')]}
-            />
-          </div>
-          {/* {map && <Path map={map} path={selectedVesselPath} />} */}
-        </>
-      }
+      {selectedVesselPath && (
+        <div id="timeline-container" className="absolute bottom-5 transform z-10 w-full">
+          <TimeLine
+            onChange={manageTimelineChange}
+            timestamps={selectedVesselPath.map((loc) => loc.timestamp)}
+            timelineVal={timelineVal}
+            setTimelineVal={setTimelineVal}
+          />
+        </div>
+      )}
     </div>
   )
 }
