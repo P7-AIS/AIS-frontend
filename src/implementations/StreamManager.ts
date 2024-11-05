@@ -6,8 +6,6 @@ import { IStreamManager } from '../interfaces/IStreamManager'
 import { RefObject } from 'react'
 
 export default class StreamManager implements IStreamManager {
-  private allVessels: ISimpleVessel[]
-  private monitoredVessels: IMonitoredVessel[]
   private zone: IPoint[] = []
   private simpleVesselTimeout: NodeJS.Timeout | undefined = undefined
   private monitoredVesselTimeout: NodeJS.Timeout | undefined = undefined
@@ -19,13 +17,6 @@ export default class StreamManager implements IStreamManager {
     private readonly myDateTimeRef: RefObject<Date>
   ) {
     this.onMonitoringZoneChange = this.onMonitoringZoneChange.bind(this)
-  }
-
-  public syncAllVessels(vessels: ISimpleVessel[]) {
-    this.allVessels = vessels
-  }
-  public syncMonitoredVessels(vessels: IMonitoredVessel[]) {
-    this.monitoredVessels = vessels
   }
 
   private async fetchSimpleVesselData() {
@@ -68,7 +59,6 @@ export default class StreamManager implements IStreamManager {
       timestamp: Math.round(this.myDateTimeRef.current!.getTime() / 1000),
       selection: { points: this.zone },
     })
-    console.log(monitoredvessels)
     this.manageNewMonitoredVessels(monitoredvessels)
   }
 
@@ -86,28 +76,10 @@ export default class StreamManager implements IStreamManager {
   }
 
   private manageNewSimpleVessels(vessels: ISimpleVessel[]) {
-    const newVessels = this.manageVesselsFromFetch(vessels, this.allVessels)
-    this.setAllVessels(newVessels)
+    this.setAllVessels(vessels)
   }
 
   private manageNewMonitoredVessels(vessels: IMonitoredVessel[]) {
     this.setMonitoredVessels(vessels)
-  }
-
-  private manageVesselsFromFetch<T extends ISimpleVessel | IMonitoredVessel>(
-    vessels: T[],
-    curVessels: T[] | undefined
-  ): T[] {
-    const locVessels: T[] = curVessels ? JSON.parse(JSON.stringify(curVessels)) : []
-    vessels.forEach((vessel) => {
-      if (locVessels?.map((v) => v.mmsi).includes(vessel.mmsi)) {
-        const idx = locVessels.findIndex((v) => v.mmsi === vessel.mmsi)
-        locVessels[idx] = vessel
-      } else {
-        locVessels?.push(vessel)
-      }
-    })
-
-    return locVessels
   }
 }

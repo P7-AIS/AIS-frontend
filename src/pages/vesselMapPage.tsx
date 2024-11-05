@@ -39,14 +39,6 @@ export default function VesselMapPage() {
   }, [])
 
   useEffect(() => {
-    streamManagerRef.current.syncAllVessels(allVessels)
-  }, [allVessels])
-
-  useEffect(() => {
-    streamManagerRef.current.syncMonitoredVessels(monitoredVessels)
-  }, [monitoredVessels])
-
-  useEffect(() => {
     if (selectedVesselPath.length > 0) setTimelineVal(selectedVesselPath.length - 1)
   }, [selectedVesselPath])
 
