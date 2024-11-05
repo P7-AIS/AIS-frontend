@@ -11,3 +11,8 @@
 ### Start server
 
 - `npm run dev:all`
+
+### Test
+
+- `npm run test`
+- `npm run test:cov` to show coverage

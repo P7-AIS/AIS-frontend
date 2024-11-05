@@ -31,7 +31,7 @@ export default class StreamManager implements IStreamManager {
     try {
       await this.fetchSimpleVesselData()
     } catch (e) {
-      console.log(e)
+      console.error(e)
     }
     this.simpleVesselTimeout = setTimeout(this.simpleVesselLoop.bind(this), 5000)
   }
