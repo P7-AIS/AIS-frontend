@@ -1,7 +1,5 @@
-import { Observable } from 'rxjs'
 import { IDetailedVessel } from '../models/detailedVessel'
 import { ISelectionArea } from '../models/selectionArea'
-import { IStreamResponse } from '../models/streamResponse'
 import { IMonitoredVessel } from '../models/monitoredVessel'
 import { ISimpleVessel } from '../models/simpleVessel'
 import { IVesselPath } from '../models/vesselPath'
@@ -14,11 +12,4 @@ export interface IClientHandler {
   getSimpleVessles(request: { timestamp: number }): Promise<ISimpleVessel[]>
   getMonitoredVessels(request: { timestamp: number; selection: ISelectionArea }): Promise<IMonitoredVessel[]>
   getVesselPath(request: { mmsi: number; starttime: number; endtime: number }): Promise<IVesselPath>
-
-  //Deprecated cant close stream
-  startStreaming(request: {
-    startTime: number
-    selection: ISelectionArea
-    timeSpeed: number
-  }): Observable<IStreamResponse>
 }
