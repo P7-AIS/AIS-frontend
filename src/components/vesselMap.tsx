@@ -1,20 +1,11 @@
 import { MapContainer, TileLayer } from 'react-leaflet'
-import { ISimpleVessel } from '../models/simpleVessel'
-import { IMonitoredVessel } from '../models/monitoredVessel'
-import VesselMarkerOverlay from './vesselMarkerOverlay'
-import { ISelectionArea } from '../models/selectionArea'
-import SelectionAreaOverlay from './selectionAreaOverlay'
 
 const VesselMap = ({
-  simpleVessels,
-  monitoredVessels,
-  selectionArea,
   setMapRef,
+  overlays,
 }: {
-  simpleVessels: ISimpleVessel[]
-  monitoredVessels: IMonitoredVessel[]
-  selectionArea: ISelectionArea
   setMapRef: React.Dispatch<React.SetStateAction<L.Map | null>>
+  overlays?: React.ReactNode
 }) => {
   return (
     <MapContainer
@@ -36,8 +27,7 @@ const VesselMap = ({
         url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
         noWrap={true}
       />
-      <SelectionAreaOverlay selectionArea={selectionArea} />
-      <VesselMarkerOverlay simpleVessels={simpleVessels} monitoredVessels={monitoredVessels} />
+      {overlays}
     </MapContainer>
   )
 }

@@ -5,22 +5,12 @@ interface IChevronProps {
 }
 
 export default function ChevronSVG({ width, height, rotate }: IChevronProps) {
-  width = width ? width : 24
-  height = height ? height : 24
-
+  width = width ? width : 30
+  height = height ? height : 30
+  rotate = rotate ? rotate : 0
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width={width}
-      height={height}
-      fill="currentColor"
-      className={'bi bi-chevron-down' + (rotate ? ' rotate-' + rotate : '')}
-      viewBox="0 0 16 16"
-    >
-      <path
-        fillRule="evenodd"
-        d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708"
-      />
+    <svg xmlns="http://www.w3.org/2000/svg" style={{ transform: `rotate(${rotate}deg)` }} height={height} viewBox="0 -960 960 960" width={width} fill="currentColor">
+      <path d="M480-528 324-372q-11 11-28 11t-28-11q-11-11-11-28t11-28l184-184q12-12 28-12t28 12l184 184q11 11 11 28t-11 28q-11 11-28 11t-28-11L480-528Z" />
     </svg>
   )
 }

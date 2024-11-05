@@ -9,9 +9,6 @@ import { ISpriteMarkerOptions } from '../models/spriteMarkerOptions'
 import SpriteMarkerOverlayHandler from '../implementations/SpriteMarkerOverlayHandler'
 import { useMap } from 'react-leaflet'
 import { useAppContext } from '../contexts/appcontext'
-import { IDetailedVessel } from '../models/detailedVessel'
-import { renderToString } from 'react-dom/server'
-import Popup from './popup'
 
 export default function VesselMarkerOverlay({
   simpleVessels,
@@ -20,12 +17,14 @@ export default function VesselMarkerOverlay({
   simpleVessels: ISimpleVessel[]
   monitoredVessels: IMonitoredVessel[]
 }) {
-  const { setSelectedVesselmmsi } = useVesselGuiContext()
+  const { selectedVesselmmsi, setSelectedVesselmmsi } = useVesselGuiContext()
   const [markerOptions] = useState<ISpriteMarkerOptions[]>([])
   const [pixiContainer] = useState(new PIXI.Container())
   const [overlay] = useState(new SpriteMarkerOverlayHandler(markerOptions, pixiContainer))
   const [arrowTexture, setArrowTexture] = useState<PIXI.Texture | null>(null)
+  const [selectedArrowTexture, setSelectedArrowTexture] = useState<PIXI.Texture | null>(null)
   const [circleTexture, setCircleTexture] = useState<PIXI.Texture | null>(null)
+  const [selectedCircleTexture, setSelectedCircleTexture] = useState<PIXI.Texture | null>(null)
   const { clientHandler } = useAppContext()
 
   const map = useMap()
@@ -34,9 +33,13 @@ export default function VesselMarkerOverlay({
   useEffect(() => {
     const loadTextures = async () => {
       const loadedArrowTexture = await PIXI.Assets.load('assets/arrow.svg')
+      const loadedSelectedArrowTexture = await PIXI.Assets.load('assets/selectedArrow.svg')
       const loadedCircleTexture = await PIXI.Assets.load('assets/circle.svg')
+      const loadedSelectedCircleTexture = await PIXI.Assets.load('assets/selectedCircle.svg')
       setArrowTexture(loadedArrowTexture)
+      setSelectedArrowTexture(loadedSelectedArrowTexture)
       setCircleTexture(loadedCircleTexture)
+      setSelectedCircleTexture(loadedSelectedCircleTexture)
     }
     loadTextures()
   }, [])
@@ -51,7 +54,7 @@ export default function VesselMarkerOverlay({
 
   // Update markers
   useEffect(() => {
-    if (arrowTexture === null || circleTexture === null) {
+    if (arrowTexture === null || selectedArrowTexture === null || circleTexture === null || selectedCircleTexture === null) {
       return
     }
 
@@ -60,19 +63,13 @@ export default function VesselMarkerOverlay({
 
     getDisplayVessels(simpleVessels, monitoredVessels).forEach((vessel) => {
       {
-        const getVesselInfo = () =>
-          clientHandler.getVesselInfo({
-            mmsi: vessel.simpleVessel.mmsi,
-            timestamp: parseInt((new Date().getTime() / 1000).toFixed(0)),
-          })
-
         const onClick = () =>
           setSelectedVesselmmsi((selectedVesselmmsi) =>
             selectedVesselmmsi === vessel.simpleVessel.mmsi ? undefined : vessel.simpleVessel.mmsi
           )
 
         markerOptions.push(
-          displayVesselToSpriteMarkerOption(vessel, arrowTexture, circleTexture, onClick, getVesselInfo)
+          displayVesselToSpriteMarkerOption(vessel, arrowTexture, selectedArrowTexture, circleTexture, selectedCircleTexture, selectedVesselmmsi === vessel.simpleVessel.mmsi, onClick)
         )
       }
     })
@@ -84,7 +81,9 @@ export default function VesselMarkerOverlay({
     }
   }, [
     arrowTexture,
+    selectedArrowTexture,
     circleTexture,
+    selectedCircleTexture,
     clientHandler,
     markerOptions,
     monitoredVessels,
@@ -92,6 +91,7 @@ export default function VesselMarkerOverlay({
     pixiContainer,
     setSelectedVesselmmsi,
     simpleVessels,
+    selectedVesselmmsi
   ])
 
   return null
@@ -119,23 +119,23 @@ function trustworthinessToColor(trustworthiness?: number): number {
 function displayVesselToSpriteMarkerOption(
   vessel: DisplayVessel,
   arrowTexture: PIXI.Texture,
+  selectedArrowTexture: PIXI.Texture,
   circleTexture: PIXI.Texture,
+  selectedCircleTexture: PIXI.Texture,
+  isSelected: boolean,
   onClick: () => void,
-  getVesselInfo: () => Promise<IDetailedVessel>
 ): ISpriteMarkerOptions {
   const { simpleVessel, monitoredInfo } = vessel
-
-  const id = vessel.simpleVessel.mmsi
 
   let sprite: PIXI.Sprite
 
   if (simpleVessel.location.heading !== undefined) {
-    sprite = new PIXI.Sprite(arrowTexture)
+    sprite = new PIXI.Sprite(isSelected ? selectedArrowTexture : arrowTexture)
     sprite.anchor.set(0.5, 0.5)
     sprite.rotation =
       Math.PI / 2 + (simpleVessel.location.heading ? (simpleVessel.location.heading * Math.PI) / 180 : 0)
   } else {
-    sprite = new PIXI.Sprite(circleTexture)
+    sprite = new PIXI.Sprite(isSelected ? selectedCircleTexture : circleTexture)
     sprite.anchor.set(0.5, 0.5)
   }
 
@@ -150,12 +150,8 @@ function displayVesselToSpriteMarkerOption(
   sprite.cursor = 'pointer'
   sprite.on('click', onClick)
 
-  const getPopupContent = async () => {
-    const vesselInfo = await getVesselInfo()
-    return renderToString(<Popup vesselDetails={vesselInfo} />)
-  }
-
+  const size = isSelected ? 20 : 13
   const position: L.LatLngTuple = [simpleVessel.location.point.lat, simpleVessel.location.point.lon]
 
-  return { id, sprite, getPopupContent, position, size: 10 }
+  return { sprite, position, size }
 }

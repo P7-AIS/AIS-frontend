@@ -30,3 +30,21 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
+
+@layer base {
+  .blue-btn {
+    @apply bg-blue-800 hover:bg-blue-700 border-2 transition-all border-blue-700 px-2 py-1 rounded-md text-white;
+  }
+  .small-blue-btn {
+    @apply bg-blue-800 hover:bg-blue-700 border-2 transition-all border-blue-700 px-1 py-1 text-sm rounded-md text-white;
+  }
+  .input-field {
+    @apply bg-gray-600 rounded-md outline-none focus:outline-blue-700;
+  }
+  .blue-badge {
+    @apply bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded border-blue-400;
+  }
+  .grey-badge {
+    @apply bg-gray-800 text-gray-400 text-xs font-medium px-2.5 py-0.5 rounded border-gray-200;
+  }
+}
