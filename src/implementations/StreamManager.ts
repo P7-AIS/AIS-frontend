@@ -5,6 +5,9 @@ import { ISimpleVessel } from '../models/simpleVessel'
 import { IStreamManager } from '../interfaces/IStreamManager'
 import { RefObject } from 'react'
 
+export const SIMPLE_FETCH_INTERVAL = 5000 // 5 seconds
+export const MONITORED_FETCH_INTERVAL = 10000 // 10 seconds
+
 export default class StreamManager implements IStreamManager {
   private zone: IPoint[] = []
   private simpleVesselTimeout: NodeJS.Timeout | undefined = undefined
@@ -33,7 +36,7 @@ export default class StreamManager implements IStreamManager {
     } catch (e) {
       console.error(e)
     }
-    this.simpleVesselTimeout = setTimeout(this.simpleVesselLoop.bind(this), 5000)
+    this.simpleVesselTimeout = setTimeout(this.simpleVesselLoop.bind(this), SIMPLE_FETCH_INTERVAL)
   }
 
   public async startSimpleVesselFetching() {
@@ -68,7 +71,7 @@ export default class StreamManager implements IStreamManager {
     } catch (e) {
       console.error(e)
     }
-    this.monitoredVesselTimeout = setTimeout(this.startMonitoredVesselFetching.bind(this), 10000)
+    this.monitoredVesselTimeout = setTimeout(this.startMonitoredVesselFetching.bind(this), MONITORED_FETCH_INTERVAL)
   }
 
   private async stopMonitoredVesselFetching() {
