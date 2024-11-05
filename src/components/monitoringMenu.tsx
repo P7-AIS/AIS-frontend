@@ -46,7 +46,7 @@ export default function MonitoringMenu({ monitoredVessels, zoomToVessel }: IMoni
       <button
         title="Show/hide list of monitored vessels"
         onClick={() => setIsCollapsed(!isCollapsed)}
-        className="w-full flex flex-cols items-center justify-center bottom-0 mt-4"
+        className={`w-full flex flex-cols items-center justify-center bottom-0 ${!isCollapsed && "mt-4"}`}
       >
         {isCollapsed ? <ChevronSVG rotate={180} /> : <ChevronSVG />}
       </button>

@@ -114,7 +114,7 @@ export default function VesselDetailsBox() {
             <button
               title="Hide/show vessel details"
               onClick={() => setIsCollapsed(!isCollapsed)}
-              className="w-full flex flex-cols items-center justify-center bottom-0 mt-4"
+              className={`w-full flex flex-cols items-center justify-center bottom-0 ${!isCollapsed && "mt-4"}`}
             >
               {isCollapsed ? <ChevronSVG rotate={180} /> : <ChevronSVG />}
             </button>
