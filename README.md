@@ -6,8 +6,8 @@
 
 - `npm i`
 - Install [Protobuf Compiler (protoc)](https://medium.com/@LogeshSakthivel/installing-protobuf-compiler-protoc-536e7770e13b).
-- `npm run build:protos:(mac/win)`
 - `git submodule update --init --recursive` to update submodules
+- `npm run build:protos:(mac/win)`
 
 ### Start server
 
