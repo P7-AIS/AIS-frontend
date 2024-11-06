@@ -27,7 +27,7 @@ export default class StreamManager implements IStreamManager {
       timestamp: Math.round(this.myDateTimeRef.current!.getTime() / 1000),
     })
 
-    this.manageNewSimpleVessels(simpleVessels)
+    this.setAllVessels(simpleVessels)
   }
 
   private async simpleVesselLoop() {
@@ -62,7 +62,7 @@ export default class StreamManager implements IStreamManager {
       timestamp: Math.round(this.myDateTimeRef.current!.getTime() / 1000),
       selection: { points: this.zone },
     })
-    this.manageNewMonitoredVessels(monitoredvessels)
+    this.setMonitoredVessels(monitoredvessels)
   }
 
   private async startMonitoredVesselFetching() {
@@ -76,13 +76,5 @@ export default class StreamManager implements IStreamManager {
 
   private async stopMonitoredVesselFetching() {
     clearTimeout(this.monitoredVesselTimeout)
-  }
-
-  private manageNewSimpleVessels(vessels: ISimpleVessel[]) {
-    this.setAllVessels(vessels)
-  }
-
-  private manageNewMonitoredVessels(vessels: IMonitoredVessel[]) {
-    this.setMonitoredVessels(vessels)
   }
 }

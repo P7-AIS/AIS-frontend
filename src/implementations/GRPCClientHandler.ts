@@ -15,7 +15,7 @@ import { ILocation } from '../models/location'
 import { IVesselPath } from '../models/vesselPath'
 
 export default class GRPCClientHandler implements IClientHandler {
-  constructor(private readonly client: AISServiceClientImpl) { }
+  constructor(private readonly client: AISServiceClientImpl) {}
 
   async getVesselInfo(request: { mmsi: number; timestamp: number }): Promise<IDetailedVessel> {
     const grpcReq: VesselInfoRequest = {
