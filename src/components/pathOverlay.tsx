@@ -15,13 +15,16 @@ export default function PathOverlay({ path, idx }: IPathOverlayProps) {
   const [pixiContainer] = useState(new PIXI.Container())
   const [overlay] = useState(new GraphicOverlayHandler(pixiContainer, graphicOptions))
   const [arrowTexture, setArrowTexture] = useState<PIXI.Texture | null>(null)
+  const [circleTexture, setCircleTexture] = useState<PIXI.Texture | null>(null)
 
   const map = useMap()
 
   useEffect(() => {
     const loadTextures = async () => {
       const loadedArrowTexture = await PIXI.Assets.load('assets/arrow.svg')
+      const loadedCircleTexture = await PIXI.Assets.load('assets/circle.svg')
       setArrowTexture(loadedArrowTexture)
+      setCircleTexture(loadedCircleTexture)
     }
     loadTextures()
   }, [])
@@ -34,7 +37,7 @@ export default function PathOverlay({ path, idx }: IPathOverlayProps) {
   }, [map, overlay])
 
   useEffect(() => {
-    if (arrowTexture === null) {
+    if (arrowTexture === null || circleTexture === null) {
       return
     }
     pixiContainer.removeChildren()
@@ -46,7 +49,7 @@ export default function PathOverlay({ path, idx }: IPathOverlayProps) {
       overlay.redraw()
     } else {
       graphicOptions.push(pathToGraphic(path))
-      graphicOptions.push(vesselToGraphic(path[idx], arrowTexture))
+      graphicOptions.push(vesselToGraphic(path[Math.min(idx, path.length - 1)], arrowTexture, circleTexture))
     }
 
     if (graphicOptions.length !== 0) {
@@ -80,19 +83,24 @@ function pathToGraphic(path: ILocation[]): IGraphicOptions {
   return { graphic, drawGraphic }
 }
 
-function vesselToGraphic(location: ILocation, texture: PIXI.Texture): IGraphicOptions {
+function vesselToGraphic(
+  location: ILocation,
+  arrowTexture: PIXI.Texture,
+  circleTexture: PIXI.Texture
+): IGraphicOptions {
   const graphic = new PIXI.Graphics()
 
   const drawGraphic = (project: (latLng: L.LatLng) => L.Point, scale: number) => {
     const projectedCords = project(new L.LatLng(location.point.lat, location.point.lon))
     graphic.removeChildren()
-    const sprite: PIXI.Sprite = new PIXI.Sprite(texture)
+    const sprite: PIXI.Sprite = new PIXI.Sprite(location.heading ? arrowTexture : circleTexture)
     sprite.anchor.set(0.5, 0.5)
     sprite.rotation = Math.PI / 2 + (location.heading ? (location.heading * Math.PI) / 180 : 0)
     sprite.tint = 0x5858ff
     sprite.x = projectedCords.x
     sprite.y = projectedCords.y
-    sprite.scale.set(0.01 / scale)
+    sprite.width = 20 / scale
+    sprite.height = 20 / scale
     graphic.addChild(sprite)
   }
 

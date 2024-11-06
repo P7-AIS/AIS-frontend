@@ -4,7 +4,7 @@ import L from 'leaflet'
 import '@geoman-io/leaflet-geoman-free'
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css'
 import { useCallback, useEffect } from 'react'
-import Point, { IPoint } from '../models/point'
+import { IPoint } from '../models/point'
 import { ISelectionArea } from '../models/selectionArea'
 import ClearSVG from '../svgs/clearSVG'
 import PolygonSVG from '../svgs/polygonSVG'
@@ -52,7 +52,7 @@ export default function Toolbar({ map, onMonitoringAreaChange, setSelectionArea 
 
           const points = (e.layer as Polygon)
             .toGeoJSON()
-            .geometry.coordinates[0].map((loc) => new Point(loc[1] as number, loc[0] as number))
+            .geometry.coordinates[0].map((loc) => ({ lat: loc[1] as number, lon: loc[0] as number }))
 
           //change in monitored area
           onMonitoringAreaChange(points)
