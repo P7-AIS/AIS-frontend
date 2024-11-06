@@ -9,11 +9,3 @@ export interface IVesselPath {
   pathForecast: IPath
   pathHistory: IPath
 }
-
-export default class VesselPath implements IVesselPath {
-  constructor(
-    public mmsi: number,
-    public pathForecast: IPath,
-    public pathHistory: IPath
-  ) {}
-}
