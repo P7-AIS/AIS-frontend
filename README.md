@@ -11,7 +11,9 @@
 
 ### Start server
 
-- `npm run dev:all`
+- `npm run dev` (vite + proxy)
+  - `npm run dev:simple` (vite)
+  - `npm run proxy` (proxy)
 
 ### Test
 

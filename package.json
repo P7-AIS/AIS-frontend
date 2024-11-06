@@ -4,8 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "dev:all": "concurrently \"npm run proxy\" \"npm run dev\"",
+    "dev": "concurrently \"npm run proxy\" \"npm run dev:simple\"",
+    "dev:simple": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "format": "prettier --write src",
