@@ -7,13 +7,16 @@ interface IMonitoringMenuRowProps {
 }
 
 export default function MonitoringMenuRow({ monitoredVessel, zoomToCallback }: IMonitoringMenuRowProps) {
-  const { selectedVesselmmsi, setSelectedVesselmmsi } = useVesselGuiContext()
+  const { selectedVesselmmsi, setSelectedVesselmmsi, setPathIsShown } = useVesselGuiContext()
 
   function handleRowSelect() {
     setSelectedVesselmmsi((prevMmsi) => {
       if (prevMmsi === monitoredVessel.mmsi) return undefined
       return monitoredVessel.mmsi
     })
+    if (selectedVesselmmsi === monitoredVessel.mmsi) {
+      setPathIsShown(false)
+    }
   }
 
   function handleClick(e: React.MouseEvent<HTMLButtonElement>) {
