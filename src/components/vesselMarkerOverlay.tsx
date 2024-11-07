@@ -71,7 +71,6 @@ export default function VesselMarkerOverlay({ simpleVessels, monitoredVessels }:
           setSelectedVesselmmsi((selectedVesselmmsi) =>
             selectedVesselmmsi === vessel.simpleVessel.mmsi ? undefined : vessel.simpleVessel.mmsi
           )
-
         markerOptions.push(
           displayVesselToSpriteMarkerOption(
             vessel,
@@ -80,7 +79,8 @@ export default function VesselMarkerOverlay({ simpleVessels, monitoredVessels }:
             circleTexture,
             selectedCircleTexture,
             selectedVesselmmsi === vessel.simpleVessel.mmsi,
-            onClick
+            onClick,
+            () => overlay.redraw()
           )
         )
       }
@@ -139,7 +139,8 @@ function displayVesselToSpriteMarkerOption(
   circleTexture: PIXI.Texture,
   selectedCircleTexture: PIXI.Texture,
   isSelected: boolean,
-  onClick: () => void
+  onClick: () => void,
+  redraw: () => void
 ): ISpriteMarkerOptions {
   const { simpleVessel, monitoredInfo } = vessel
 
@@ -165,6 +166,14 @@ function displayVesselToSpriteMarkerOption(
   sprite.eventMode = 'dynamic'
   sprite.cursor = 'pointer'
   sprite.on('click', onClick)
+  sprite.on('mouseover', () => {
+    sprite.alpha = monitoredInfo ? 1 : 0.7
+    redraw()
+  })
+  sprite.on('mouseout', () => {
+    sprite.alpha = monitoredInfo ? 1 : 0.3
+    redraw()
+  })
 
   const size = isSelected ? 20 : 13
   const position: L.LatLngTuple = [simpleVessel.location.point.lat, simpleVessel.location.point.lon]
