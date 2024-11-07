@@ -13,43 +13,67 @@ export default function VesselDetailsBox() {
   const [pathDuration, setPathDuration] = useState<number>(1)
   const [isCollapsed, setIsCollapsed] = useState<boolean>(false)
 
+  // Fetch vessel details on selected vessel change
   useEffect(() => {
     const fetchDetails = async () => {
       if (!selectedVesselmmsi) return
-      const details = await clientHandler.getVesselInfo({
-        mmsi: selectedVesselmmsi,
-        timestamp: myDateTimeRef.current.getTime(),
-      })
-      setVesselDetails(details)
+
+      try {
+        const details = await clientHandler.getVesselInfo({
+          mmsi: selectedVesselmmsi,
+          timestamp: myDateTimeRef.current.getTime(),
+        })
+        setVesselDetails(details)
+      } catch (e) {
+        console.error(e)
+      }
     }
 
     fetchDetails()
     setLoading(false)
   }, [clientHandler, selectedVesselmmsi])
 
-  async function controlVesselPath() {
+  async function tryGetVesselPath() {
     if (!selectedVesselmmsi) return
-    if (selectedVesselPath.length > 0) {
+    try {
+      const res = await clientHandler.getVesselPath({
+        mmsi: selectedVesselmmsi,
+        endtime: myDateTimeRef.current.getTime() / 1000,
+        starttime: myDateTimeRef.current.getTime() / 1000 - pathDuration * 60 * 60,
+      }) //time is in seconds
+      setSelectedVesselPath(res.pathHistory.locations)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  const pathIsShown = selectedVesselPath.length > 0
+
+  async function controlVesselPath() {
+    if (pathIsShown) {
       setSelectedVesselPath([])
       return
     }
-    const res = await clientHandler.getVesselPath({
-      mmsi: selectedVesselmmsi,
-      endtime: myDateTimeRef.current.getTime() / 1000,
-      starttime: myDateTimeRef.current.getTime() / 1000 - pathDuration * 60 * 60,
-    }) //time is in seconds
-    setSelectedVesselPath(res.pathHistory.locations)
+    await tryGetVesselPath()
   }
 
-  function handleDurationChange(val: string) {
+  async function handleDurationChange(val: string) {
     try {
       const parsed = parseFloat(val)
-      setPathDuration(parsed)
+      setPathDuration(Math.max(0, parsed))
     } catch (e) {
       console.error(e)
       setPathDuration(1)
     }
   }
+
+  // Fetch path history on path duration change
+  useEffect(() => {
+    async function doSomething() {
+      await tryGetVesselPath()
+    }
+    if (pathIsShown) doSomething()
+  }, [pathDuration, pathIsShown, tryGetVesselPath])
 
   const vesselDetailsContent = [
     { displayName: 'Name', value: vesselDetails?.name },
@@ -99,7 +123,9 @@ export default function VesselDetailsBox() {
                     <input
                       className="w-12 rounded-md text-center bg-gray-600"
                       type="number"
-                      placeholder="Path duration  Hours"
+                      min="0"
+                      max="24"
+                      placeholder="Path duration Hours"
                       value={pathDuration}
                       onChange={(e) => handleDurationChange(e.target.value)}
                     ></input>
@@ -114,7 +140,7 @@ export default function VesselDetailsBox() {
             <button
               title="Hide/show vessel details"
               onClick={() => setIsCollapsed(!isCollapsed)}
-              className={`w-full flex flex-cols items-center justify-center bottom-0 ${!isCollapsed && "mt-4"}`}
+              className={`w-full flex flex-cols items-center justify-center bottom-0 ${!isCollapsed && 'mt-4'}`}
             >
               {isCollapsed ? <ChevronSVG rotate={180} /> : <ChevronSVG />}
             </button>
