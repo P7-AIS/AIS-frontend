@@ -11,6 +11,7 @@ export default function VesselDetailsBox() {
   const [vesselDetails, setVesselDetails] = useState<IDetailedVessel | undefined>(undefined)
   const [loading, setLoading] = useState(true)
   const [pathDuration, setPathDuration] = useState<number>(1)
+  const [pathIsShown, setPathIsShown] = useState<boolean>(false)
   const [isCollapsed, setIsCollapsed] = useState<boolean>(false)
 
   // Fetch vessel details on selected vessel change
@@ -31,49 +32,30 @@ export default function VesselDetailsBox() {
 
     fetchDetails()
     setLoading(false)
-  }, [clientHandler, selectedVesselmmsi])
+  }, [clientHandler, myDateTimeRef, selectedVesselmmsi])
 
-  async function tryGetVesselPath() {
-    if (!selectedVesselmmsi) return
-    try {
-      const res = await clientHandler.getVesselPath({
-        mmsi: selectedVesselmmsi,
-        endtime: myDateTimeRef.current.getTime() / 1000,
-        starttime: myDateTimeRef.current.getTime() / 1000 - pathDuration * 60 * 60,
-      }) //time is in seconds
-      setSelectedVesselPath(res.pathHistory.locations)
-    } catch (e) {
-      console.error(e)
-    }
-  }
-
-  const pathIsShown = selectedVesselPath.length > 0
-
-  async function controlVesselPath() {
-    if (pathIsShown) {
-      setSelectedVesselPath([])
-      return
-    }
-    await tryGetVesselPath()
-  }
-
-  async function handleDurationChange(val: string) {
-    try {
-      const parsed = parseFloat(val)
-      setPathDuration(Math.max(0, parsed))
-    } catch (e) {
-      console.error(e)
-      setPathDuration(1)
-    }
-  }
-
-  // Fetch path history on path duration change
+  // Fetch path history on path duration change and show path
   useEffect(() => {
-    async function doSomething() {
-      await tryGetVesselPath()
+    async function tryGetVesselPath() {
+      if (!selectedVesselmmsi) return
+      try {
+        const res = await clientHandler.getVesselPath({
+          mmsi: selectedVesselmmsi,
+          endtime: myDateTimeRef.current.getTime() / 1000,
+          starttime: myDateTimeRef.current.getTime() / 1000 - pathDuration * 60 * 60,
+        }) //time is in seconds
+        setSelectedVesselPath(res.pathHistory.locations)
+      } catch (e) {
+        console.error(e)
+      }
     }
-    if (pathIsShown) doSomething()
-  }, [pathDuration, pathIsShown, tryGetVesselPath])
+
+    if (!pathIsShown) {
+      setSelectedVesselPath([])
+    } else {
+      tryGetVesselPath()
+    }
+  }, [clientHandler, myDateTimeRef, pathDuration, pathIsShown, selectedVesselmmsi, setSelectedVesselPath])
 
   const vesselDetailsContent = [
     { displayName: 'Name', value: vesselDetails?.name },
@@ -127,11 +109,11 @@ export default function VesselDetailsBox() {
                       max="24"
                       placeholder="Path duration Hours"
                       value={pathDuration}
-                      onChange={(e) => handleDurationChange(e.target.value)}
+                      onChange={(e) => setPathDuration(Math.max(0, parseFloat(e.target.value)))}
                     ></input>
                   </div>
 
-                  <button className="blue-badge w-24 py-1" onClick={controlVesselPath}>
+                  <button className="blue-badge w-24 py-1" onClick={() => setPathIsShown(!pathIsShown)}>
                     {selectedVesselPath.length > 0 ? 'Hide Path' : 'Show Path'}
                   </button>
                 </div>
