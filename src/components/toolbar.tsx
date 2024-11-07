@@ -4,7 +4,7 @@ import L from 'leaflet'
 import '@geoman-io/leaflet-geoman-free'
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css'
 import { useCallback, useEffect } from 'react'
-import Point, { IPoint } from '../models/point'
+import { IPoint } from '../models/point'
 import { ISelectionArea } from '../models/selectionArea'
 import ClearSVG from '../svgs/clearSVG'
 import PolygonSVG from '../svgs/polygonSVG'
@@ -52,7 +52,7 @@ export default function Toolbar({ map, onMonitoringAreaChange, setSelectionArea 
 
           const points = (e.layer as Polygon)
             .toGeoJSON()
-            .geometry.coordinates[0].map((loc) => new Point(loc[1] as number, loc[0] as number))
+            .geometry.coordinates[0].map((loc) => ({ lat: loc[1] as number, lon: loc[0] as number }))
 
           //change in monitored area
           onMonitoringAreaChange(points)
@@ -78,7 +78,7 @@ export default function Toolbar({ map, onMonitoringAreaChange, setSelectionArea 
   }
 
   return (
-    <div className="flex flex-row gap-4 bg-gray-700 text-gray-300 rounded-lg p-4 justify-between w-full">
+    <div className="flex flex-row gap-4 bg-gray-700 text-gray-300 rounded-lg p-4 justify-between items-center w-full">
       <h2 className="text-white text-lg font-bold">Focus area tools</h2>
 
       <div id="tools" className="flex gap-4 items-center">

@@ -5,9 +5,10 @@ import { ISimpleVessel } from '../models/simpleVessel'
 import { IStreamManager } from '../interfaces/IStreamManager'
 import { RefObject } from 'react'
 
+export const SIMPLE_FETCH_INTERVAL = 5000 // 5 seconds
+export const MONITORED_FETCH_INTERVAL = 10000 // 10 seconds
+
 export default class StreamManager implements IStreamManager {
-  private allVessels: ISimpleVessel[]
-  private monitoredVessels: IMonitoredVessel[]
   private zone: IPoint[] = []
   private simpleVesselTimeout: NodeJS.Timeout | undefined = undefined
   private monitoredVesselTimeout: NodeJS.Timeout | undefined = undefined
@@ -21,29 +22,21 @@ export default class StreamManager implements IStreamManager {
     this.onMonitoringZoneChange = this.onMonitoringZoneChange.bind(this)
   }
 
-  public syncAllVessels(vessels: ISimpleVessel[]) {
-    this.allVessels = vessels
-  }
-  public syncMonitoredVessels(vessels: IMonitoredVessel[]) {
-    this.monitoredVessels = vessels
-  }
-
   private async fetchSimpleVesselData() {
     const simpleVessels = await this.clientHandler.getSimpleVessles({
       timestamp: Math.round(this.myDateTimeRef.current!.getTime() / 1000),
-      // timestamp: Math.round(new Date(1725844950 * 1000).getTime() / 1000),
     })
 
-    this.manageNewSimpleVessels(simpleVessels)
+    this.setAllVessels(simpleVessels)
   }
 
   private async simpleVesselLoop() {
     try {
       await this.fetchSimpleVesselData()
     } catch (e) {
-      console.log(e)
+      console.error(e)
     }
-    this.simpleVesselTimeout = setTimeout(this.simpleVesselLoop.bind(this), 5000)
+    this.simpleVesselTimeout = setTimeout(this.simpleVesselLoop.bind(this), SIMPLE_FETCH_INTERVAL)
   }
 
   public async startSimpleVesselFetching() {
@@ -67,11 +60,9 @@ export default class StreamManager implements IStreamManager {
   private async fetchMonitoredVessels() {
     const monitoredvessels = await this.clientHandler.getMonitoredVessels({
       timestamp: Math.round(this.myDateTimeRef.current!.getTime() / 1000),
-      // timestamp: Math.round(new Date(1725844950 * 1000).getTime() / 1000),
       selection: { points: this.zone },
     })
-    console.log(monitoredvessels)
-    this.manageNewMonitoredVessels(monitoredvessels)
+    this.setMonitoredVessels(monitoredvessels)
   }
 
   private async startMonitoredVesselFetching() {
@@ -80,37 +71,10 @@ export default class StreamManager implements IStreamManager {
     } catch (e) {
       console.error(e)
     }
-    this.monitoredVesselTimeout = setTimeout(this.startMonitoredVesselFetching.bind(this), 10000)
+    this.monitoredVesselTimeout = setTimeout(this.startMonitoredVesselFetching.bind(this), MONITORED_FETCH_INTERVAL)
   }
 
   private async stopMonitoredVesselFetching() {
     clearTimeout(this.monitoredVesselTimeout)
-  }
-
-  private manageNewSimpleVessels(vessels: ISimpleVessel[]) {
-    const newVessels = this.manageVesselsFromFetch(vessels, this.allVessels)
-    this.setAllVessels(newVessels)
-  }
-
-  private manageNewMonitoredVessels(vessels: IMonitoredVessel[]) {
-    // const newVessels = this.manageVesselsFromFetch(vessels, this.monitoredVessels)
-    this.setMonitoredVessels(vessels)
-  }
-
-  private manageVesselsFromFetch<T extends ISimpleVessel | IMonitoredVessel>(
-    vessels: T[],
-    curVessels: T[] | undefined
-  ): T[] {
-    const locVessels: T[] = curVessels ? JSON.parse(JSON.stringify(curVessels)) : []
-    vessels.forEach((vessel) => {
-      if (locVessels?.map((v) => v.mmsi).includes(vessel.mmsi)) {
-        const idx = locVessels.findIndex((v) => v.mmsi === vessel.mmsi)
-        locVessels[idx] = vessel
-      } else {
-        locVessels?.push(vessel)
-      }
-    })
-
-    return locVessels
   }
 }

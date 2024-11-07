@@ -21,4 +21,8 @@ dist-ssr
 *.sln
 *.sw?
 
+# Protbuf folder
 proto
+
+# Jest coverage
+coverage

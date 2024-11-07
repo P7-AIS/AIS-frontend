@@ -7,49 +7,61 @@ import CloseSVG from '../svgs/closeSVG'
 
 export default function VesselDetailsBox() {
   const { clientHandler, myDateTimeRef } = useAppContext()
-  const { selectedVesselmmsi, setSelectedVesselmmsi, selectedVesselPath, setSelectedVesselPath } = useVesselGuiContext()
+  const {
+    selectedVesselmmsi,
+    setSelectedVesselmmsi,
+    selectedVesselPath,
+    setSelectedVesselPath,
+    pathIsShown,
+    setPathIsShown,
+  } = useVesselGuiContext()
   const [vesselDetails, setVesselDetails] = useState<IDetailedVessel | undefined>(undefined)
   const [loading, setLoading] = useState(true)
   const [pathDuration, setPathDuration] = useState<number>(1)
   const [isCollapsed, setIsCollapsed] = useState<boolean>(false)
 
+  // Fetch vessel details on selected vessel change
   useEffect(() => {
     const fetchDetails = async () => {
       if (!selectedVesselmmsi) return
-      const details = await clientHandler.getVesselInfo({
-        mmsi: selectedVesselmmsi,
-        timestamp: myDateTimeRef.current.getTime(),
-      })
-      setVesselDetails(details)
+
+      try {
+        const details = await clientHandler.getVesselInfo({
+          mmsi: selectedVesselmmsi,
+          timestamp: myDateTimeRef.current.getTime(),
+        })
+        setVesselDetails(details)
+      } catch (e) {
+        console.error(e)
+      }
     }
 
     fetchDetails()
     setLoading(false)
-  }, [clientHandler, selectedVesselmmsi])
+  }, [clientHandler, myDateTimeRef, selectedVesselmmsi])
 
-  async function controlVesselPath() {
-    if (!selectedVesselmmsi) return
-    if (selectedVesselPath.length > 0) {
+  // Fetch path history on path duration change and show path
+  useEffect(() => {
+    async function tryGetVesselPath() {
+      if (!selectedVesselmmsi) return
+      try {
+        const res = await clientHandler.getVesselPath({
+          mmsi: selectedVesselmmsi,
+          endtime: myDateTimeRef.current.getTime() / 1000,
+          starttime: myDateTimeRef.current.getTime() / 1000 - pathDuration * 60 * 60,
+        }) //time is in seconds
+        setSelectedVesselPath(res.pathHistory.locations)
+      } catch (e) {
+        console.error(e)
+      }
+    }
+
+    if (!pathIsShown) {
       setSelectedVesselPath([])
-      return
+    } else {
+      tryGetVesselPath()
     }
-    const res = await clientHandler.getVesselPath({
-      mmsi: selectedVesselmmsi,
-      endtime: myDateTimeRef.current.getTime() / 1000,
-      starttime: myDateTimeRef.current.getTime() / 1000 - pathDuration * 60 * 60,
-    }) //time is in seconds
-    setSelectedVesselPath(res.pathHistory.locations)
-  }
-
-  function handleDurationChange(val: string) {
-    try {
-      const parsed = parseFloat(val)
-      setPathDuration(parsed)
-    } catch (e) {
-      console.error(e)
-      setPathDuration(1)
-    }
-  }
+  }, [clientHandler, myDateTimeRef, pathDuration, pathIsShown, selectedVesselmmsi, setSelectedVesselPath])
 
   const vesselDetailsContent = [
     { displayName: 'Name', value: vesselDetails?.name },
@@ -69,17 +81,25 @@ export default function VesselDetailsBox() {
       ) : (
         vesselDetails && (
           <div>
-            <h2 className="text-lg font-bold pb-3">Vessel Details</h2>
-            <button
-              title="Close vessel details"
-              className="absolute top-4 right-4"
-              onClick={() => setSelectedVesselmmsi(undefined)}
-            >
-              <CloseSVG />
-            </button>
+            <h2 className="text-lg font-bold">Vessel Details</h2>
+            <div className="absolute top-4 right-4 flex gap-1 items-center">
+              <button title="Hide/show vessel details" onClick={() => setIsCollapsed(!isCollapsed)} className="">
+                {isCollapsed ? <ChevronSVG rotate={180} /> : <ChevronSVG />}
+              </button>
+              <button
+                title="Close vessel details"
+                className=""
+                onClick={() => {
+                  setSelectedVesselmmsi(undefined)
+                  setPathIsShown(false)
+                }}
+              >
+                <CloseSVG />
+              </button>
+            </div>
             {!isCollapsed && (
               <>
-                <div id="vessel-info" className="flex flex-col">
+                <div id="vessel-info" className="flex flex-col pt-3">
                   {vesselDetailsContent.map((content, index) => (
                     <div
                       className="flex flex-row gap-3 py-1 px-2 rounded-md even:bg-gray-700 odd:bg-gray-600 text-sm"
@@ -99,25 +119,20 @@ export default function VesselDetailsBox() {
                     <input
                       className="w-12 rounded-md text-center bg-gray-600"
                       type="number"
-                      placeholder="Path duration  Hours"
+                      min="0"
+                      max="24"
+                      placeholder="Path duration Hours"
                       value={pathDuration}
-                      onChange={(e) => handleDurationChange(e.target.value)}
+                      onChange={(e) => setPathDuration(Math.max(0, parseFloat(e.target.value)))}
                     ></input>
                   </div>
 
-                  <button className="blue-badge w-24 py-1" onClick={controlVesselPath}>
+                  <button className="blue-badge w-24 py-1" onClick={() => setPathIsShown(!pathIsShown)}>
                     {selectedVesselPath.length > 0 ? 'Hide Path' : 'Show Path'}
                   </button>
                 </div>
               </>
             )}
-            <button
-              title="Hide/show vessel details"
-              onClick={() => setIsCollapsed(!isCollapsed)}
-              className="w-full flex flex-cols items-center justify-center bottom-0 mt-4"
-            >
-              {isCollapsed ? <ChevronSVG rotate={180} /> : <ChevronSVG />}
-            </button>
           </div>
         )
       )}

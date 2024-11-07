@@ -23,6 +23,8 @@ interface IVesselGuiContext {
   setSelectedVesselmmsi: React.Dispatch<React.SetStateAction<number | undefined>>
   selectedVesselPath: ILocation[]
   setSelectedVesselPath: React.Dispatch<React.SetStateAction<ILocation[]>>
+  pathIsShown: boolean
+  setPathIsShown: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const VesselGuiContext = createContext<IVesselGuiContext | undefined>(undefined)
@@ -45,6 +47,7 @@ export const VesselGuiContextProvider = ({ children }: { children: React.ReactNo
   const [selectionArea, setSelectionArea] = useState<ISelectionArea>({ points: [] })
   const [selectedVesselmmsi, setSelectedVesselmmsi] = useState<number | undefined>()
   const [selectedVesselPath, setSelectedVesselPath] = useState<ILocation[]>([])
+  const [pathIsShown, setPathIsShown] = useState<boolean>(false)
 
   return (
     <VesselGuiContext.Provider
@@ -63,6 +66,8 @@ export const VesselGuiContextProvider = ({ children }: { children: React.ReactNo
         setSelectedVesselmmsi,
         selectedVesselPath,
         setSelectedVesselPath,
+        pathIsShown,
+        setPathIsShown,
       }}
     >
       {children}

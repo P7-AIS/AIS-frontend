@@ -5,12 +5,11 @@ import HamburgerSVG from '../svgs/hamburgerSVG'
 import CloseSVG from '../svgs/closeSVG'
 
 export default function Navbar() {
-  const { myClockSpeed, setMyClockSpeed, myDateTimeRef } = useAppContext()
+  const { myClockSpeed, setMyClockSpeed, myDateTimeRef, hideVessels, setHideVessels } = useAppContext()
   const [opened, setOpened] = useState<boolean>(false)
   const [localClock, setLocalClock] = useState<Date>(myDateTimeRef.current)
   const [localSpeed, setLocalSpeed] = useState<string>(myClockSpeed.toString())
   const convertedMyDateTime = `${localClock.getFullYear()}-${(localClock.getMonth() + 1).toString().padStart(2, '0')}-${localClock.getDate().toString().padStart(2, '0')}T${localClock.getHours().toString().padStart(2, '0')}:${localClock.getMinutes().toString().padStart(2, '0')}`
-
   useEffect(() => {
     function updateLocalClock() {
       setLocalClock(myDateTimeRef.current)
@@ -54,7 +53,7 @@ export default function Navbar() {
           id="settings-container"
           className="absolute left-[101%] top-0 bg-gray-700 opacity-90 text-white flex flex-col gap-4 p-4 min-w-96 rounded-lg shadow-lg"
         >
-          <h2 className="text-lg font-bold">Simulation settings</h2>
+          <h2 className="text-lg font-bold">Settings</h2>
           <div className="flex flex-row justify-between gap-4">
             <label className="font-medium whitespace-nowrap" htmlFor="my-speed">
               Simulated Speed
@@ -79,6 +78,19 @@ export default function Navbar() {
               onChange={(e) => manageDateChange(e.target.value)}
               value={convertedMyDateTime}
             />
+          </div>
+          <div className="flex flex-row justify-between items-center gap-4">
+            <span className="font-medium whitespace-nowrap">Hide vessels when showing path</span>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                value=""
+                onChange={(e) => setHideVessels(e.target.checked)}
+                className="sr-only peer"
+                checked={hideVessels}
+              />
+              <div className="w-9 h-5 bg-gray-600 hover:bg-gray-500 peer-focus:outline-0 peer-focus:ring-transparent rounded-full peer transition-all ease-in-out duration-500 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-700 hover:peer-checked:bg-blue-600"></div>
+            </label>
           </div>
         </div>
       )}
