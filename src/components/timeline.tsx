@@ -42,7 +42,7 @@ export default function Timeline({ timestamps, onChange, timelineVal, setTimelin
             ? timestamps[timelineVal].toISOString().replace('T', ' ').replace('Z', '').slice(0, 19)
             : 'unknown'}
         </p>
-        <button onClick={closePath} className="ml-auto -mr-2">
+        <button title="Hide path" onClick={closePath} className="ml-auto -mr-2">
           <CloseSVG />
         </button>
       </div>
