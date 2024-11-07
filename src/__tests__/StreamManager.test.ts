@@ -6,30 +6,36 @@ import { RefObject } from 'react'
 
 jest.mock('../interfaces/IClientHandler')
 
+let mockClientHandler: jest.Mocked<IClientHandler>
+let setAllVessels: jest.Mock<React.Dispatch<React.SetStateAction<ISimpleVessel[]>>>
+let setMonitoredVessels: jest.Mock<React.Dispatch<React.SetStateAction<IMonitoredVessel[]>>>
+let dateTimeRef: RefObject<Date>
+let streamManager: StreamManager
+
+// Setup: runs before each test
+beforeEach(() => {
+  mockClientHandler = {
+    getSimpleVessles: jest
+      .fn()
+      .mockResolvedValue([
+        { mmsi: 123456, location: { point: { lon: 1, lat: 2 }, timestamp: new Date(), heading: 45 } },
+      ]),
+    getMonitoredVessels: jest.fn().mockResolvedValue([{ mmsi: 123456, trustworthiness: 0.9, reason: 'Test' }]),
+  } as unknown as jest.Mocked<IClientHandler>
+
+  setAllVessels = jest.fn()
+  setMonitoredVessels = jest.fn()
+  dateTimeRef = { current: new Date() } as RefObject<Date>
+
+  streamManager = new StreamManager(mockClientHandler, setAllVessels, setMonitoredVessels, dateTimeRef)
+})
+
+// Cleanup: runs after each test to reset mocks
+afterEach(() => {
+  jest.clearAllMocks()
+})
+
 describe('StreamManager', () => {
-  let mockClientHandler: jest.Mocked<IClientHandler>
-  let setAllVessels: jest.Mock<React.Dispatch<React.SetStateAction<ISimpleVessel[]>>>
-  let setMonitoredVessels: jest.Mock<React.Dispatch<React.SetStateAction<IMonitoredVessel[]>>>
-  let dateTimeRef: RefObject<Date>
-  let streamManager: StreamManager
-
-  beforeEach(() => {
-    mockClientHandler = {
-      getSimpleVessles: jest
-        .fn()
-        .mockResolvedValue([
-          { mmsi: 123456, location: { point: { lon: 1, lat: 2 }, timestamp: new Date(), heading: 45 } },
-        ]),
-      getMonitoredVessels: jest.fn().mockResolvedValue([{ mmsi: 123456, trustworthiness: 0.9, reason: 'Test' }]),
-    } as unknown as jest.Mocked<IClientHandler>
-
-    setAllVessels = jest.fn()
-    setMonitoredVessels = jest.fn()
-    dateTimeRef = { current: new Date() } as RefObject<Date>
-
-    streamManager = new StreamManager(mockClientHandler, setAllVessels, setMonitoredVessels, dateTimeRef)
-  })
-
   it('should start and stop simple vessel fetching', async () => {
     streamManager.startSimpleVesselFetching()
     expect(mockClientHandler.getSimpleVessles).toHaveBeenCalledTimes(1) // Called once

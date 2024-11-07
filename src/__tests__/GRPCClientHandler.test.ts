@@ -1,7 +1,15 @@
 import GRPCClientHandler from '../implementations/GRPCClientHandler'
-import { AISServiceClientImpl, VesselInfoResponse, VesselPathResponse } from '../../proto/AIS-protobuf/ais'
+import {
+  AISServiceClientImpl,
+  MonitoredVessel,
+  SimpleVessel,
+  VesselInfoResponse,
+  VesselPathResponse,
+} from '../../proto/AIS-protobuf/ais'
 import { IDetailedVessel } from '../models/detailedVessel'
 import { IVesselPath } from '../models/vesselPath'
+import { IMonitoredVessel } from '../models/monitoredVessel'
+import { ISimpleVessel } from '../models/simpleVessel'
 
 // Create a mock implementation of AISServiceClientImpl
 const mockClient: jest.Mocked<AISServiceClientImpl> = {
@@ -18,17 +26,17 @@ beforeEach(() => {
 })
 
 // Cleanup: runs after each test to reset mocks
+afterEach(() => {
+  jest.clearAllMocks()
+})
 
 describe('GRPCClientHandler - getVesselInfo', () => {
-  afterEach(() => {
-    jest.clearAllMocks()
-  })
-  it('should return detailed vessel information', async () => {
+  it('should return detailed vessel information for valid mmsi', async () => {
     const mockResponse = { mmsi: 123456789, name: 'Test Vessel', shipType: 'Cargo' } as VesselInfoResponse // Mock the actual response
     mockClient.GetVesselInfo.mockResolvedValue(mockResponse)
 
     const result = await clientHandler.getVesselInfo({ mmsi: 123456789, timestamp: 1609459200 })
-    expect(result).toEqual({
+    expect(result).toEqual<IDetailedVessel>({
       mmsi: 123456789,
       name: 'Test Vessel',
       shipType: 'Cargo',
@@ -42,7 +50,7 @@ describe('GRPCClientHandler - getVesselInfo', () => {
 })
 
 describe('GRPCClientHandler - converters', () => {
-  it('should convert grpcVessel to DetailedVessel', () => {
+  it('should convert VesselInfoResponse to DetailedVessel', () => {
     const grpcVessel: VesselInfoResponse = {
       mmsi: 123456789,
       name: 'Tom Cruise',
@@ -69,7 +77,7 @@ describe('GRPCClientHandler - converters', () => {
     })
   })
 
-  it('should convert grpcVesselPath to VesselPath', () => {
+  it('should convert VesselPathResponse to VesselPath', () => {
     const grpcVesselPath: VesselPathResponse = {
       mmsi: 123456789,
       pathHistory: {
@@ -86,7 +94,7 @@ describe('GRPCClientHandler - converters', () => {
       },
     }
 
-    const privateMethodProto = Object.getPrototypeOf(clientHandler) //to test private method this is necessary https://stackoverflow.com/questions/48906484/how-to-unit-test-private-methods-in-typescript
+    const privateMethodProto = Object.getPrototypeOf(clientHandler)
     const res = privateMethodProto.convertToVesselPath(grpcVesselPath)
 
     expect(res).toEqual<IVesselPath>({
@@ -102,6 +110,46 @@ describe('GRPCClientHandler - converters', () => {
       },
       pathForecast: {
         locations: [],
+      },
+    })
+  })
+
+  it('should convert MonitoredVessel to IMonitoredVessel', () => {
+    const grpcVessel: MonitoredVessel = {
+      mmsi: 123456789,
+      trustworthiness: 0.69,
+      reason: 'Test',
+    }
+
+    const privateMethodProto = Object.getPrototypeOf(clientHandler)
+    const res = privateMethodProto.convertToMoniteredVessel(grpcVessel)
+
+    expect(res).toEqual<IMonitoredVessel>({
+      mmsi: 123456789,
+      trustworthiness: 0.69,
+      reason: 'Test',
+    })
+  })
+
+  it('should convert SimpleVessel to ISimpleVessel', () => {
+    const grpcVessel: SimpleVessel = {
+      mmsi: 123456789,
+      location: {
+        point: { lon: 12, lat: 13 },
+        heading: 69,
+        timestamp: new Date('2024-01-01T00:00:00Z').getTime(),
+      },
+    }
+
+    const privateMethodProto = Object.getPrototypeOf(clientHandler)
+    const res = privateMethodProto.convertToSimpleVessel(grpcVessel)
+
+    expect(res).toEqual<ISimpleVessel>({
+      mmsi: 123456789,
+      location: {
+        point: { lon: 12, lat: 13 },
+        timestamp: new Date('2024-01-01T00:00:00Z'),
+        heading: 69,
       },
     })
   })
