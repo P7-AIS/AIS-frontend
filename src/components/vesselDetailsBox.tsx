@@ -81,17 +81,25 @@ export default function VesselDetailsBox() {
       ) : (
         vesselDetails && (
           <div>
-            <h2 className="text-lg font-bold pb-3">Vessel Details</h2>
-            <button
-              title="Close vessel details"
-              className="absolute top-4 right-4"
-              onClick={() => setSelectedVesselmmsi(undefined)}
-            >
-              <CloseSVG />
-            </button>
+            <h2 className="text-lg font-bold">Vessel Details</h2>
+            <div className="absolute top-4 right-4 flex gap-1 items-center">
+              <button title="Hide/show vessel details" onClick={() => setIsCollapsed(!isCollapsed)} className="">
+                {isCollapsed ? <ChevronSVG rotate={180} /> : <ChevronSVG />}
+              </button>
+              <button
+                title="Close vessel details"
+                className=""
+                onClick={() => {
+                  setSelectedVesselmmsi(undefined)
+                  setPathIsShown(false)
+                }}
+              >
+                <CloseSVG />
+              </button>
+            </div>
             {!isCollapsed && (
               <>
-                <div id="vessel-info" className="flex flex-col">
+                <div id="vessel-info" className="flex flex-col pt-3">
                   {vesselDetailsContent.map((content, index) => (
                     <div
                       className="flex flex-row gap-3 py-1 px-2 rounded-md even:bg-gray-700 odd:bg-gray-600 text-sm"
@@ -125,13 +133,6 @@ export default function VesselDetailsBox() {
                 </div>
               </>
             )}
-            <button
-              title="Hide/show vessel details"
-              onClick={() => setIsCollapsed(!isCollapsed)}
-              className={`w-full flex flex-cols items-center justify-center bottom-0 ${!isCollapsed && 'mt-4'}`}
-            >
-              {isCollapsed ? <ChevronSVG rotate={180} /> : <ChevronSVG />}
-            </button>
           </div>
         )
       )}

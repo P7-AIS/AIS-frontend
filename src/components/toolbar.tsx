@@ -78,7 +78,7 @@ export default function Toolbar({ map, onMonitoringAreaChange, setSelectionArea 
   }
 
   return (
-    <div className="flex flex-row gap-4 bg-gray-700 text-gray-300 rounded-lg p-4 justify-between w-full">
+    <div className="flex flex-row gap-4 bg-gray-700 text-gray-300 rounded-lg p-4 justify-between items-center w-full">
       <h2 className="text-white text-lg font-bold">Focus area tools</h2>
 
       <div id="tools" className="flex gap-4 items-center">
