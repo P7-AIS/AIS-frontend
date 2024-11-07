@@ -6,7 +6,11 @@ import GraphicOverlayHandler from '../implementations/GraphicOverlayHandler'
 import { IGraphicOptions } from '../models/graphicOptions'
 import L from 'leaflet'
 
-export default function SelectionAreaOverlay({ selectionArea }: { selectionArea: ISelectionArea }) {
+interface ISelectionAreaOverlayProps {
+  selectionArea: ISelectionArea
+}
+
+export default function SelectionAreaOverlay({ selectionArea }: ISelectionAreaOverlayProps) {
   const [graphicOptions] = useState<IGraphicOptions[]>([])
   const [pixiContainer] = useState(new PIXI.Container())
   const [overlay] = useState(new GraphicOverlayHandler(pixiContainer, graphicOptions))

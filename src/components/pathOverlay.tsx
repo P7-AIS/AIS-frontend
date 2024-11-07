@@ -10,6 +10,7 @@ interface IPathOverlayProps {
   path: ILocation[]
   idx: number
 }
+
 export default function PathOverlay({ path, idx }: IPathOverlayProps) {
   const [graphicOptions] = useState<IGraphicOptions[]>([])
   const [pixiContainer] = useState(new PIXI.Container())

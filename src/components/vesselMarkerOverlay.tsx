@@ -10,13 +10,12 @@ import SpriteMarkerOverlayHandler from '../implementations/SpriteMarkerOverlayHa
 import { useMap } from 'react-leaflet'
 import { useAppContext } from '../contexts/appcontext'
 
-export default function VesselMarkerOverlay({
-  simpleVessels,
-  monitoredVessels,
-}: {
+interface IVesselMarkerOverlayProps {
   simpleVessels: ISimpleVessel[]
   monitoredVessels: IMonitoredVessel[]
-}) {
+}
+
+export default function VesselMarkerOverlay({ simpleVessels, monitoredVessels }: IVesselMarkerOverlayProps) {
   const { selectedVesselmmsi, setSelectedVesselmmsi } = useVesselGuiContext()
   const [markerOptions] = useState<ISpriteMarkerOptions[]>([])
   const [pixiContainer] = useState(new PIXI.Container())
@@ -54,7 +53,12 @@ export default function VesselMarkerOverlay({
 
   // Update markers
   useEffect(() => {
-    if (arrowTexture === null || selectedArrowTexture === null || circleTexture === null || selectedCircleTexture === null) {
+    if (
+      arrowTexture === null ||
+      selectedArrowTexture === null ||
+      circleTexture === null ||
+      selectedCircleTexture === null
+    ) {
       return
     }
 
@@ -69,7 +73,15 @@ export default function VesselMarkerOverlay({
           )
 
         markerOptions.push(
-          displayVesselToSpriteMarkerOption(vessel, arrowTexture, selectedArrowTexture, circleTexture, selectedCircleTexture, selectedVesselmmsi === vessel.simpleVessel.mmsi, onClick)
+          displayVesselToSpriteMarkerOption(
+            vessel,
+            arrowTexture,
+            selectedArrowTexture,
+            circleTexture,
+            selectedCircleTexture,
+            selectedVesselmmsi === vessel.simpleVessel.mmsi,
+            onClick
+          )
         )
       }
     })
@@ -91,7 +103,7 @@ export default function VesselMarkerOverlay({
     pixiContainer,
     setSelectedVesselmmsi,
     simpleVessels,
-    selectedVesselmmsi
+    selectedVesselmmsi,
   ])
 
   return null
@@ -123,7 +135,7 @@ function displayVesselToSpriteMarkerOption(
   circleTexture: PIXI.Texture,
   selectedCircleTexture: PIXI.Texture,
   isSelected: boolean,
-  onClick: () => void,
+  onClick: () => void
 ): ISpriteMarkerOptions {
   const { simpleVessel, monitoredInfo } = vessel
 

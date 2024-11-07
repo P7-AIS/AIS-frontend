@@ -7,11 +7,17 @@ import CloseSVG from '../svgs/closeSVG'
 
 export default function VesselDetailsBox() {
   const { clientHandler, myDateTimeRef } = useAppContext()
-  const { selectedVesselmmsi, setSelectedVesselmmsi, selectedVesselPath, setSelectedVesselPath } = useVesselGuiContext()
+  const {
+    selectedVesselmmsi,
+    setSelectedVesselmmsi,
+    selectedVesselPath,
+    setSelectedVesselPath,
+    pathIsShown,
+    setPathIsShown,
+  } = useVesselGuiContext()
   const [vesselDetails, setVesselDetails] = useState<IDetailedVessel | undefined>(undefined)
   const [loading, setLoading] = useState(true)
   const [pathDuration, setPathDuration] = useState<number>(1)
-  const [pathIsShown, setPathIsShown] = useState<boolean>(false)
   const [isCollapsed, setIsCollapsed] = useState<boolean>(false)
 
   // Fetch vessel details on selected vessel change
