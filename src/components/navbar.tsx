@@ -5,7 +5,7 @@ import HamburgerSVG from '../svgs/hamburgerSVG'
 import CloseSVG from '../svgs/closeSVG'
 
 export default function Navbar() {
-  const { myClockSpeed, setMyClockSpeed, myDateTimeRef, hideShips, setHideShips } = useAppContext()
+  const { myClockSpeed, setMyClockSpeed, myDateTimeRef, hideVessels, setHideVessels } = useAppContext()
   const [opened, setOpened] = useState<boolean>(false)
   const [localClock, setLocalClock] = useState<Date>(myDateTimeRef.current)
   const [localSpeed, setLocalSpeed] = useState<string>(myClockSpeed.toString())
@@ -85,9 +85,9 @@ export default function Navbar() {
               <input
                 type="checkbox"
                 value=""
-                onChange={(e) => setHideShips(e.target.checked)}
+                onChange={(e) => setHideVessels(e.target.checked)}
                 className="sr-only peer"
-                checked={hideShips}
+                checked={hideVessels}
               />
               <div className="w-9 h-5 bg-gray-600 hover:bg-gray-500 peer-focus:outline-0 peer-focus:ring-transparent rounded-full peer transition-all ease-in-out duration-500 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-700 hover:peer-checked:bg-blue-600"></div>
             </label>

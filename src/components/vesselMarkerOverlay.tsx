@@ -24,7 +24,7 @@ export default function VesselMarkerOverlay({ simpleVessels, monitoredVessels }:
   const [selectedArrowTexture, setSelectedArrowTexture] = useState<PIXI.Texture | null>(null)
   const [circleTexture, setCircleTexture] = useState<PIXI.Texture | null>(null)
   const [selectedCircleTexture, setSelectedCircleTexture] = useState<PIXI.Texture | null>(null)
-  const { clientHandler, hideShips } = useAppContext()
+  const { clientHandler, hideVessels } = useAppContext()
 
   const map = useMap()
 
@@ -87,7 +87,7 @@ export default function VesselMarkerOverlay({ simpleVessels, monitoredVessels }:
     })
 
     if (markerOptions.length !== 0) {
-      if ((!hideShips && pathIsShown) || !pathIsShown) {
+      if ((!hideVessels && pathIsShown) || !pathIsShown) {
         pixiContainer.addChild(...markerOptions.map((option) => option.sprite))
       }
       overlay.updated()
@@ -107,7 +107,7 @@ export default function VesselMarkerOverlay({ simpleVessels, monitoredVessels }:
     simpleVessels,
     selectedVesselmmsi,
     pathIsShown,
-    hideShips,
+    hideVessels,
   ])
 
   return null
