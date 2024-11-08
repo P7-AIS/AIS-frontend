@@ -1,4 +1,4 @@
-![Github banner_new](https://github.com/user-attachments/assets/de893df9-30e6-42b4-a355-09153eef1f5f)
+![Github banner New](https://github.com/user-attachments/assets/20abbcb5-67d7-4360-845e-8d50c622fa23)
 
 # AIS-frontend
 
