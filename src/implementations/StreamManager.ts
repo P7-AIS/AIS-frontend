@@ -26,7 +26,6 @@ export default class StreamManager implements IStreamManager {
     const simpleVessels = await this.clientHandler.getSimpleVessles({
       timestamp: Math.round(this.myDateTimeRef.current!.getTime() / 1000),
     })
-
     this.setAllVessels(simpleVessels)
   }
 

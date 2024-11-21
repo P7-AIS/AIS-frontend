@@ -5,7 +5,17 @@ import HamburgerSVG from '../svgs/hamburgerSVG'
 import CloseSVG from '../svgs/closeSVG'
 
 export default function Navbar() {
-  const { myClockSpeed, setMyClockSpeed, myDateTimeRef, hideVessels, setHideVessels } = useAppContext()
+  const {
+    myClockSpeed,
+    setMyClockSpeed,
+    myDateTimeRef,
+    hideVessels,
+    setHideVessels,
+    showBaseStations,
+    setShowBaseStations,
+    showAtoNs,
+    setShowAtoNs,
+  } = useAppContext()
   const [opened, setOpened] = useState<boolean>(false)
   const [localClock, setLocalClock] = useState<Date>(myDateTimeRef.current)
   const [localSpeed, setLocalSpeed] = useState<string>(myClockSpeed.toString())
@@ -88,6 +98,36 @@ export default function Navbar() {
                 onChange={(e) => setHideVessels(e.target.checked)}
                 className="sr-only peer"
                 checked={hideVessels}
+              />
+              <div className="w-9 h-5 bg-gray-600 hover:bg-gray-500 peer-focus:outline-0 peer-focus:ring-transparent rounded-full peer transition-all ease-in-out duration-500 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-700 hover:peer-checked:bg-blue-600"></div>
+            </label>
+          </div>
+
+          <hr className="my-3 border-2 border-gray-600 rounded-md" />
+
+          <h2 className="text-lg font-bold">Filtering</h2>
+          <div className="flex flex-row justify-between items-center gap-4">
+            <span className="font-medium whitespace-nowrap">Show base stations</span>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                value=""
+                onChange={(e) => setShowBaseStations(e.target.checked)}
+                className="sr-only peer"
+                checked={showBaseStations}
+              />
+              <div className="w-9 h-5 bg-gray-600 hover:bg-gray-500 peer-focus:outline-0 peer-focus:ring-transparent rounded-full peer transition-all ease-in-out duration-500 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-700 hover:peer-checked:bg-blue-600"></div>
+            </label>
+          </div>
+          <div className="flex flex-row justify-between items-center gap-4">
+            <span className="font-medium whitespace-nowrap">Show AtoN (navigational aids)</span>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                value=""
+                onChange={(e) => setShowAtoNs(e.target.checked)}
+                className="sr-only peer"
+                checked={showAtoNs}
               />
               <div className="w-9 h-5 bg-gray-600 hover:bg-gray-500 peer-focus:outline-0 peer-focus:ring-transparent rounded-full peer transition-all ease-in-out duration-500 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-700 hover:peer-checked:bg-blue-600"></div>
             </label>
