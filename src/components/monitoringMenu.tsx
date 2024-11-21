@@ -29,11 +29,10 @@ export default function MonitoringMenu({ monitoredVessels, zoomToVessel }: IMoni
       </div>
       {!isCollapsed && (
         <>
-          <div id="title-row" className="px-2 pr-6 py-2 grid grid-cols-4 gap-4 font-medium">
-            <p className="text-left">MMSI</p>
-            <p className="text-right">Trust</p>
-            <p className="text-left">Reason</p>
-            <p className="text-center">Find vessel</p>
+          <div id="title-row" className="px-2 pr-6 py-2 flex flex-row gap-4 font-medium">
+            <p className="w-20">MMSI</p>
+            <p className="w-12">Trust</p>
+            <p className="w-[200px]">Reason</p>
           </div>
           <div id="rows-container" className="max-h-[50vh] overflow-y-auto divide-y rounded-md">
             {sortedMonitoredVessels.map((vessel, index) => (

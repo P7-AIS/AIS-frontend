@@ -9,6 +9,10 @@ interface IAppContext {
   setMyClockSpeed: React.Dispatch<React.SetStateAction<number>>
   hideVessels: boolean
   setHideVessels: React.Dispatch<React.SetStateAction<boolean>>
+  showBaseStations: boolean
+  setShowBaseStations: React.Dispatch<React.SetStateAction<boolean>>
+  showAtoNs: boolean
+  setShowAtoNs: React.Dispatch<React.SetStateAction<boolean>>
   clientHandler: IClientHandler
 }
 
@@ -25,6 +29,8 @@ export const useAppContext = () => {
 export const AppContextProvider = ({ children }: { children: React.ReactNode }) => {
   const [myClockSpeed, setMyClockSpeed] = useState<number>(100)
   const [hideVessels, setHideVessels] = useState<boolean>(true)
+  const [showBaseStations, setShowBaseStations] = useState<boolean>(false)
+  const [showAtoNs, setShowAtoNs] = useState<boolean>(false)
   const myDateTimeRef = useRef(new Date(1725874950 * 1000)) // Initialize ref with current time
 
   const grpcWeb = new GrpcWebImpl('http://localhost:8080', {})
@@ -44,7 +50,18 @@ export const AppContextProvider = ({ children }: { children: React.ReactNode }) 
 
   return (
     <AppContext.Provider
-      value={{ myClockSpeed, setMyClockSpeed, hideVessels, setHideVessels, clientHandler, myDateTimeRef }}
+      value={{
+        myClockSpeed,
+        setMyClockSpeed,
+        hideVessels,
+        setHideVessels,
+        showBaseStations,
+        setShowBaseStations,
+        showAtoNs,
+        setShowAtoNs,
+        clientHandler,
+        myDateTimeRef,
+      }}
     >
       {children}
     </AppContext.Provider>

@@ -18,9 +18,9 @@ beforeEach(() => {
     getSimpleVessles: jest
       .fn()
       .mockResolvedValue([
-        { mmsi: 123456, location: { point: { lon: 1, lat: 2 }, timestamp: new Date(), heading: 45 } },
+        { mmsi: 123456789, location: { point: { lon: 1, lat: 2 }, timestamp: new Date(), heading: 45 } },
       ]),
-    getMonitoredVessels: jest.fn().mockResolvedValue([{ mmsi: 123456, trustworthiness: 0.9, reason: 'Test' }]),
+    getMonitoredVessels: jest.fn().mockResolvedValue([{ mmsi: 123456789, trustworthiness: 0.9, reason: 'Test' }]),
   } as unknown as jest.Mocked<IClientHandler>
 
   setAllVessels = jest.fn()
