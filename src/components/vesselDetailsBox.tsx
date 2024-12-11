@@ -36,7 +36,9 @@ export default function VesselDetailsBox() {
       }
     }
 
+    console.time('VesselDetails')
     fetchDetails()
+    console.timeEnd('VesselDetails')
     setLoading(false)
   }, [clientHandler, myDateTimeRef, selectedVesselmmsi])
 
@@ -59,7 +61,9 @@ export default function VesselDetailsBox() {
     if (!pathIsShown) {
       setSelectedVesselPath([])
     } else {
+      console.time('VesselPath')
       tryGetVesselPath()
+      console.timeEnd('VesselPath')
     }
   }, [clientHandler, myDateTimeRef, pathDuration, pathIsShown, selectedVesselmmsi, setSelectedVesselPath])
 

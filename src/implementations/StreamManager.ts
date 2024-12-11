@@ -23,10 +23,12 @@ export default class StreamManager implements IStreamManager {
   }
 
   private async fetchSimpleVesselData() {
+    console.time('SimpleVessels')
     const simpleVessels = await this.clientHandler.getSimpleVessles({
       timestamp: Math.round(this.myDateTimeRef.current!.getTime() / 1000),
     })
     this.setAllVessels(simpleVessels)
+    console.timeEnd('SimpleVessels')
   }
 
   private async simpleVesselLoop() {
@@ -57,11 +59,13 @@ export default class StreamManager implements IStreamManager {
   }
 
   private async fetchMonitoredVessels() {
+    console.time('MonitoredVessels')
     const monitoredvessels = await this.clientHandler.getMonitoredVessels({
       timestamp: Math.round(this.myDateTimeRef.current!.getTime() / 1000),
       selection: { points: this.zone },
     })
     this.setMonitoredVessels(monitoredvessels)
+    console.timeEnd('MonitoredVessels')
   }
 
   private async startMonitoredVesselFetching() {
