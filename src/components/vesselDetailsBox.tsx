@@ -25,6 +25,7 @@ export default function VesselDetailsBox() {
     const fetchDetails = async () => {
       if (!selectedVesselmmsi) return
 
+      console.time('VesselDetails')
       try {
         const details = await clientHandler.getVesselInfo({
           mmsi: selectedVesselmmsi,
@@ -34,11 +35,10 @@ export default function VesselDetailsBox() {
       } catch (e) {
         console.error(e)
       }
+      console.timeEnd('VesselDetails')
     }
 
-    console.time('VesselDetails')
     fetchDetails()
-    console.timeEnd('VesselDetails')
     setLoading(false)
   }, [clientHandler, myDateTimeRef, selectedVesselmmsi])
 
@@ -46,6 +46,7 @@ export default function VesselDetailsBox() {
   useEffect(() => {
     async function tryGetVesselPath() {
       if (!selectedVesselmmsi) return
+      console.time('VesselPath')
       try {
         const res = await clientHandler.getVesselPath({
           mmsi: selectedVesselmmsi,
@@ -56,14 +57,13 @@ export default function VesselDetailsBox() {
       } catch (e) {
         console.error(e)
       }
+      console.timeEnd('VesselPath')
     }
 
     if (!pathIsShown) {
       setSelectedVesselPath([])
     } else {
-      console.time('VesselPath')
       tryGetVesselPath()
-      console.timeEnd('VesselPath')
     }
   }, [clientHandler, myDateTimeRef, pathDuration, pathIsShown, selectedVesselmmsi, setSelectedVesselPath])
 
